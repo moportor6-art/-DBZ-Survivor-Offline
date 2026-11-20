@@ -2,6 +2,10 @@ plugins {
     id 'com.android.application'
 }
 
+// Número de compilación: lo pasa GitHub Actions (-Pvc=<número de ejecución>); en local, 1.
+// El actualizador de la app compara este número con el de la última publicación.
+def buildNum = (project.findProperty('vc') ?: '1') as Integer
+
 android {
     namespace 'com.dbsurvivors.collection'
     compileSdk 35
@@ -10,15 +14,25 @@ android {
         applicationId 'com.dbsurvivors.collection'
         minSdk 24
         targetSdk 35
-        versionCode 1
-        versionName '1.0'
+        versionCode buildNum
+        versionName "1.0.${buildNum}"
+    }
+
+    // Clave de firma fija: todas las compilaciones se instalan encima de la anterior sin desinstalar.
+    // (Antes se usaba la clave de depuración, que GitHub crea nueva en cada compilación.)
+    signingConfigs {
+        fija {
+            storeFile file('release.keystore')
+            storePassword 'dbsurvivors-fusion'
+            keyAlias 'dbsurvivors'
+            keyPassword 'dbsurvivors-fusion'
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            // Firmada con la clave de depuración para poder instalarla directo en el teléfono
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.fija
         }
     }
 

@@ -74,6 +74,7 @@ public class MainActivity extends Activity {
     }
 
     private WebView web;
+    private Updater updater;
     private boolean backDialogOpen = false;
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -106,6 +107,7 @@ public class MainActivity extends Activity {
         s.setSupportMultipleWindows(false);           // target=_blank se abre aquí y se deriva al navegador
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
+        updater = new Updater(this, web);   // antes de cargar: decide de dónde sale cada archivo del juego
         web.addJavascriptInterface(new GfxBridge(), "FusionNative");   // ajustes gráficos del juego (js/fusion-gfx.js)
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient() {
@@ -136,6 +138,7 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl(HOME);
+        web.postDelayed(() -> updater.check(false), 4000);   // busca actualizaciones al abrir (sin internet, nada)
     }
 
     // ─── Puente para los ajustes gráficos: frecuencia de la pantalla (60/90/120 Hz) y batería ───
@@ -190,6 +193,13 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> applyRefreshRate(hz));
         }
 
+        // ─── Actualizador (js/fusion-update.js) ───
+        @JavascriptInterface public String updInfo() { return updater.info(); }
+        @JavascriptInterface public void updCheck() { runOnUiThread(() -> updater.check(true)); }
+        @JavascriptInterface public void updHistory() { updater.history(); }
+        @JavascriptInterface public void updReset() { updater.reset(); }
+        @JavascriptInterface public void updBooted() { updater.booted(); }
+
         /** "nivel,cargando": p. ej. "18,0" = 18 % sin cargador. */
         @JavascriptInterface
         public String battery() {
@@ -212,20 +222,31 @@ public class MainActivity extends Activity {
         String path = u.getPath();
         if (path == null || path.isEmpty() || path.endsWith("/")) path = (path == null ? "/" : path) + "index.html";
         if (path.contains("..") || path.startsWith("/api")) return notFound();
-        String ext = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
-        String mime = MIME.containsKey(ext) ? MIME.get(ext) : "application/octet-stream";
+        if ("dbzsurvivor".equals(folder) && updater != null) {   // archivos actualizados (Updater) antes que los de la APK
+            String rel = path.substring(1);
+            if (updater.isRemoved(rel)) return notFound();
+            java.io.File upd = updater.overlayFile(rel);
+            if (upd != null) {
+                try { return response(path, new java.io.FileInputStream(upd)); } catch (IOException e) { /* sigue con la APK */ }
+            }
+        }
         try {
-            InputStream in = getAssets().open("www/" + folder + path, AssetManager.ACCESS_STREAMING);
-            WebResourceResponse r = new WebResourceResponse(mime,
-                    mime.startsWith("text/") || mime.endsWith("json") ? "utf-8" : null, in);
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Cache-Control", "no-cache");
-            headers.put("Access-Control-Allow-Origin", "*");
-            r.setResponseHeaders(headers);
-            return r;
+            return response(path, getAssets().open("www/" + folder + path, AssetManager.ACCESS_STREAMING));
         } catch (IOException e) {
             return notFound();
         }
+    }
+
+    private static WebResourceResponse response(String path, InputStream in) {
+        String ext = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
+        String mime = MIME.containsKey(ext) ? MIME.get(ext) : "application/octet-stream";
+        WebResourceResponse r = new WebResourceResponse(mime,
+                mime.startsWith("text/") || mime.endsWith("json") ? "utf-8" : null, in);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cache-Control", "no-cache");
+        headers.put("Access-Control-Allow-Origin", "*");
+        r.setResponseHeaders(headers);
+        return r;
     }
 
     private static WebResourceResponse notFound() {
