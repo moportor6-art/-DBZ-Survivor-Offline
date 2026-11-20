@@ -7,13 +7,16 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -103,6 +106,7 @@ public class MainActivity extends Activity {
         s.setSupportMultipleWindows(false);           // target=_blank se abre aquí y se deriva al navegador
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
+        web.addJavascriptInterface(new GfxBridge(), "FusionNative");   // ajustes gráficos del juego (js/fusion-gfx.js)
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -132,6 +136,67 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl(HOME);
+    }
+
+    // ─── Puente para los ajustes gráficos: frecuencia de la pantalla (60/90/120 Hz) y batería ───
+    private Display display() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? getDisplay() : getWindowManager().getDefaultDisplay();
+    }
+
+    /** Pide a la pantalla el modo con esa frecuencia (misma resolución); 0 = la más alta que tenga. */
+    private void applyRefreshRate(float hz) {
+        Display d = display();
+        if (d == null) return;
+        Display.Mode cur = d.getMode(), best = null;
+        for (Display.Mode m : d.getSupportedModes()) {
+            if (m.getPhysicalWidth() != cur.getPhysicalWidth() || m.getPhysicalHeight() != cur.getPhysicalHeight()) continue;
+            float r = m.getRefreshRate();
+            if (best == null) { best = m; continue; }
+            float b = best.getRefreshRate();
+            if (hz <= 0) { if (r > b) best = m; }
+            else if (Math.abs(r - hz) < Math.abs(b - hz) || (Math.abs(r - hz) == Math.abs(b - hz) && r > b)) best = m;
+        }
+        if (best == null) return;
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.preferredDisplayModeId = best.getModeId();
+        getWindow().setAttributes(lp);
+    }
+
+    private class GfxBridge {
+        /** Frecuencias que admite la pantalla, p. ej. "60,90,120". */
+        @JavascriptInterface
+        public String refreshRates() {
+            Display d = display();
+            if (d == null) return "";
+            Display.Mode cur = d.getMode();
+            StringBuilder sb = new StringBuilder();
+            for (Display.Mode m : d.getSupportedModes()) {
+                if (m.getPhysicalWidth() != cur.getPhysicalWidth() || m.getPhysicalHeight() != cur.getPhysicalHeight()) continue;
+                if (sb.length() > 0) sb.append(',');
+                sb.append(Math.round(m.getRefreshRate()));
+            }
+            return sb.toString();
+        }
+
+        /** Frecuencia actual de la pantalla. */
+        @JavascriptInterface
+        public float currentRefreshRate() {
+            Display d = display();
+            return d == null ? 60 : d.getRefreshRate();
+        }
+
+        @JavascriptInterface
+        public void setRefreshRate(final float hz) {
+            runOnUiThread(() -> applyRefreshRate(hz));
+        }
+
+        /** "nivel,cargando": p. ej. "18,0" = 18 % sin cargador. */
+        @JavascriptInterface
+        public String battery() {
+            BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
+            if (bm == null) return "";
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) + "," + (bm.isCharging() ? 1 : 0);
+        }
     }
 
     private static boolean isLocal(Uri u) {

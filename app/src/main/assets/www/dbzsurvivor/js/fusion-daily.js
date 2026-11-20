@@ -135,7 +135,8 @@
   badge();
 
   const css = document.createElement('style');
-  css.textContent = `.fd-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.12)}
+  css.textContent = `#daily{overflow-y:auto;justify-content:flex-start;padding-top:3vh}
+    .fd-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.12)}
     .fd-txt{flex:1;font-weight:600}.fd-bar{height:8px;margin-top:6px;border-radius:4px;background:rgba(0,0,0,.35);overflow:hidden}
     .fd-bar i{display:block;height:100%;background:#ffcc33}.fd-act{min-width:120px;text-align:right}.fd-bonus .fd-txt{color:#ffd93b}
     #btnDaily.fd-ready{border-color:#ffd93b;color:#ffd93b}`;
