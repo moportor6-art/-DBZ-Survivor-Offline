@@ -244,3 +244,19 @@ LEVELS.push(
     bosses: [{ id: 'coldb', at: 105, hp: 6000 }, { id: 'mechafz', at: 210, hp: 7000 }, { id: 'coolerb', at: 330, hp: 11000 },
       { id: 'goldenfz', at: 450, hp: 15000 }, { id: 'brolyb', at: 510, hp: 17000 }, { id: 'bills', at: 600, hp: 28000, final: true }] },
 );
+
+// ─── Fase 3: técnicas propias que faltaban ───
+Object.assign(ATTACKS, {
+  gkame: {
+    name: 'Final Kamehameha', color: '#7dd8ff', core: '#ffffff', type: 'beam', users: ['vegetto'],
+    desc: 'El Kamehameha y el Final Flash juntos: un rayo enorme, largo y muy dañino.',
+    stats: l => ({ cd: 3.6 - l * 0.22, dmg: 12 + l * 5, len: 260 + l * 32, width: 24 + l * 5, dur: 0.6 + l * 0.05 }),
+  },
+  barrera: {
+    name: 'Barrera', color: '#8fe3ff', type: 'orbit', shield: true, users: ['a17p'],
+    desc: 'Una barrera de energía gira a tu alrededor: golpea a quien se acerque y destruye los disparos enemigos.',
+    stats: l => ({ count: 2 + l, dmg: 6 + l * 3, radius: 46 + l * 4, r: 8, spin: 3 + l * 0.2 }),
+  },
+});
+CHARACTERS.vegetto.start = 'gkame';   // su técnica de la película (el Kamehameha lo sigue pudiendo aprender)
+CHARACTERS.a17p.start = 'barrera';
