@@ -40,7 +40,7 @@ import java.util.Map;
 public class MainActivity extends Activity {
 
     private static final String SUFFIX = ".offline";
-    private static final String HOME = "https://menu" + SUFFIX + "/";
+    private static final String HOME = "https://dbzsurvivor" + SUFFIX + "/";   // el juego fusionado, directo (sin el menú de dos juegos)
     /** host (sin el sufijo) → carpeta dentro de assets/www */
     private static final Map<String, String> SITES = new HashMap<>();
     static {
@@ -235,19 +235,33 @@ public class MainActivity extends Activity {
         return r;
     }
 
-    /** Atrás: en el menú sale de la app; dentro de un juego pregunta antes de volver al menú. */
+    /**
+     * Atrás: en plena partida abre la pausa del juego (como su botón ⏸); en los menús pregunta si salir de la app.
+     * Lo decide el propio juego: G es la partida en curso (js/game.js).
+     */
+    private static final String BACK_JS = "(function(){try{var p=document.getElementById('pause');"
+            + "if(typeof G!=='undefined'&&G&&G.mode==='play'&&p&&p.classList.contains('hidden')){"
+            + "document.getElementById('btnPause').click();return 'paused';}}catch(e){}return 'menu';})()";
+
     private void handleBack() {
+        if (backDialogOpen) return;
         String url = web.getUrl();
-        if (url == null || url.startsWith(HOME)) {
-            finish();
-            return;
+        if (url != null && isLocal(Uri.parse(url))) {
+            web.evaluateJavascript(BACK_JS, v -> { if (!"\"paused\"".equals(v)) askExit(); });
+        } else if (web.canGoBack()) {
+            web.goBack();
+        } else {
+            askExit();
         }
+    }
+
+    private void askExit() {
         if (backDialogOpen) return;
         backDialogOpen = true;
         new AlertDialog.Builder(this)
-                .setTitle("¿Volver al menú de juegos?")
+                .setTitle("¿Salir de DB Survivors?")
                 .setMessage("Si estás en una partida, se perderá el progreso de esa partida.")
-                .setPositiveButton("Volver al menú", (d, i) -> web.loadUrl(HOME))
+                .setPositiveButton("Salir", (d, i) -> finish())
                 .setNegativeButton("Seguir jugando", null)
                 .setOnDismissListener(d -> { backDialogOpen = false; hideSystemBars(); })
                 .show();
