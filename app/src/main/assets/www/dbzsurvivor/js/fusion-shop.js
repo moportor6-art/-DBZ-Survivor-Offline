@@ -12,6 +12,7 @@
   const basePerk = perk;
   perk = function (P, id) {   // eslint-disable-line no-global-assign
     const v = basePerk.apply(this, arguments);
+    if (id === 'regen') return v + wish(P) * 0.1;   // +0,1 de salud por segundo por nivel
     return STATS.has(id) ? v + wish(P) * SHENLONG_STAT : v;
   };
 
@@ -28,6 +29,18 @@
     // El deseo más alto entre los jugadores de la partida (en solitario, el tuyo)
     const w = typeof G !== 'undefined' && G && G.players ? Math.max(0, ...G.players.filter(p => !p.ally).map(wish)) : 0;
     return spawn.call(this, dt * (1 + w * SHENLONG_ENEMIES));
+  };
+
+  // Carga de Ki: el Ki que ganas en cada paso del juego (golpes, meditación...) sube un 5% por nivel
+  const upd = update;
+  update = function () {   // eslint-disable-line no-global-assign
+    const ps = typeof G !== 'undefined' && G && G.players ? G.players : [], before = ps.map(p => p.ki);
+    const r = upd.apply(this, arguments);
+    ps.forEach((p, i) => {
+      const w = wish(p), d = p.ki - before[i];
+      if (w && d > 0 && p.ki < 100 && !(p.transformed > 0)) p.ki = Math.min(100, p.ki + d * w * SHENLONG_STAT);
+    });
+    return r;
   };
 
   const tr = doTransform;
