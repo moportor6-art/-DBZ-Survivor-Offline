@@ -105,7 +105,7 @@ const myChar = () => weeklyChar() || (CHARACTERS[SAVE.char] && (isUnlocked(SAVE.
 // ¿Se ve distinto al transformarse? (pelo Super Saiyajin, o una hoja propia como Piccolo sin capa)
 const hasTransformLook = c => !!(c.ssjHair || c.transformSprite);
 // Niveles: el 1 está abierto; cada uno se abre al ganar el anterior (en el modo prueba, todos)
-const isLevelOpen = id => { const L = levelDef(id); return TEST_MODE || L.bonus || L.num === 1 || !!SAVE.levelsWon[LEVELS[L.num - 2].id]; };
+const isLevelOpen = id => { const L = levelDef(id); return TEST_MODE || L.bonus || L.num === 1 || !!SAVE.levelsWon[L.openAfter || LEVELS[L.num - 2].id]; };   // openAfter: niveles de la fusión (js/fusion.js)
 const myLevel = () => SAVE.level === 'weekly' ? (WEEKLY ? 'weekly' : 'saiyan') : (isLevelOpen(SAVE.level) ? levelDef(SAVE.level).id : 'saiyan');
 // Récord de un guerrero en un nivel (los récords de antes de los niveles cuentan para el Nivel 1)
 const bestOf = (lv, ch) => SAVE.best[`${lv}|${ch}`] || (lv === 'saiyan' ? SAVE.best[ch] || 0 : 0);
@@ -4671,7 +4671,7 @@ function buildLevels() {
     const open = isLevelOpen(L.id), won = !!SAVE.levelsWon[L.id], card = document.createElement('button');
     card.className = 'level-card' + (L.id === sel ? ' selected' : '') + (open ? '' : ' locked');
     const fb = L.bosses.find(b => b.final);
-    const state = !open ? t('🔒 Gana el Nivel {n} para abrirlo', { n: L.num - 1 }) : L.infinite ? t('♾ Infinito · gana quien más aguanta')
+    const state = !open ? t('🔒 Gana el Nivel {n} para abrirlo', { n: L.openAfter ? levelDef(L.openAfter).num : L.num - 1 }) : L.infinite ? t('♾ Infinito · gana quien más aguanta')
       : won ? t('✓ Ganado') : t('Jefe final: {name}', { name: bossDef(fb.id).name });
     card.innerHTML = `${levelPic(L.id)}<b>${t('Nivel {n}', { n: L.num })}</b><small>${esc(L.desc)}</small>
       <span class="lv-state">${esc(state)}</span>`;
