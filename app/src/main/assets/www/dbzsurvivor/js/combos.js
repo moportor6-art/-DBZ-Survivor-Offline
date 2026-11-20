@@ -19,7 +19,7 @@ function comboIcon(kind, id, dim) {
 }
 
 function comboPanel(P) {
-  const { S, EVO_Y, TEC_Y, PAS_Y, H } = COMBO, W = comboX(5) - COMBO.GAP;
+  const { S, EVO_Y, TEC_Y, PAS_Y, H } = COMBO, W = comboX(Math.max(5, maxPassives(P))) - COMBO.GAP;   // más ancho con casillas extra (Tienda)
   const owned = Object.keys(PASSIVES).filter(k => P.passives[k] > 0);   // en el mismo orden que el HUD
   const slots = owned.slice(), ghosts = new Set();
   // Qué evoluciona cada técnica y en qué estado está
@@ -31,7 +31,7 @@ function comboPanel(P) {
     let state;
     if (def.evolved) state = 'done';
     else if (P.passives[need] > 0) state = a.lvl >= MAX_ATTACK_LEVEL ? 'ready' : 'level';
-    else if (slots.includes(need) || slots.length < MAX_PASSIVES) { state = 'miss'; if (!slots.includes(need)) { slots.push(need); ghosts.add(need); } }
+    else if (slots.includes(need) || slots.length < maxPassives(P)) { state = 'miss'; if (!slots.includes(need)) { slots.push(need); ghosts.add(need); } }
     else state = 'blocked';   // no queda casilla de mejoras: esta técnica ya no puede evolucionar
     return { a, i, evoId, need, state, pj: slots.indexOf(need) };
   });
@@ -95,7 +95,7 @@ function comboPanel(P) {
       : r.state === 'blocked' ? t('Sin casilla') : t('Falta {need}', { need: needName }), r.state);
   }
   // Mejoras (las que tienes y, punteadas, las que faltan)
-  for (let j = 0; j < MAX_PASSIVES; j++) {
+  for (let j = 0; j < maxPassives(P); j++) {
     const id = slots[j];
     if (!id) { slot(comboX(j), PAS_Y, 'empty', t('Casilla libre de mejora')); continue; }
     if (ghosts.has(id)) {

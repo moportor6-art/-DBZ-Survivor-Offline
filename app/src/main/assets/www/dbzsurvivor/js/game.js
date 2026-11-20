@@ -1159,7 +1159,7 @@ function attackStats(P, id, lvl) {
   const s = { ...ATTACKS[id].stats(lvl) }, area = 1 + 0.08 * (P.passives.area || 0), ml = P.passives.multi || 0;
   for (const k of ['radius', 'width', 'explode', 'taunt', 'ringR']) if (s[k]) s[k] *= area;
   if (s.r) s.r = Math.round(s.r * area);
-  if (ml && s.count >= 2 && ATTACKS[id].type !== 'decoy') s.count += multiExtra(ml);
+  if (ml && s.count >= 1 && ATTACKS[id].type !== 'decoy') s.count += multiExtra(ml);   // fusión: desde 1 proyectil (antes solo con 2 o más)
   if (s.dur && P.passives.sustain) s.dur *= 1 + 0.1 * P.passives.sustain;   // Técnica sostenida
   return s;
 }
@@ -1208,7 +1208,7 @@ function fireAttacks(P, dt) {
       sfx('shot');
       P.castT = Math.max(P.castT || 0, 0.2);
     } else if (def.type === 'beam') {
-      for (const an of def.both ? [ang, ang + Math.PI] : [ang]) {   // Super Masenko: hacia adelante y hacia atrás
+      for (const an of beamAngles(P, def, ang)) {   // Super Masenko: hacia adelante y hacia atrás; Multiplicación: un rayo más (fusion.js)
         G.beams.push({ ang: an, len: s.len, width: s.width, dmg: s.dmg, t: s.dur, dur: s.dur, tick: 0, color: def.color, core: def.core, aid: a.id, owner: P });
       }
       sfx('beam', 0.3);
@@ -2264,7 +2264,7 @@ function cardPool(P) {
   const ownedPassives = Object.keys(PASSIVES).filter(id => P.passives[id] > 0).length;
   for (const id in PASSIVES) {
     if (P.passives[id] >= passiveMax(id) || (P.c.noPassives || []).includes(id)) continue;
-    if (P.passives[id] > 0 || ownedPassives < MAX_PASSIVES) opts.push({ kind: 'passive', id });
+    if (P.passives[id] > 0 || ownedPassives < maxPassives(P)) opts.push({ kind: 'passive', id });
   }
   const banned = new Set(P.banned || []);
   return opts.filter(o => !banned.has(optKey(o)));
@@ -2309,7 +2309,7 @@ function cardCombo(P, o) {
     const a = P.attacks.find(x => EVOLUTION_OF[x.id] && ATTACKS[EVOLUTION_OF[x.id]].needs === o.id && canLearn(P.charId, EVOLUTION_OF[x.id]));
     if (a) return { combo: t('Combina con tu {name}: con esta mejora puede evolucionar', { name: ATTACKS[a.id].name }) };
     const used = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
-    if (used === MAX_PASSIVES - 1) {   // última casilla: ¿deja afuera la mejora que alguna técnica necesita?
+    if (used === maxPassives(P) - 1) {   // última casilla: ¿deja afuera la mejora que alguna técnica necesita?
       const stuck = P.attacks.find(x => { const e = EVOLUTION_OF[x.id]; return e && canLearn(P.charId, e) && !P.passives[ATTACKS[e].needs]; });
       if (stuck) return { warn: t('Es tu última casilla de mejoras: tu {name} ya no podría evolucionar (necesita {need})', { name: ATTACKS[stuck.id].name, need: PASSIVES[ATTACKS[EVOLUTION_OF[stuck.id]].needs].name }) };
     }
@@ -2402,7 +2402,7 @@ function applyOption(P, o) {
   } else if (o.kind === 'new') {
     if (ATTACKS[o.id] && canLearn(P.charId, o.id) && P.attacks.length < MAX_ATTACKS && !P.attacks.some(a => a.id === o.id)) P.attacks.push({ id: o.id, lvl: 1, cd: 0.3 });
   } else if (o.kind === 'passive') {
-    const slotFree = P.passives[o.id] > 0 || Object.keys(PASSIVES).filter(id => P.passives[id] > 0).length < MAX_PASSIVES;
+    const slotFree = P.passives[o.id] > 0 || Object.keys(PASSIVES).filter(id => P.passives[id] > 0).length < maxPassives(P);
     if (PASSIVES[o.id] && P.passives[o.id] < passiveMax(o.id) && slotFree) {
       P.passives[o.id]++;
       if (o.id === 'vital') { P.maxHp += 20; healPlayer(P, 20); }
@@ -2753,7 +2753,7 @@ function passiveTip(P, id) {
     focus: t('-{n}% de recarga', { n: 8 * l }), sense: `${t('Radio de atracción')}: ${Math.round(magnetRange(P))}`, armor: t('-{n} de daño por golpe recibido', { n: l }),
     crit: t('{n}% de probabilidad de crítico', { n: 8 + 4 * l }), kictl: t('El Ki se carga un {n}% más rápido', { n: 15 * l }),
     absorb: t('{n}% de probabilidad de curarte al derrotar', { n: 3 * l }), area: t('+{n}% de tamaño y área', { n: 8 * l }),
-    multi: t('+{n} proyectil en las técnicas que disparan varios', { n: multiExtra(l) }),
+    multi: t('+{n} proyectil en tus técnicas que disparan y un rayo más en tus rayos', { n: multiExtra(l) }),
     luck: t('+{a}% de semillas y cápsulas, +{b}% de Zeni', { a: luckPct(l), b: luckPct(l) }),
     gravity: t('+{n}% de experiencia', { n: 8 * l }), instinct: t('{n}% de probabilidad de esquivar', { n: 3 * l }),
     regen: t('Recuperas {n} de salud por segundo', { n: (0.25 * l).toFixed(2) }), aura: t('{n} de daño cada medio segundo a los enemigos pegados', { n: 4 * l }),
@@ -4430,7 +4430,7 @@ function drawLoadout(P, top, compact) {
     hudSlotLevel(x, y2, s, P.passives[id], passiveMax(id));
     if (wanted[id]) hudText('★', x + s - 6, y2 + 10, 10, '#ffd93b', 'center');   // sirve para evolucionar una técnica tuya
   });
-  for (let i = owned.length; i < MAX_PASSIVES; i++) emptySlot(8 + i * (s + gap), y2, s);
+  for (let i = owned.length; i < maxPassives(P); i++) emptySlot(8 + i * (s + gap), y2, s);
   return y2 + s;
 }
 // Casilla libre: marco tenue para ver cuánto lugar queda
@@ -5046,7 +5046,7 @@ function testPowerChange(kind, id, delta) {
   } else {
     const lv = P.passives[id] || 0;
     const used = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
-    if (delta > 0 && lv < passiveMax(id) && (lv > 0 || used < MAX_PASSIVES)) {
+    if (delta > 0 && lv < passiveMax(id) && (lv > 0 || used < maxPassives(P))) {
       P.passives[id] = lv + 1;
       if (id === 'vital') { P.maxHp += 20; healPlayer(P, 20); }
     } else if (delta < 0 && lv > 0) {
@@ -5069,7 +5069,7 @@ function renderTestPowers() {
   };
   const usedP = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
   const pasRow = id => {
-    const lv = P.passives[id] || 0, canUp = lv < passiveMax(id) && (lv > 0 || usedP < MAX_PASSIVES);
+    const lv = P.passives[id] || 0, canUp = lv < passiveMax(id) && (lv > 0 || usedP < maxPassives(P));
     return `<div class="tp-row${lv ? ' on' : ''}"><span class="tp-dot" style="background:${PASSIVES[id].color}"></span>
       <span class="tp-name" title="${esc(PASSIVES[id].desc)}">${esc(PASSIVES[id].name)}</span><span class="tp-lvl">${lv ? t('Nv {n}', { n: lv }) : ''}</span>
       <button data-tp="pas" data-id="${id}" data-d="-1"${lv ? '' : ' disabled'}>−</button><button data-tp="pas" data-id="${id}" data-d="1"${canUp ? '' : ' disabled'}>+</button></div>`;
@@ -5080,7 +5080,7 @@ function renderTestPowers() {
     group('Técnicas de ' + esc(ch.name), base.filter(id => ATTACKS[id].users && ATTACKS[id].users.includes(P.charId)), atkRow, `${P.attacks.length} / ${MAX_ATTACKS} casillas`)
     + group('Técnicas comunes', base.filter(id => !ATTACKS[id].users), atkRow)
     + group('Evoluciones', ids.filter(id => ATTACKS[id].evolved), atkRow, 'reemplazan a su técnica si la tienes')
-    + group('Mejoras', Object.keys(PASSIVES), pasRow, `${usedP} / ${MAX_PASSIVES} casillas`)
+    + group('Mejoras', Object.keys(PASSIVES), pasRow, `${usedP} / ${maxPassives(P)} casillas`)
     + group('Técnicas de otros guerreros', base.filter(id => ATTACKS[id].users && !ATTACKS[id].users.includes(P.charId)), atkRow);
   for (const b of $('tpContent').querySelectorAll('button[data-tp]')) b.onclick = () => testPowerChange(b.dataset.tp, b.dataset.id, +b.dataset.d);
 }
