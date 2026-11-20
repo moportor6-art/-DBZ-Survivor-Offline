@@ -260,3 +260,26 @@ Object.assign(ATTACKS, {
 });
 CHARACTERS.vegetto.start = 'gkame';   // su técnica de la película (el Kamehameha lo sigue pudiendo aprender)
 CHARACTERS.a17p.start = 'barrera';
+
+// ─── Fase 4: gigantes de DB Survivors ───
+Object.assign(ENEMIES, {
+  // El Ozaru (un Saiyajin transformado en mono gigante) en la saga Saiyajin
+  ozaru: { name: 'Ozaru', hp: 220, speed: 0.55, r: 22, dmg: 20, xp: 10, scale: 1, stomp: 70, look: FL('#7a4a2a', '#7a4a2a', '#7a4a2a') },
+  // Los robots gigantes de Ciudad Satán
+  annihil: { name: 'Robot aniquilador', hp: 200, speed: 0.6, r: 20, dmg: 19, xp: 9, scale: 0.95, stomp: 65, look: FL('#7fd0d0', '#8a8a9a', '#8a8a9a') },
+  deathm: { name: 'Máquina de la muerte', hp: 200, speed: 0.6, r: 20, dmg: 19, xp: 9, scale: 0.95, stomp: 65, look: FL('#e8b030', '#c03030', '#c03030') },
+});
+for (const [id, w] of [['ozaru', 34], ['annihil', 66], ['deathm', 66]]) {
+  ENEMIES[id].look.id = id;
+  SPRITE_OVERRIDES[id] = {
+    src: `assets/sprites/fusion/${id}.png`, frameW: w, frameH: 64, footY: 64, fps: 10, scale: 1.25 * 44 / 64,
+    anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } },
+    dirs: DIRS_PLAIN,
+  };
+}
+LEVELS.find(L => L.id === 'saiyan').spawns.push({ id: 'ozaru', from: 420, weight: 1 });   // se suma; lo demás queda igual
+LEVELS.find(L => L.id === 'leyendas').spawns.push({ id: 'annihil', from: 300, weight: 1 }, { id: 'deathm', from: 300, weight: 1 });
+
+// ─── Fase 4: mejora pasiva de DB Survivors que la base no tenía ───
+// (La Aureola/vida extra no se agrega: la base ya tiene la Semilla de reserva con su aureola.)
+PASSIVES.kiai = { name: 'Kiai', color: '#ffe0a0', desc: 'Tus golpes empujan más lejos a los enemigos (a los jefes casi no los mueven).' };
