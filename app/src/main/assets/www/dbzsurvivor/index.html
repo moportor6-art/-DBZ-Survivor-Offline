@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>DBZ Survivor - Free Game</title>
+  <!-- Vista previa al compartir el link (WhatsApp, Discord, Telegram, X...) -->
+  <meta name="description" content="Juego de Dragon Ball Z al estilo Vampire Survivors: elige tu guerrero, sobrevive a las oleadas de los 5 niveles y derrota a los jefes. Solo o online con amigos.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DBZ Survivor">
+  <meta property="og:title" content="DBZ Survivor">
+  <meta property="og:description" content="Elige tu guerrero, sobrevive a las oleadas de los 5 niveles y derrota a los jefes. Solo o online con amigos.">
+  <meta property="og:url" content="https://www.dbz-survivor.com/">
+  <link rel="canonical" href="https://www.dbz-survivor.com/">
+  <!-- Idiomas (2.34.4): sin ?lang la página elige sola; cada idioma tiene su dirección. js/i18n.js pone el título,
+       la descripción y la dirección canónica del idioma que se muestra -->
+  <link rel="alternate" hreflang="es" href="https://www.dbz-survivor.com/?lang=es">
+  <link rel="alternate" hreflang="en" href="https://www.dbz-survivor.com/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://www.dbz-survivor.com/">
+  <meta property="og:locale:alternate" content="en_US">
+  <!-- Ficha de videojuego para Google (2.34.4) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "DBZ Survivor",
+    "url": "https://www.dbz-survivor.com/",
+    "image": "https://www.dbz-survivor.com/og-image.jpg",
+    "description": "Juego gratis de Dragon Ball Z al estilo Vampire Survivors, en el navegador: elige tu guerrero, sobrevive a las oleadas de los 5 niveles y derrota a los jefes. Solo o online con amigos. / Free Dragon Ball Z browser game in the style of Vampire Survivors: pick your fighter, survive 5 levels and defeat the bosses, solo or online.",
+    "genre": ["Action", "Roguelite", "Bullet heaven"],
+    "gamePlatform": ["Web browser", "PC", "Mobile"],
+    "applicationCategory": "Game",
+    "operatingSystem": "Any (web browser)",
+    "playMode": ["SinglePlayer", "MultiPlayer"],
+    "inLanguage": ["es", "en"],
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <meta property="og:image" content="https://www.dbz-survivor.com/og-image.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="es_AR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.dbz-survivor.com/og-image.jpg">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#18245e">
+  <link rel="stylesheet" href="fonts/fredoka.css">
+  <link rel="stylesheet" href="css/style.css?v=2.35.1">
+  <!-- Vercel Web Analytics (sin cookies): solo en el sitio publicado, no en local ni en el modo test -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    if (false && location.protocol === 'https:' && !/^(localhost|127\.|\[::1\])/.test(location.hostname) && !/[?&]test\b/.test(location.search)) {
+      const s = document.createElement('script');
+      s.defer = true; s.src = '/_vercel/insights/script.js';
+      document.head.appendChild(s);
+    }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- Menú principal: jugar solo u online y las secciones -->
+  <div id="menu" class="screen">
+    <div class="box menu-box">
+      <!-- Idioma: al cambiarlo la página se recarga (js/i18n.js) -->
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button data-lang="es" title="Español">ES</button><button data-lang="en" title="English">EN</button>
+      </div>
+      <h1 class="logo">DBZ <span>Survivor</span></h1>
+      <p class="subtitle">Sobrevive a las oleadas de los 4 niveles y derrota a sus jefes</p>
+      <!-- Cartel que se escribe desde el backoffice (js/telemetry.js) -->
+      <p id="motd" class="motd hidden"></p>
+      <div class="name-row">
+        <label for="nameInput">Tu nombre</label>
+        <input id="nameInput" maxlength="12" placeholder="Guerrero" autocomplete="off">
+      </div>
+      <!-- Escena del menú: tu guerrero frente al jefe final del nivel elegido (se anima en renderMenuHero) -->
+      <canvas id="menuHero" class="menu-hero" width="560" height="190" aria-hidden="true"></canvas>
+      <div class="modes">
+        <div class="mode-row">
+          <button id="btnSolo" class="btn btn-play">Jugar</button>
+        </div>
+        <div class="mode-row">
+          <button id="btnHost" class="btn ghost">Crear sala online</button>
+          <span class="mode-or">o</span>
+          <div class="join">
+            <input id="codeInput" maxlength="5" placeholder="CÓDIGO" autocomplete="off" spellcheck="false">
+            <button id="btnJoin" class="btn ghost small">Unirse</button>
+          </div>
+        </div>
+        <p id="netMsg" class="net-msg"></p>
+        <div class="mode-row shop-row">
+          <button id="btnShop" class="btn shop-btn">Tienda de Zeni</button>
+          <button id="btnTechs" class="btn ghost">Técnicas</button>
+          <button id="btnProfile" class="btn ghost">Perfil</button>
+          <button id="btnAchs" class="btn ghost">Logros</button>
+          <button id="btnRank" class="btn ghost">Ranking</button>
+          <button id="btnHelp" class="btn ghost">Cómo jugar</button>
+          <button id="btnBoard" class="btn ghost">💬 Reportes</button>
+        </div>
+      </div>
+      <p class="hint">WASD / flechas para moverte · Espacio, Shift o E para el poder del Ki · M mapa · N música · B sonidos · P pausa<br>Mando: palanca izquierda para moverte, palanca derecha para apuntar (manual), A/B/X/Y o gatillos para el Ki · Móvil: arrastra para moverte y toca el botón de Ki</p>
+      <p class="zeni"><i class="coin"></i>Zeni: <b id="zeniTotal">0</b></p>
+      <!-- Donaciones y meta del mes: las arma js/support.js -->
+      <div id="support" class="support"></div>
+      <p class="footer">
+        <span class="version"></span> ·
+        <button id="btnNews" class="link-btn news-link">Novedades</button> ·
+        Creado por <a class="author-link" target="_blank" rel="noopener"></a> ·
+        <button id="btnCredits" class="link-btn">Créditos</button> ·
+        <button id="btnReport" class="link-btn">Reportar un problema</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- Antes de jugar solo: nivel, guerrero, apuntado y velocidad -->
+  <div id="setup" class="screen overlay hidden">
+    <div class="box setup-box">
+      <h2>Prepara tu partida</h2>
+      <p id="setupBonusTitle" class="setup-bonus-title"></p>
+      <h3 class="pick pick-level">Elige el nivel</h3>
+      <div id="levelList" class="level-list"></div>
+      <button id="btnBonus" class="bonus-link"><b>⭐ Niveles bonus</b><small>El Camino de la Serpiente · Torneo Mundial de Artes Marciales</small><span>›</span></button>
+      <h3 class="pick">Elige a tu guerrero</h3>
+      <p id="setupCharNote" class="hint wk-note hidden"></p>
+      <div id="charList" class="char-list"></div>
+      <p id="charDetail" class="char-detail"></p>
+      <!-- Barra fija de abajo: opciones de la partida y los botones, siempre a la vista -->
+      <div class="setup-foot">
+      <div class="setup-opts">
+        <div class="aim-pick" role="group" aria-label="Apuntado">
+          <span>Apuntado:</span>
+          <button id="aimAuto" class="aim-btn">⚙️ Automático <small>todo al enemigo más cercano</small></button>
+          <button id="aimSemi" class="aim-btn">🎯⚙️ Semiautomático <small>los rayos hacia tu mira, el resto solo</small></button>
+          <button id="aimManual" class="aim-btn">🎯 Manual <small>rayos y proyectiles hacia tu mira (PC: mouse · mando: palanca derecha · celular: hacia donde te mueves)</small></button>
+        </div>
+        <label class="opt-speed"><input type="checkbox" id="optSpeed"> Velocidad x1.5 <small>(todo el juego va un 50% más rápido)</small></label>
+      </div>
+      <div class="setup-actions">
+        <button id="btnSetupBack" class="btn ghost">Volver</button>
+        <button id="btnSetupGo" class="btn">Jugar</button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Niveles bonus (2.26.0): el Camino de la Serpiente y el Torneo Mundial, aparte de los niveles normales -->
+  <div id="bonusWin" class="screen overlay hidden">
+    <div class="box setup-box">
+      <h2>⭐ Niveles bonus</h2>
+      <div id="bonusList" class="level-list"></div>
+      <div class="setup-actions"><button id="btnBonusBack" class="btn ghost">Volver</button></div>
+    </div>
+  </div>
+
+  <!-- Cómo jugar -->
+  <div id="help" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Cómo jugar</h2>
+      <div id="helpContent" class="help-content"></div>
+      <button id="btnHelpBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Técnicas de cada guerrero -->
+  <div id="techs" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Técnicas</h2>
+      <div id="techsContent" class="help-content"></div>
+      <button id="btnTechsBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Logros -->
+  <div id="achs" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Logros</h2>
+      <div id="achsContent" class="help-content"></div>
+      <button id="btnAchsBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Ranking global por nivel -->
+  <div id="rank" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Ranking</h2>
+      <div id="rankContent" class="help-content"></div>
+      <button id="btnRankBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Novedades: cambios de cada versión (salen de CHANGELOG.md) -->
+  <div id="news" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Novedades</h2>
+      <div id="newsContent" class="help-content news-content"></div>
+      <button id="btnNewsBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Reportes y respuestas (2.31.0): lo que reportaron los jugadores y la respuesta del autor (se publica desde el backoffice) -->
+  <div id="board" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>💬 Reportes y respuestas</h2>
+      <p class="hint">Lo que nos reportaron y cómo lo respondimos. ¿Encontraste algo o tienes una idea? Usa «Reportar un problema».</p>
+      <p class="board-note">📌 No son todos los reportes que recibimos: leemos todos, pero acá publicamos algunos en los que creemos que compartir la respuesta le sirve a todos.</p>
+      <div id="boardContent" class="board-list"></div>
+      <div class="setup-actions"><button id="btnBoardReport" class="btn">Reportar un problema</button><button id="btnBoardBack" class="btn ghost">Volver</button></div>
+    </div>
+  </div>
+
+  <!-- Modo mantenimiento (se activa desde el backoffice): tapa todo y no deja jugar -->
+  <div id="maint" class="screen maint hidden">
+    <div class="box maint-box">
+      <div class="maint-icon">🔧</div>
+      <h2>El juego está en mantenimiento</h2>
+      <p id="maintText"></p>
+      <button class="btn ghost" onclick="location.reload()">Reintentar</button>
+    </div>
+  </div>
+  <p id="maintTest" class="maint-test hidden">🔧 Mantenimiento activo · el modo prueba puede jugar igual</p>
+
+  <!-- Aviso de reinicio general del progreso (backoffice) -->
+  <div id="resetNotice" class="screen overlay hidden">
+    <div class="box maint-box">
+      <div class="maint-icon">🔄</div>
+      <h2>¡Empezamos de cero!</h2>
+      <p>Se reinició el progreso de todos los jugadores: el Zeni, las mejoras, los logros y los guerreros desbloqueados volvieron al inicio. Todos arrancan igual. ¡Suerte!</p>
+      <button id="btnResetOk" class="btn">¡A jugar!</button>
+    </div>
+  </div>
+
+  <!-- Reportar un problema (llega al backoffice) -->
+  <div id="report" class="screen overlay hidden">
+    <div class="box report-box">
+      <h2>Reportar un problema</h2>
+      <p class="hint">Cuéntanos qué pasó: qué estabas haciendo, en qué nivel y con qué guerrero. Nos ayuda a arreglarlo.</p>
+      <textarea id="reportText" maxlength="1000" rows="6" placeholder="Por ejemplo: en el Nivel 3, al aparecer Cell el juego se trabó..."></textarea>
+      <p id="reportMsg" class="hint"></p>
+      <div class="setup-actions">
+        <button id="btnReportCancel" class="btn ghost">Volver</button>
+        <button id="btnReportSend" class="btn">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Perfil del jugador (js/profile.js) -->
+  <div id="profile" class="screen overlay hidden">
+    <div class="box help-box">
+      <h2>Perfil</h2>
+      <div id="profileContent" class="help-content"></div>
+      <button id="btnProfileBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Créditos -->
+  <div id="credits" class="screen overlay hidden">
+    <div class="box credits-box">
+      <h2>Créditos</h2>
+      <section>
+        <h3>Creado por</h3>
+        <p><a class="author-link" target="_blank" rel="noopener"></a></p>
+      </section>
+      <section>
+        <h3>Agradecimientos especiales</h3>
+        <p>Uriel Infantino · Matias Arias</p>
+      </section>
+      <section>
+        <h3>Inspirado en</h3>
+        <p><a href="https://poncle.itch.io/vampire-survivors" target="_blank" rel="noopener">Vampire Survivors</a> de poncle</p>
+      </section>
+      <section>
+        <h3>Sprites</h3>
+        <p>De los juegos de Game Boy Advance <i>Dragon Ball Z: The Legacy of Goku</i>, <i>The Legacy of Goku II</i> y <i>Buu's Fury</i> (Webfoot Technologies / Atari; hoy Bandai Namco), publicados en The Spriters Resource.</p>
+        <p>Extraídos por <b>SpYn</b> (guerreros, enemigos, jefes, efectos de las técnicas y fotos de los niveles), <b>Blues Light</b> (soldados de Freezer y Fuerzas Especiales Ginyu), <b>Poky</b> (lobo), <b>Nemu</b> (Puipui), <b>Zuko_25</b> (Dabura), <b>Fab &amp; Nat</b> (cráter de Raditz, planeta de Kaio-sama y retratos de Legacy of Goku), <b>Ghost</b> (nave de Babidi y estadio del Torneo) y <b>Omega</b> (retratos de Buu&#39;s Fury). Los retratos de Legacy of Goku II también son de <b>SpYn</b>.</p>
+        <p>Saibaimans, escenarios e interfaz dibujados por código.</p>
+      </section>
+      <section>
+        <h3>Música y sonido</h3>
+        <p>Temas y efectos originales, sintetizados en el navegador con Web Audio.</p>
+      </section>
+      <section>
+        <h3>Tecnología</h3>
+        <p>JavaScript y Canvas 2D · Multijugador con <a href="https://peerjs.com" target="_blank" rel="noopener">PeerJS</a> (WebRTC) · Fuente <a href="https://fonts.google.com/specimen/Fredoka" target="_blank" rel="noopener">Fredoka</a> (SIL Open Font License)</p>
+      </section>
+      <section>
+        <h3>Aviso</h3>
+        <p>Dragon Ball y sus personajes son propiedad de Akira Toriyama, Bird Studio, Shueisha y Toei Animation. Los sprites pertenecen a sus autores y a los dueños de los juegos originales (Webfoot Technologies, Atari y Bandai Namco).</p>
+        <p>Proyecto de fans, gratuito y sin fines comerciales. No está afiliado a ninguna de estas empresas.</p>
+      </section>
+      <section>
+        <h3>Colaborar</h3>
+        <div id="creditsSupport" class="support"></div>
+      </section>
+      <p class="version"></p>
+      <button id="btnCreditsBack" class="btn ghost">Volver</button>
+    </div>
+  </div>
+
+  <!-- Tienda de Zeni -->
+  <div id="shop" class="screen overlay hidden">
+    <div class="box shop-box">
+      <h2>Tienda de Zeni</h2>
+      <p class="hint">Mejoras permanentes para todos tus guerreros, también en las partidas online</p>
+      <p class="shop-zeni"><i class="coin"></i>Tienes <b id="shopZeni">0</b> Zeni</p>
+      <div id="shopList" class="shop-list"></div>
+      <h3 class="shop-sub">Cursores</h3>
+      <p class="hint" id="cursorHint">Cambia la flecha del mouse por algo del mundo de Dragon Ball. Se compra una vez y después eliges cuál usar.</p>
+      <div id="cursorList" class="cursor-list"></div>
+      <div class="shop-actions">
+        <button id="btnShopBack" class="btn ghost">Volver</button>
+        <button id="btnShopReset" class="btn danger">Reiniciar mejoras</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sala online -->
+  <div id="lobby" class="screen overlay hidden">
+    <div class="box lobby-box">
+      <h2>Sala <span id="roomCode" class="room-code"></span></h2>
+      <p class="hint">Comparte el código o el enlace con tus amigos (hasta 4 jugadores)</p>
+      <button id="btnCopy" class="btn ghost small">Copiar enlace</button>
+      <div id="lobbyPlayers" class="lobby-players"></div>
+      <h3>Tu guerrero</h3>
+      <div id="lobbyChars" class="lobby-chars"></div>
+      <select id="lobbyLevel" class="lobby-level" title="Nivel de la partida"></select>
+      <p id="lobbyLevelInfo" class="hint"></p>
+      <label id="lobbySpeedOpt" class="opt-speed"><input type="checkbox" id="lobbySpeed"> Velocidad x1.5</label>
+      <label class="opt-speed">Apuntado: <select id="lobbyAim"><option value="auto">⚙️ Automático</option><option value="semi">🎯⚙️ Semiautomático</option><option value="manual">🎯 Manual</option></select></label>
+      <p id="lobbySpeedInfo" class="hint"></p>
+      <button id="btnStart" class="btn">Comenzar partida</button>
+      <p id="lobbyWait" class="hint">Esperando a que el anfitrión comience la partida...</p>
+      <button id="btnLeave" class="btn ghost">Salir de la sala</button>
+    </div>
+  </div>
+
+  <!-- Subida de nivel -->
+  <div id="levelup" class="screen overlay hidden">
+    <h2 id="levelupTitle">¡Tu poder aumenta!</h2>
+    <div class="lvl-row">
+      <div id="comboLvl" class="combo-wrap"></div>
+      <div id="choices" class="choices"></div>
+    </div>
+  </div>
+
+  <!-- Pausa -->
+  <div id="pause" class="screen overlay hidden">
+    <div class="box pause-box">
+      <h2 id="pauseTitle">Pausa</h2>
+      <p id="pauseNote" class="hint"></p>
+      <div class="pause-cols">
+        <div id="pauseStats" class="pause-stats"></div>
+        <div class="pause-map">
+          <!-- Pestañas: el mapa o el cuadro de mejoras y combinaciones (js/combos.js) -->
+          <div class="pause-tabs">
+            <button id="tabMap" class="btn small ghost" data-tab="map">Mapa</button>
+            <button id="tabCombos" class="btn small ghost" data-tab="combos">Mejoras</button>
+          </div>
+          <div id="pauseCombos" class="combo-wrap"></div>
+          <canvas id="mapCanvas" width="300" height="300"></canvas>
+          <div class="map-legend">
+            <span><i style="background:#ffe27a"></i>Tú</span>
+            <span><i style="background:#7fd8ff"></i>Compañeros</span>
+            <span><i style="background:#ff4d4d"></i>Enemigos</span>
+            <span><i class="big" style="background:#ff3d5c"></i>Jefe</span>
+            <span><i style="background:#ffcc33;box-shadow:0 0 0 2px rgba(255,204,51,.45)"></i>Élite (lleva una esfera)</span>
+            <span><img class="legend-ball" src="favicon.png" alt="">Esfera del Dragón</span>
+            <span><i style="background:#6cff7a"></i>Semilla</span>
+            <span><i style="background:#8fd8ff"></i>Cápsula de Bulma</span>
+          </div>
+          <!-- Opciones y botones van debajo del mapa para que la pausa entre sin desplazarse
+               (el apuntado y la velocidad se eligen antes de empezar, no acá) -->
+          <div class="pause-opts">
+            <h3>Opciones</h3>
+            <label class="vol-row">🎵 Música <input type="range" id="volMusic" min="0" max="100" step="5"><span id="volMusicVal"></span></label>
+            <label class="vol-row">🔊 Efectos <input type="range" id="volSfx" min="0" max="100" step="5"><span id="volSfxVal"></span></label>
+            <label class="vol-row" title="Cuánto mapa se ve alrededor de tu guerrero">🔍 Zoom <input type="range" id="optZoom" min="-1" max="1" step="1"><span id="optZoomVal"></span></label>
+          </div>
+          <div class="pause-actions">
+            <button id="btnResume" class="btn">Continuar</button>
+            <button id="btnRestart" class="btn ghost">Reiniciar</button>
+            <button id="btnQuit" class="btn danger">Abandonar</button>
+            <button id="btnFullscreen" class="btn ghost hidden">Pantalla completa</button>
+          </div>
+          <button id="btnReportPause" class="link-btn report-link">Reportar un problema</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fin de la partida -->
+  <div id="gameover" class="screen overlay hidden">
+    <div class="box small-box go-box">
+      <p id="goBadge" class="go-badge"></p>
+      <h2 id="goTitle">Has caído...</h2>
+      <figure id="goQuote" class="go-quote"></figure>
+      <div id="goStats" class="stats"></div>
+      <div id="goRank" class="go-rank"></div>
+      <p id="goSupport" class="go-support support hidden"></p>
+      <div id="goDetail" class="go-detail pause-stats"></div>
+      <button id="btnRetry" class="btn">Reintentar</button>
+      <button id="btnMenu" class="btn ghost">Menú</button>
+    </div>
+  </div>
+
+  <!-- Cartel al conseguir un logro -->
+  <div id="achToasts" class="ach-toasts" role="status" aria-live="polite"></div>
+
+  <!-- Contraseña del modo prueba (?test en el enlace) -->
+  <div id="testLogin" class="screen overlay hidden">
+    <div class="box small-box">
+      <h2>Modo prueba</h2>
+      <p class="hint">Ingresa la contraseña para activar el modo prueba.</p>
+      <input id="testPass" type="password" autocomplete="off" placeholder="Contraseña">
+      <p id="testError" class="net-msg"></p>
+      <div class="mode-row">
+        <button id="btnTestOk" class="btn">Entrar</button>
+        <button id="btnTestCancel" class="btn ghost">Jugar normal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modo prueba (?test en el enlace) -->
+  <div id="testBadge" class="test-badge hidden">
+    <b>MODO PRUEBA</b> · todos los personajes · no se guarda nada
+    <span class="test-keys">· F1 nivel · F2 Ki · F3 jefe · F4 esfera · F5 técnicas a nivel 5 · F6 poderes · F8 inmortal · F9 tiempo x5 · F10 sin enemigos</span>
+    <!-- Zeni de prueba (solo en el menú; como el modo prueba no guarda, dura hasta recargar) -->
+    <button id="btnTestZeni" class="test-zeni">+1000 Zeni</button>
+    <!-- En la partida: interruptores (también F8, F9 y F10) -->
+    <button class="test-tog" data-test="god">Inmortal</button><button class="test-tog" data-test="fast">Tiempo x5</button><button class="test-tog" data-test="noSpawn">Sin enemigos</button><button class="test-tog" id="btnTestPowers">Poderes</button>
+  </div>
+  <!-- Modo prueba: panel de Poderes (F6) para aprender cualquier técnica o mejora en la partida -->
+  <div id="testPowers" class="screen overlay hidden">
+    <div class="box tp-box">
+      <h2>Poderes <small>(modo prueba)</small></h2>
+      <p class="hint">+ aprende o sube de nivel · − baja o quita. Sirven todas, aunque no sean del guerrero.</p>
+      <div id="tpContent" class="tp-content"></div>
+      <button id="tpClose" class="btn">Cerrar (F6)</button>
+    </div>
+  </div>
+
+  <!-- Aviso de versión nueva (js/update.js) -->
+  <div id="updateBanner" class="update-banner hidden" role="status">
+    <span id="updateText"></span>
+    <button id="btnUpdate" class="btn small">Actualizar</button>
+    <button id="btnUpdateClose" class="link-btn" title="Ahora no">✕</button>
+  </div>
+
+  <button id="btnTransform" class="btn-ki hidden">¡KI!</button>
+  <!-- Torneo Mundial (js/tournament.js): elegir peleador, la llave y la pausa; y los botones táctiles de golpe y dash -->
+  <div id="tour" class="screen overlay hidden"><div class="box tour-box" id="tourBox"></div></div>
+  <div id="tourBtns" class="tour-btns hidden"><button id="tourSp" class="tour-btn sp">⭐</button><button id="tourDash" class="tour-btn dash">💨</button><button id="tourHit" class="tour-btn hit">👊</button><button id="tourPause" class="tour-pause">⏸</button></div>
+  <button id="btnPause" class="btn-pause">II</button>
+  <button id="btnMap" class="btn-pause btn-map" title="Mostrar u ocultar el mapa (M)">▦</button>
+  <button id="btnMusic" class="btn-music" title="Silenciar música (N)">♪</button>
+  <button id="btnSfx" class="btn-music btn-sfx" title="Silenciar efectos de sonido (B)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7h3l5-4v14l-5-4H3z" fill="currentColor"/><path d="M13.5 6.5a5 5 0 0 1 0 7M15.8 4.2a8.2 8.2 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+
+  <script src="js/i18n.js?v=2.35.1"></script>
+  <script src="js/data.js?v=2.35.1"></script>
+  <script src="js/lang-en.js?v=2.35.1"></script>
+  <script src="js/sprites.js?v=2.35.1"></script>
+  <script src="js/custom-sprites.js?v=2.35.1"></script>
+  <script src="js/draw.js?v=2.35.1"></script>
+  <script src="js/maps.js?v=2.35.1"></script>
+  <script src="js/audio.js?v=2.35.1"></script>
+  <script src="vendor/peerjs.min.js"></script>
+  <script src="js/game.js?v=2.35.1"></script>
+  <script src="js/weekly.js?v=2.35.1"></script>
+  <script src="js/bonus.js?v=2.35.1"></script>
+  <script src="js/tournament.js?v=2.35.1"></script>
+  <script src="js/help.js?v=2.35.1"></script>
+  <script src="js/profile.js?v=2.35.1"></script>
+  <script src="js/replays.js?v=2.35.1"></script>
+  <script src="js/combos.js?v=2.35.1"></script>
+  <script src="js/ranking.js?v=2.35.1"></script>
+  <script src="js/news.js?v=2.35.1"></script>
+  <script src="js/net.js?v=2.35.1"></script>
+  <script src="js/update.js?v=2.35.1"></script>
+  <script src="js/support.js?v=2.35.1"></script>
+  <script src="js/telemetry.js?v=2.35.1"></script>
+</body>
+</html>

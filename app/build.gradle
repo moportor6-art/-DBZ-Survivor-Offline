@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.dbsurvivors.collection'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.dbsurvivors.collection'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Firmada con la clave de depuración para poder instalarla directo en el teléfono
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // Los mp3/png ya vienen comprimidos; no recomprimirlos
+    androidResources {
+        noCompress 'mp3', 'png', 'woff2'
+    }
+}
