@@ -48,7 +48,8 @@
   $('btnUpdBack').onclick = () => { scr.classList.add('hidden'); $('menu').classList.remove('hidden'); };
 
   const b = document.createElement('button');
-  b.id = 'btnUpd'; b.className = 'btn ghost'; b.textContent = 'Actualizaciones';
+  b.id = 'btnUpd'; b.className = 'btn ghost';
+  { const i = info(), v = Math.max(i.base || 0, i.active || 0); b.textContent = v ? `Actualizaciones · build ${v}` : 'Actualizaciones'; }
   ($('btnGfx') || $('btnDaily') || $('btnAchs')).after(b);
   b.onclick = open;
 
