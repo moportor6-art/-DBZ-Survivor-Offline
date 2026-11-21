@@ -349,6 +349,70 @@ CHARACTERS.freezerp.title = 'El emperador del universo, en todas sus formas';
 CHARACTERS.cellp.transform = 'Cell Semi-perfecto';
 CHARACTERS.cellp.title = 'De Imperfecto a la forma de vida perfecta';
 
+// ─── Fase 6: jefes que ya tenían hoja completa, ahora también jugables ───
+// Usan la misma hoja que su versión de jefe (los jefes no se tocan).
+Object.assign(ATTACKS, {
+  huracan: {
+    name: 'Huracán de Paikuhan', color: '#bff5ff', type: 'nova', users: ['pikkonp'],
+    desc: 'Giras a toda velocidad y levantas un torbellino que golpea y empuja a todos los que tienes cerca.',
+    stats: l => ({ cd: 2.0 - l * 0.12, dmg: 14 + l * 7, radius: 70 + l * 9 }),
+  },
+  ilusion: {
+    name: 'Illusion Smash', color: '#ff6ec7', type: 'rain', kind: 'ball', users: ['janembap'],
+    desc: 'Janemba se divide en ilusiones: llueven golpes de energía sobre enemigos al azar.',
+    stats: l => ({ cd: 2.8 - l * 0.18, dmg: 15 + l * 7, count: 4 + l, explode: 30 + l * 3, r: 6 }),
+  },
+  garras: {
+    name: 'Garras de Yakon', color: '#f0e070', type: 'nova', punch: true, users: ['yakonp'],
+    desc: 'Zarpazos rapidísimos contra todos los enemigos que tienes cerca.',
+    stats: l => ({ cd: 1.1 - l * 0.06, dmg: 12 + l * 5, radius: 55 + l * 6 }),
+  },
+  eraser: {
+    name: 'Recoome Eraser Gun', color: '#ffe36b', core: '#fffbe0', type: 'beam', users: ['recoomep'],
+    desc: 'Un rayo enorme disparado por la boca contra el enemigo más cercano.',
+    stats: l => ({ cd: 3.6 - l * 0.22, dmg: 12 + l * 5, len: 220 + l * 28, width: 22 + l * 5, dur: 0.55 + l * 0.05 }),
+  },
+  cometa: {
+    name: 'Cometa Azul', color: '#7aa8ff', type: 'projectile', kind: 'ball', users: ['burterp'],
+    desc: 'Disparos veloces que persiguen a los enemigos: el estilo del más rápido del universo.',
+    stats: l => ({ cd: 0.9 - l * 0.06, dmg: 8 + l * 4, count: 1 + Math.floor(l / 2), speed: 9, r: 5, pierce: 0, life: 1.6,
+      spread: 0.25, home: 3 }),
+  },
+  crusher: {
+    name: 'Crusher Ball', color: '#ff5a5a', type: 'projectile', kind: 'big', users: ['jeicep'],
+    desc: 'Una bola de energía roja que estalla al tocar al enemigo.',
+    stats: l => ({ cd: 2.4 - l * 0.14, dmg: 24 + l * 10, count: 1 + (l >= 4 ? 1 : 0), speed: 6, r: 8, pierce: 0, life: 1.6,
+      spread: 0.3, explode: 48 + l * 7 }),
+  },
+});
+const FUSION_CHARS3 = {
+  pikkonp:  { name: 'Paikuhan', title: 'El campeón del Otro Mundo', hp: 120, speed: 2.7, start: 'huracan', transform: 'Sin pesas',
+              perk: 'Entrenamiento del Gran Kaio: +20% de daño a los jefes', bossBonus: 0.2, cost: 3500, aura: '#bff5ff' },
+  janembap: { name: 'Janemba', title: 'El demonio del Otro Mundo', hp: 140, speed: 2.55, start: 'ilusion', transform: 'Maldad pura',
+              perk: 'Distorsión de la realidad: +20% de daño', dmgBonus: 0.2, cost: 5000, aura: '#c46bff' },
+  yakonp:   { name: 'Yakon', title: 'El devorador de luz', hp: 130, speed: 2.5, start: 'garras', transform: 'Luz devorada',
+              perk: 'Come energía: recupera salud con el tiempo', regen: 0.4, cost: 2500, aura: '#f0e070' },
+  recoomep: { name: 'Recoome', title: 'El gigante de las Fuerzas Especiales', hp: 155, speed: 2.35, start: 'eraser', transform: 'Pose especial',
+              perk: 'Cuerpo de hierro: 1 de cada 6 golpes no le hace daño', dodge: 0.17, cost: 2200, aura: '#ff8a5c' },
+  burterp:  { name: 'Burter', title: 'El más rápido del universo', hp: 95, speed: 3.0, start: 'cometa', transform: 'Pose especial',
+              perk: 'Velocidad cósmica: +15% de velocidad de recarga', cdBonus: 0.15, cost: 2200, aura: '#7aa8ff' },
+  jeicep:   { name: 'Jeice', title: 'El guerrero rojo del Ginyu', hp: 100, speed: 2.7, start: 'crusher', transform: 'Pose especial',
+              perk: 'Dúo con Burter: +20% de experiencia', xpBonus: 0.2, cost: 2200, aura: '#ff5a5a' },
+};
+for (const [id, d] of Object.entries(FUSION_CHARS3)) {
+  const { cost, ...c } = d;
+  c.look = { ...CHARACTERS.goku.look, id, ssjHair: null };
+  c.ssjHair = null;
+  c.unlock = { kind: 'zeni', cost, text: 'Cómpralo con Zeni' };
+  c.fusion = true;
+  CHARACTERS[id] = c;
+}
+Object.assign(SPRITE_OVERRIDES, {
+  pikkonp: SPRITE_OVERRIDES.pikkon, janembap: SPRITE_OVERRIDES.janemba, yakonp: SPRITE_OVERRIDES.yakon,
+  recoomep: SPRITE_OVERRIDES.recoome, burterp: SPRITE_OVERRIDES.burter, jeicep: SPRITE_OVERRIDES.jeice,
+});
+CHARACTERS.majinbuu.title = 'De Buu bueno a Super Buu, en todas sus formas';
+
 // Recarga global (js/fusion-shop.js): la recarga también acelera el Ki para transformarte
 PASSIVES.focus.desc = '-8% de tiempo de recarga de técnicas y del Ki para transformarte.';
 SHOP_UPGRADES.find(u => u.id === 'cd').fmt = v => `-${Math.round(v * 100)}% de recarga (técnicas y Ki para transformarte)`;

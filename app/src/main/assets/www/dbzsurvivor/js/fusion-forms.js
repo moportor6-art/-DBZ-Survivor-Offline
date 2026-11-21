@@ -19,11 +19,15 @@
     freezerp: [{ name: '3.ª forma', aura: '#c46bff', bonus: 0.15 }, { name: 'Forma final', aura: '#e8e0ff', bonus: 0.35 },
       { name: 'Golden Freezer', aura: '#ffd93b', bonus: 0.6 }],
     cellp: [{ name: 'Cell Perfecto', aura: '#b4ff8a', bonus: 0.35 }],
+    // Fase 6
+    majinbuu: [{ name: 'Super Buu', aura: '#ff8fd0', bonus: 0.25 }, { name: 'Super Buu (absorbe a Gotenks)', aura: '#ffb0e0', bonus: 0.45 },
+      { name: 'Super Buu (absorbe a Gohan)', aura: '#ffd0f0', bonus: 0.65 }],
   };
   // hoja: [ancho, alto, archivo (si no es <hoja>-ssj)]
   const SHEETS = { 'goku~2': [32, 32], 'goku~3': [32, 32], 'goku~4': [32, 32], 'vegeta~2': [32, 32], 'vegeta~3': [32, 32], 'gohan~2': [34, 32],
     'gogetap~2': [32, 32], 'vegetto~2': [32, 32], 'gotenks~2': [32, 32], 'gohanc~2': [32, 32],
-    'freezerp~2': [34, 32], 'freezerp~3': [32, 32], 'freezerp~4': [32, 32], 'cellp~2': [42, 58, 'cellp-ssj'] };
+    'freezerp~2': [34, 32], 'freezerp~3': [32, 32], 'freezerp~4': [32, 32], 'cellp~2': [42, 58, 'cellp-ssj'],
+    'majinbuu~2': [42, 59, 'superbuu'], 'majinbuu~3': [42, 58], 'majinbuu~4': [42, 58] };
   const KO = { 'gohan~2': true, 'freezerp~3': true };
 
   // Hojas: la forma transformada es nueva; sin transformar, el mismo sprite de siempre del guerrero
