@@ -43,3 +43,9 @@ El co-op de DBZ Survivor (PeerJS) puede funcionar si el teléfono tiene internet
 ## Actualizar un juego
 
 Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del creador, vuelve a aplicar el cambio indicado arriba, sube `versionCode` en `app/build.gradle` y recompila.
+
+## Créditos de sprites y mapas
+
+- Buu's Fury (The Spriters Resource): soldados Majin ripeados por SpYn; mapas de West City, Planeta del Gran Kaio y
+  Roshi's Island por -Bwar-; HFIL por Flint829; Templo de Kami por SpYn y Ghost.
+- Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).

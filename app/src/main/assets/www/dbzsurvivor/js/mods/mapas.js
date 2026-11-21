@@ -37,7 +37,13 @@ THEMES['otromundo-dbs'] = { ...THEMES.infierno, bg: '#0e1a0a' };
 sheetTheme('otromundo-dbs', {
   base: 'dbs-otro-grass', alt: 'dbs-hell-ground', altZone: 0.6, edge: '#5a3a10', map: ['#3fb83a', '#c8902a', '#2a6a1a'],
   outline: true,
-  spawn: [{ name: 'dbs-palace', x: 0, y: -150, r: 0, colliders: fusionWall(0, -150, 470) }],
+  spawn: [{ name: 'dbs-palace', x: 0, y: -150, r: 0, colliders: fusionWall(0, -150, 470) },
+    // Buu's Fury (Spriters Resource, ripeado por -Bwar- y Flint829): el estadio del Otro Mundo al sur y el lago de sangre
+    // del Infierno al este. Calcomanías del suelo: las gradas y el lago no se pueden pisar (choques)
+    { name: 'bf-estadio', x: 0, y: 1500, decal: true, colliders: [
+      ...fusionWall(-190, 1500 - 290, 280), ...fusionWall(190, 1500 - 290, 280),
+      ...[-300, -230, -160, -90, -20, 50, 120, 190, 260].flatMap(dy => [[-300, 1500 + dy, 26], [300, 1500 + dy, 26]])] },
+    { name: 'bf-hfil-lago', x: 1600, y: 350, decal: true, colliders: [[1600, 380, 120, 70], [1600, 300, 40]] }],
   props: [
     { names: ['dbs-otrotree1', 'dbs-otrotree2', 'dbs-otrotree3', 'dbs-otrotree4', 'dbs-otrotree5'], r: 12, max: 2, cluster: true, onBase: true },
     { names: ['dbs-helltree1', 'dbs-helltree2', 'dbs-helltree3', 'dbs-helltree4', 'dbs-helltree5', 'dbs-helltree6'], r: 8, max: 3, onAlt: true },
@@ -53,6 +59,8 @@ sheetTheme('tierra-dbs', {
   decal: { cell: 1100, chance: 0.3, names: ['dbs-crater'] },
   spawn: [
     { name: 'dbs-kamehouse', x: 0, y: -110, r: 0, colliders: fusionWall(0, -110, 150) },
+    // Capsule Corp (Buu's Fury, West City, ripeado por -Bwar-): al oeste de Kame House
+    { name: 'bf-capsulecorp', x: -1300, y: -100, decal: true, colliders: [[-1300, -280, 60, 30], [-1160, -175, 50, 30]] },
     { name: 'dbs-chair', x: 95, y: -95, r: 0 }, { name: 'dbs-ball', x: -90, y: -80, r: 0 },
     // Ciudad Satán
     { name: 'dbs-cafe', x: 1250, y: -60, r: 0, colliders: fusionWall(1250, -60, 200) },
@@ -80,5 +88,5 @@ for (const [lv, theme] of [['otromundo', 'otromundo-dbs'], ['leyendas', 'tierra-
 }
 {
   const L7 = LEVELS.find(l => l.id === 'leyendas');
-  if (L7) L7.desc = 'Los villanos de las películas invaden la Tierra: Kame House, Ciudad Satán y el Templo de Kami.';
+  if (L7) L7.desc = 'Los villanos de las películas invaden la Tierra: Kame House, Capsule Corp, Ciudad Satán y el Templo de Kami.';
 }

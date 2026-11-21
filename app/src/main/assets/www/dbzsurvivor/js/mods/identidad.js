@@ -290,7 +290,7 @@
   ID.babidip = { firma: 'Mago malvado: pega poco, pero cada 14 s invoca 2 soldados Majin, cada 10 s pone la marca Majin al enemigo más fuerte cerca (los jefes, 6 s; los finales no) y cada forma de su transformación invoca a un guerrero: Pui Pui y Yakon → Dabura → Majin Vegeta → Majin Buu.',
     dmg: () => 0.8,
     tick(P, dt) {
-      if (every(P, 'majT', 14, dt)) { for (let i = 0; i < 2; i++) spawnFriend(P, 'majin', 14, 'summon', { mark: 'M' }); say(P, '¡Pa-pa-ra-pa!', '#ff9bd6'); }
+      if (every(P, 'majT', 14, dt)) { for (let i = 0; i < 2; i++) spawnFriend(P, 'msoldado', 14, 'summon', { mark: 'M' }); say(P, '¡Pa-pa-ra-pa!', '#ff9bd6'); }
       if (every(P, 'posT', 10, dt)) {
         const e = nearestHostile(P.x, P.y, 280, x => !x.final && (x.boss || x.elite)) || nearestHostile(P.x, P.y, 220, x => !x.final);
         if (e) { possess(P, e); if (e.boss || e.elite) say(P, `¡${e.def.name || 'Tú'}, ahora me obedeces!`, '#ff4da6'); }

@@ -103,3 +103,12 @@ for (const [id, w] of [['ozaru', 34], ['annihil', 66], ['deathm', 66]]) {
 }
 LEVELS.find(L => L.id === 'saiyan').spawns.push({ id: 'ozaru', from: 420, weight: 1 });   // se suma; lo demás queda igual
 LEVELS.find(L => L.id === 'leyendas').spawns.push({ id: 'annihil', from: 300, weight: 1 }, { id: 'deathm', from: 300, weight: 1 });
+
+// ─── Soldados Majin de Buu's Fury (tools/hojas/majin_soldier.py): 3 variantes, normal, élite y súper ───
+// Los invoca Babidi (js/mods/identidad.js) y aparecen en la saga de Buu.
+ENEMIES.msoldado = { name: 'Soldado Majin', hp: 80, speed: 0.95, r: 14, dmg: 12, xp: 5, scale: 1.1,
+  look: { style: 'bald', skin: '#e8b88a', top: '#3a3a3a', pants: '#3030b2', belt: '#222', boots: '#222', majin: true, id: 'msoldado' } };
+SPRITE_OVERRIDES.msoldado = { src: 'assets/sprites/fusion/majinsoldado.png', frameW: 32, frameH: 32, footY: 32, fps: 10, scale: 1.25,
+  anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } },
+  dirs: DIRS_PLAIN, variants: 3, variantRows: 3 };
+LEVELS.find(L => L.id === 'buu').spawns.push({ id: 'msoldado', from: 60, weight: 5 });
