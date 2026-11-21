@@ -59,7 +59,18 @@ function serve() {
       if (!G) return;
       if (Math.random() < 0.1) { keys[arrows[dir]] = false; dir = Math.floor(Math.random() * 4); keys[arrows[dir]] = true; }
       G.testFast = true;
-      for (const P of G.players) { if (!P.dead) P.hp = P.maxHp; if (P.ki < 100 && Math.random() < 0.02) P.ki = 100; }
+      for (const P of G.players) {
+        if (!P.dead) P.hp = P.maxHp;
+        // Ki estilo ESF (js/mods/ki.js): carga, se transforma, sube y baja de forma al azar
+        if (typeof handleKi === 'function' && G.mode === 'play' && !P.dead) {
+          const r = Math.random();
+          if (!(P.transformed > 0)) {
+            if (P.ki >= 100 && r < 0.05) doTransform(P);
+            else if (r < 0.03) handleKi(P, P.charging ? 1002 : 1001);
+          } else if (r < 0.03) handleKi(P, 1003);
+          else if (r < 0.04) handleKi(P, 1004);
+        }
+      }
       if (G.mode === 'choice') { const b = document.querySelector('#choices button'); if (b) b.click(); }
       if (G.mode === 'pause' && typeof togglePause === 'function') togglePause();
     }, 50);

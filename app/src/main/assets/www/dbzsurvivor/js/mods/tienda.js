@@ -3,7 +3,7 @@
 // Se carga después de js/game.js y envuelve funciones de la base sin cambiar su lógica:
 //   Deseo de Shenlong: perk() suma el bono a cada estadística; makePlayer() sube la salud máxima;
 //                      updateSpawning() recibe más tiempo de aparición (= más enemigos comunes; jefes, élites y hordas igual)
-//   Dominio de la transformación: doTransform() alarga la transformación recién hecha
+//   Dominio de la transformación: baja el gasto de Ki de las formas superiores (lo aplica js/mods/ki.js)
 // (Casilla de mejora extra la usa maxPassives() en game.js y combos.js.)
 (() => {
   const STATS = new Set(['atk', 'spd', 'cd', 'def', 'xp', 'magnet']);   // las que la base lee como porcentaje
@@ -48,11 +48,5 @@
     return r;
   };
 
-  const tr = doTransform;
-  doTransform = function (P) {   // eslint-disable-line no-global-assign
-    const before = P ? P.transformed || 0 : 0;
-    const r = tr.apply(this, arguments);
-    if (P && !P.c.buddy && P.transformed > before && before <= 0) P.transformed *= 1 + perk(P, 'transtime');
-    return r;
-  };
+  // (Dominio de la transformación ya no alarga la transformación: con el Ki estilo ESF baja el gasto, ver js/mods/ki.js)
 })();

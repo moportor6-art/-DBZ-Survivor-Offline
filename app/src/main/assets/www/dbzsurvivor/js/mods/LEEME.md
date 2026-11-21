@@ -32,7 +32,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `datos/guerreros.js` | Jugables nuevos, sus hojas de sprites, regeneración por raza | `datos/enemigos.js` (reusa hojas de jefes) |
 | `datos/mejoras.js` | Kiai, artículos nuevos de la tienda, `maxPassives`, `beamAngles` | `datos/guerreros.js` |
 | `mapas.js` | Escenarios de los niveles nuevos | `maps.js` |
-| `formas.js` | Formas extra de transformación | `game.js` |
+| `formas.js` | Escalera de formas: efectos propios (velocidad, esquiva, regeneración…) y lore de cada forma | `game.js` |
 | `trajes.js` | Trajes (solo apariencia) | `formas.js` |
 | `tienda.js` | Efectos en partida de los artículos nuevos de la tienda | `game.js` |
 | `kiai.js` | Efecto e ícono de la mejora Kiai | `game.js` |
@@ -42,6 +42,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `graficos.js` | Límite de FPS, 90/120 Hz, resolución, modo batería | `game.js` |
 | `actualizaciones.js` | Ventana de Actualizaciones (la hace `Updater.java`) | `game.js` |
 | `recetas.js` | Receta de evolución en las cartas de subir de nivel | `game.js` |
+| `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
 ## Puntos de enganche dentro del código base
 
@@ -57,3 +58,14 @@ podían envolver desde afuera. **Si se actualiza el juego base, hay que volver a
 | `game.js` (`isLevelOpen`) | — | lee `openAfter` | niveles de `datos/enemigos.js` |
 
 Para encontrarlas: `grep -n "maxPassives\|beamAngles\|charRegen\|openAfter" js/game.js js/combos.js`
+
+## Ki estilo ESF (`ki.js`)
+
+- Mantener Ki sin transformarse = cargar (te mueves al 35%). Tocar con el Ki lleno = transformarse.
+- Transformado: gasta Ki por segundo (`DRAIN`, por escalón); tocar = subir de forma (50% de Ki mínimo); mantener = bajar
+  (en la 1.ª, vuelve a base y conserva el Ki).
+- Lo bajan: Recarga de Ki (tienda, 20 niveles), Dominio de la transformación (tienda, formas 2+), Dominio del Ki (carta)
+  y `transformTime` del guerrero.
+- Cooperativo: el invitado manda sus órdenes con el mensaje `tr` de la base y un ángulo de 1001 a 1004 como código.
+  Limitación: el invitado no ve el nombre/sprite de la forma alta de los demás (la base no sincroniza la forma).
+- Para darle formas a un guerrero: agrégalo en `FORMS` (y su lore en `FIRST`) de `formas.js`, con su hoja en `SHEETS`.
