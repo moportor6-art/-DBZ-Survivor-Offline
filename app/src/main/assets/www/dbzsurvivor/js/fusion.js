@@ -413,6 +413,73 @@ Object.assign(SPRITE_OVERRIDES, {
 });
 CHARACTERS.majinbuu.title = 'De Buu bueno a Super Buu, en todas sus formas';
 
+// ─── Fase 7: guerreros de las hojas GBA de Legacy of Goku II y Buu's Fury ───
+// (hojas convertidas al formato del juego: assets/sprites/fusion/<id>.png)
+Object.assign(ATTACKS, {
+  embestida: {
+    name: 'Embestida brutal', color: '#ffcf9a', type: 'nova', punch: true, users: ['spopovichp'],
+    desc: 'Golpes salvajes a todo lo que tienes cerca. Lento pero muy dañino.',
+    stats: l => ({ cd: 1.6 - l * 0.08, dmg: 20 + l * 9, radius: 60 + l * 7 }),
+  },
+  extractor: {
+    name: 'Extractor de energía', color: '#e0e8ff', core: '#ffffff', type: 'beam', users: ['yamup'],
+    desc: 'El aparato de Babidi absorbe la energía del enemigo más cercano con un rayo.',
+    stats: l => ({ cd: 2.6 - l * 0.16, dmg: 9 + l * 4, len: 170 + l * 22, width: 12 + l * 3, dur: 0.5 + l * 0.04 }),
+  },
+  deadlybomber: {
+    name: 'S.S. Deadly Bomber', color: '#ff4d4d', type: 'projectile', kind: 'big', users: ['a13p'],
+    desc: 'Una enorme esfera roja que estalla con fuerza al tocar al enemigo.',
+    stats: l => ({ cd: 3.0 - l * 0.18, dmg: 34 + l * 14, count: 1 + (l >= 4 ? 1 : 0), speed: 5, r: 10, pierce: 0, life: 1.8,
+      spread: 0.3, explode: 70 + l * 10 }),
+  },
+  pistolaray: {
+    name: 'Pistola de rayos', color: '#7dffea', type: 'projectile', kind: 'ball', users: ['bulmap'],
+    desc: 'Un invento de Capsule Corp: dispara rayos rápidos al enemigo más cercano.',
+    stats: l => ({ cd: 0.8 - l * 0.05, dmg: 7 + l * 4, count: 1 + Math.floor(l / 2), speed: 10, r: 4, pierce: l >= 4 ? 1 : 0,
+      life: 1.4, spread: 0.15 }),
+  },
+  ondanamek: {
+    name: 'Onda namekiana', color: '#9dff8a', type: 'nova', users: ['dendep', 'kamip'],
+    desc: 'Una onda de energía sagrada que golpea y empuja a todos los enemigos cercanos.',
+    stats: l => ({ cd: 2.6 - l * 0.16, dmg: 13 + l * 7, radius: 80 + l * 12 }),
+  },
+  alfombra: {
+    name: 'Alfombra mágica', color: '#ff5a5a', type: 'orbit', users: ['popop'],
+    desc: 'La alfombra mágica de Mr. Popo gira a tu alrededor y golpea a quien se acerque.',
+    stats: l => ({ count: 1 + l, dmg: 8 + l * 3, radius: 50 + l * 5, r: 9, spin: 3 + l * 0.2 }),
+  },
+});
+ATTACKS.mafuba.users.push('kamip');   // Kami también conoce la técnica para sellar
+const FUSION_CHARS4 = {
+  spopovichp: { name: 'Spopovich', title: 'El luchador controlado por Babidi', hp: 165, speed: 2.3, start: 'embestida', transform: 'Poder de Babidi',
+                perk: 'Cuerpo de Majin: recupera salud con el tiempo', regen: 0.5, cost: 2000, aura: '#c46bff' },
+  yamup:      { name: 'Yamu', title: 'El ladrón de energía de Babidi', hp: 110, speed: 2.6, start: 'extractor', transform: 'Poder de Babidi',
+                perk: 'Energía robada: el Ki se carga un 40% más rápido', kiBonus: 0.4, cost: 2000, aura: '#c46bff' },
+  a13p:       { name: 'Androide 13 Super', title: 'El androide que absorbió a sus compañeros', hp: 145, speed: 2.5, start: 'deadlybomber', transform: 'Energía infinita',
+                perk: 'Tres androides en uno: +20% de daño', dmgBonus: 0.2, cost: 4000, aura: '#ff4d4d' },
+  bulmap:     { name: 'Bulma', title: 'La genio de Capsule Corp', hp: 75, speed: 2.75, start: 'pistolaray', transform: 'Inventos al máximo',
+                perk: 'Fortuna de Capsule Corp: +50% de Zeni y +20% de experiencia', zeniBonus: 0.5, xpBonus: 0.2, cost: 1500, aura: '#7dffea' },
+  dendep:     { name: 'Dende', title: 'El Dios de la Tierra', hp: 85, speed: 2.7, start: 'ondanamek', transform: 'Poder sanador',
+                perk: 'Curación namekiana: recupera mucha salud con el tiempo', regen: 1.0, cost: 2000, aura: '#9dff8a' },
+  popop:      { name: 'Mr. Popo', title: 'El guardián del Templo Sagrado', hp: 120, speed: 2.6, start: 'alfombra', transform: 'Poder milenario',
+                perk: 'Maestro de entrenamiento: +30% de experiencia', xpBonus: 0.3, cost: 1800, aura: '#ffffff' },
+  kamip:      { name: 'Kami', title: 'El antiguo Dios de la Tierra', hp: 100, speed: 2.45, start: 'ondanamek', transform: 'Poder divino',
+                perk: 'Sabiduría divina: la transformación dura un 40% más', transformTime: 0.4, cost: 2500, aura: '#9dff8a' },
+};
+for (const [id, d] of Object.entries(FUSION_CHARS4)) {
+  const { cost, ...c } = d;
+  c.look = { ...CHARACTERS.goku.look, id, ssjHair: null };
+  c.ssjHair = null;
+  c.unlock = { kind: 'zeni', cost, text: 'Cómpralo con Zeni' };
+  c.fusion = true;
+  CHARACTERS[id] = c;
+}
+Object.assign(SPRITE_OVERRIDES, {
+  spopovichp: fusionSheet('spopovichp', 68, 66, true), yamup: fusionSheet('yamup', 72, 64, true), a13p: fusionSheet('a13p', 68, 67),
+  bulmap: fusionSheet('bulmap', 32, 32), dendep: fusionSheet('dendep', 32, 32), popop: fusionSheet('popop', 32, 32), kamip: fusionSheet('kamip', 32, 32),
+});
+SPRITE_OVERRIDES.yamup.scale = 0.72;   // Yamu es de tamaño humano: que no se vea tan grande como Spopovich
+
 // Recarga global (js/fusion-shop.js): la recarga también acelera el Ki para transformarte
 PASSIVES.focus.desc = '-8% de tiempo de recarga de técnicas y del Ki para transformarte.';
 SHOP_UPGRADES.find(u => u.id === 'cd').fmt = v => `-${Math.round(v * 100)}% de recarga (técnicas y Ki para transformarte)`;
