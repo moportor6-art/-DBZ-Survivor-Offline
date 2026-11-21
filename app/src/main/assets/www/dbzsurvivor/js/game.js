@@ -2833,7 +2833,7 @@ function renderPause() {
   const dps = G.t > 0 ? dmgTotal / G.t : 0;
   // Atributos actuales (con mejoras de la partida, de la tienda, ventaja del personaje y transformación)
   const pctTxt = (v, sign = '+') => `${Math.round(v * 100) ? sign : ''}${Math.round(v * 100)}%`;
-  const regen = (P.c.regen || 0) + perk(P, 'regen'), def = perk(P, 'def'), armor = P.passives.armor;
+  const regen = charRegen(P) + perk(P, 'regen'), def = perk(P, 'def'), armor = P.passives.armor;
   const attrs = [
     [`${fmtNum(Math.ceil(P.hp))} / ${fmtNum(P.maxHp)}`, 'Salud'],
     [pctTxt(dmgMult(P) - 1), 'Daño de técnicas'],
@@ -3477,7 +3477,7 @@ function update(dt) {
     if (P.immortal > 0) P.immortal -= dt;
     if (P.castT > 0) P.castT -= dt;
     if (P.punchT > 0) P.punchT -= dt;
-    const regen = (P.c.regen || 0) + perk(P, 'regen') + 0.25 * (P.passives.regen || 0);   // + Regeneración namekiana
+    const regen = charRegen(P) + perk(P, 'regen') + 0.25 * (P.passives.regen || 0);   // + Regeneración namekiana
     if (!P.dead && regen) healPlayer(P, regen * dt);
     passiveTicks(P, dt);
   }

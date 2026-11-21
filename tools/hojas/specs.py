@@ -27,6 +27,5 @@ specs = {
   'bulma': npcspec('bulma.png', 0, cast=(6, 7)),
   'dende': npcspec('kami.png', 0),
   'popo': npcspec('kami.png', 160),
-  'kami': npcspec('kami.png', 112, walk=(0, 1, 0, 1), cast=(1, 0), upwalk=(0, 0, 0, 0)),
 }
 json.dump(specs, open('specs.json', 'w'))

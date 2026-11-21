@@ -439,7 +439,7 @@ Object.assign(ATTACKS, {
       life: 1.4, spread: 0.15 }),
   },
   ondanamek: {
-    name: 'Onda namekiana', color: '#9dff8a', type: 'nova', users: ['dendep', 'kamip'],
+    name: 'Onda namekiana', color: '#9dff8a', type: 'nova', users: ['dendep'],
     desc: 'Una onda de energía sagrada que golpea y empuja a todos los enemigos cercanos.',
     stats: l => ({ cd: 2.6 - l * 0.16, dmg: 13 + l * 7, radius: 80 + l * 12 }),
   },
@@ -449,7 +449,6 @@ Object.assign(ATTACKS, {
     stats: l => ({ count: 1 + l, dmg: 8 + l * 3, radius: 50 + l * 5, r: 9, spin: 3 + l * 0.2 }),
   },
 });
-ATTACKS.mafuba.users.push('kamip');   // Kami también conoce la técnica para sellar
 const FUSION_CHARS4 = {
   spopovichp: { name: 'Spopovich', title: 'El luchador controlado por Babidi', hp: 165, speed: 2.3, start: 'embestida', transform: 'Poder de Babidi',
                 perk: 'Cuerpo de Majin: recupera salud con el tiempo', regen: 0.5, cost: 2000, aura: '#c46bff' },
@@ -463,8 +462,6 @@ const FUSION_CHARS4 = {
                 perk: 'Curación namekiana: recupera mucha salud con el tiempo', regen: 1.0, cost: 2000, aura: '#9dff8a' },
   popop:      { name: 'Mr. Popo', title: 'El guardián del Templo Sagrado', hp: 120, speed: 2.6, start: 'alfombra', transform: 'Poder milenario',
                 perk: 'Maestro de entrenamiento: +30% de experiencia', xpBonus: 0.3, cost: 1800, aura: '#ffffff' },
-  kamip:      { name: 'Kami', title: 'El antiguo Dios de la Tierra', hp: 100, speed: 2.45, start: 'ondanamek', transform: 'Poder divino',
-                perk: 'Sabiduría divina: la transformación dura un 40% más', transformTime: 0.4, cost: 2500, aura: '#9dff8a' },
 };
 for (const [id, d] of Object.entries(FUSION_CHARS4)) {
   const { cost, ...c } = d;
@@ -476,10 +473,45 @@ for (const [id, d] of Object.entries(FUSION_CHARS4)) {
 }
 Object.assign(SPRITE_OVERRIDES, {
   spopovichp: fusionSheet('spopovichp', 68, 66, true), yamup: fusionSheet('yamup', 72, 64, true), a13p: fusionSheet('a13p', 68, 67),
-  bulmap: fusionSheet('bulmap', 32, 32), dendep: fusionSheet('dendep', 32, 32), popop: fusionSheet('popop', 32, 32), kamip: fusionSheet('kamip', 32, 32),
+  bulmap: fusionSheet('bulmap', 32, 32), dendep: fusionSheet('dendep', 32, 32), popop: fusionSheet('popop', 32, 32),
 });
 SPRITE_OVERRIDES.yamup.scale = 0.72;   // Yamu es de tamaño humano: que no se vea tan grande como Spopovich
 
 // Recarga global (js/fusion-shop.js): la recarga también acelera el Ki para transformarte
 PASSIVES.focus.desc = '-8% de tiempo de recarga de técnicas y del Ki para transformarte.';
 SHOP_UPGRADES.find(u => u.id === 'cd').fmt = v => `-${Math.round(v * 100)}% de recarga (técnicas y Ki para transformarte)`;
+
+// ─── Identidad de los regeneradores ───
+// Antes era una cantidad fija (0,4-1 de salud por segundo), casi nada frente al daño de los enemigos.
+// Ahora cada raza se cura con un % de su salud máxima (sube con su vida) y algunos se rehacen más
+// rápido cuando están malheridos. regenLow: multiplicador con menos del 35% de salud.
+// game.js lo lee con charRegen(P) (salud por segundo); la Meditación de la tienda y la mejora
+// Regeneración namekiana se siguen sumando aparte, igual que antes.
+const REGEN_IDENTITY = {
+  // Namekianos: se regeneran de verdad, y aún más rápido cuando están graves (Piccolo se rehace el brazo)
+  piccolo:    { pct: 0.012, low: 2,   perk: 'Regeneración namekiana: recupera un 1,2% de su salud por segundo, el doble con poca vida' },
+  dendep:     { pct: 0.015, low: 2,   perk: 'Curación namekiana: recupera un 1,5% de su salud por segundo, el doble con poca vida' },
+  // Majin: el cuerpo de goma se rehace solo, sobre todo cuando lo destrozan
+  majinbuu:   { pct: 0.018, low: 2.5, perk: 'Cuerpo de goma: recupera un 1,8% de su salud por segundo, y 2,5 veces más con poca vida' },
+  kidbuup:    { pct: 0.016, low: 2.5, perk: 'Regeneración de Majin: recupera un 1,6% de su salud por segundo, y 2,5 veces más con poca vida' },
+  spopovichp: { pct: 0.008, low: 2,   perk: 'Cuerpo de Majin: recupera un 0,8% de su salud por segundo, el doble con poca vida' },
+  // Cell: hereda la regeneración de Piccolo
+  cellp:      { pct: 0.01,  low: 2,   perk: 'Células de Piccolo: recupera un 1% de su salud por segundo, el doble con poca vida' },
+  // Zamasu: inmortal, se cura siempre al mismo ritmo pase lo que pase
+  zamasu:     { pct: 0.015, low: 1,   perk: 'Inmortal: recupera un 1,5% de su salud por segundo, siempre' },
+  // Absorben energía: curación más modesta
+  a19p:       { pct: 0.007, low: 1.5, perk: 'Absorción de energía: recupera un 0,7% de su salud por segundo (un 50% más con poca vida)' },
+  yakonp:     { pct: 0.007, low: 1.5, perk: 'Come energía: recupera un 0,7% de su salud por segundo (un 50% más con poca vida)' },
+};
+for (const [id, r] of Object.entries(REGEN_IDENTITY)) {
+  const c = CHARACTERS[id];
+  if (!c) continue;
+  Object.assign(c, { regenPct: r.pct, regenLow: r.low, perk: r.perk });
+  delete c.regen;   // se reemplaza por el % (no se suman los dos)
+}
+// Salud por segundo que recupera el guerrero por su raza (los que no tienen, la de siempre: c.regen o nada)
+function charRegen(P) {
+  const c = P.c;
+  if (!c.regenPct) return c.regen || 0;
+  return c.regenPct * P.maxHp * (P.hp < P.maxHp * 0.35 ? (c.regenLow || 1) : 1);
+}
