@@ -44,6 +44,8 @@ function serve() {
   page.on('console', m => { if (m.type() === 'error' && !/net::ERR|Failed to load resource|peer|PeerJS|WebSocket/i.test(m.text())) errors.push('Consola: ' + m.text()); });
   page.on('response', r => { if (local(r.url()) && r.status() >= 400 && !r.url().includes('/api/'))   // /api/ = servidores online (ranking, telemetría): sin ellos es normal
     errors.push(`Falta archivo (${r.status()}): ${r.url().slice(base.length)}`); });
+  // Con compañero (js/mods/companero.js): así también se prueban los aliados en cada partida
+  await page.addInitScript(() => { try { localStorage.setItem('fusion.companero', 'piccolo'); } catch (e) { /* nada */ } });
   // Sin internet a propósito: igual que el teléfono sin datos
   await page.route(u => !local(u.toString()), r => r.abort());
 

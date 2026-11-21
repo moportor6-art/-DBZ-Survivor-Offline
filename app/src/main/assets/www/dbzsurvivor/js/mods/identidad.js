@@ -184,11 +184,11 @@
     tick(P) { let n = 0; for (const e of G.enemies) if (!e.dead && !e.friend && near(e, P, 120)) n++; P.crowd = Math.min(10, n); },
     dmg: P => 1 + 0.04 * (P.crowd || 0) };
   ID.trunks = { firma: 'Sin miedo: +30% de daño contra élites, jefes y enemigos grandes. Con Goten en el equipo, los dos pegan +15%.',
-    vs: (P, e) => (e.boss || e.elite || e.r >= 20 ? 1.3 : 1), dmg: P => (G.players.some(Q => Q.charId === 'goten' && !Q.ally && Q !== P) ? 1.15 : 1) };
+    vs: (P, e) => (e.boss || e.elite || e.r >= 20 ? 1.3 : 1), dmg: P => (G.players.some(Q => Q.charId === 'goten' && !Q.gone && Q !== P) ? 1.15 : 1) };
   ID.ftrunks = { firma: 'Espada del futuro: remata a los enemigos comunes con menos del 15% de vida.', exec: 0.15 };
   ID.goten = { firma: 'Energía de niño: carga Ki solo con moverse. Con Trunks en el equipo, los dos pegan +15%.',
     tick(P, dt) { if (P.moving && !(P.transformed > 0) && P.ki < 100) P.ki = Math.min(100, P.ki + 2.5 * dt); },
-    dmg: P => (G.players.some(Q => Q.charId === 'trunks' && !Q.ally && Q !== P) ? 1.15 : 1) };
+    dmg: P => (G.players.some(Q => Q.charId === 'trunks' && !Q.gone && Q !== P) ? 1.15 : 1) };
   ID.pan = { firma: 'Heredera: con el Kamehameha y el Masenko a la vez, +15% de daño.',
     dmg: P => (P.attacks.some(a => a.id === 'kamehameha' || a.id === 'kame10') && P.attacks.some(a => a.id === 'masenko' || a.id === 'supermasenko') ? 1.15 : 1) };
   ID.piccolo = { firma: 'Ropa con peso: la primera vez que se transforma se quita la capa y el turbante: +15% de velocidad toda la partida.',
@@ -557,4 +557,5 @@
   document.head.appendChild(css);
 
   window.IDENTIDAD = ID;   // (para la prueba automática)
+  window.summonAlly = summonAlly; window.dismissAlly = dismissAlly;   // (para js/mods/companero.js)
 })();

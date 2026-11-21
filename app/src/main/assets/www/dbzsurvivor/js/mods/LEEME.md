@@ -43,6 +43,8 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `actualizaciones.js` | Ventana de Actualizaciones (la hace `Updater.java`) | `game.js` |
 | `recetas.js` | Receta de evolución en las cartas de subir de nivel | `game.js` |
 | `identidad.js` | Firma de cada guerrero (mecánica única), aliados invocados, enemigos aliados, posesión de Babidi | **al final**, después de `ki.js` |
+| `maestria.js` | Las formas se desbloquean derrotando enemigos con cada guerrero (localStorage `fusion.maestria`) | después de `identidad.js` |
+| `companero.js` | Compañero de equipo en solitario: crece contigo, vuelve si cae, dúos de la serie +15%, fusión con Vegeta/Goku | después de `maestria.js` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
 ## Puntos de enganche dentro del código base
