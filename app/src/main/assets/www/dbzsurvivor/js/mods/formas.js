@@ -33,13 +33,14 @@
   // (las formas sin hoja propia se distinguen por el aura y su efecto)
   const S = (file, w = 32, h = 32, ko) => ({ file, w, h, ko });
   const A = alias => ({ alias });
+  const R = (from, file) => ({ from, file });   // recolor: misma hoja y animaciones que "from", otra imagen (tools/recolor)
   const FORMS = {
     goku: [
       { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.12 }, sprite: A('goku:ssj'),
         lore: 'Más allá del Super Saiyajin: el Ki chisporrotea en descargas eléctricas.' },
       { name: 'Super Saiyajin 3', aura: '#ffe14d', bonus: 0.5, fx: { spd: -0.08 }, drain: 1.15, sprite: S('goku~2-ssj'),
         lore: 'La alcanzó entrenando en el Otro Mundo. Su poder es enorme, pero devora el Ki como ninguna otra.' },
-      { name: 'Super Saiyajin Dios', aura: '#ff4d4d', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: A('goku'),
+      { name: 'Super Saiyajin Dios', aura: '#ff4d4d', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: R('goku:ssj', 'goku-dios'),
         lore: 'El ritual de cinco Saiyajin de corazón puro: Ki divino y sereno que sana su cuerpo, sin desgaste.' },
       { name: 'Super Saiyajin Blue', aura: '#4fd8ff', bonus: 0.6, fx: { cd: 0.25, def: 0.1 }, sprite: S('goku~3-ssj'),
         lore: 'El Ki divino dentro del Super Saiyajin: control perfecto, las técnicas salen casi sin pausa.' },
@@ -57,13 +58,13 @@
         lore: 'El Ki divino lo envuelve: su cuerpo se recupera mientras pelea.' },
       { name: 'Super Saiyajin Blue', aura: '#4fd8ff', bonus: 0.6, fx: { def: 0.25 }, sprite: S('vegeta~3-ssj'),
         lore: 'El Blue con el orgullo de un príncipe: aguanta golpes que tumbarían a cualquiera.' },
-      { name: 'Ego Superior', aura: '#b06bff', bonus: 0.75, fx: { ego: 0.6 }, sprite: S('vegeta~3-ssj'),
+      { name: 'Ego Superior', aura: '#b06bff', bonus: 0.75, fx: { ego: 0.6 }, sprite: S('vegeta-ego'),
         lore: 'El poder de un dios de la destrucción: cuanto más daño recibe, más fuerte pega.' },
     ],
     gohan: [
       { name: 'Gohan Místico', aura: '#f2f2ff', bonus: 0.35, fx: { cd: 0.15 }, drain: 0.55, sprite: S('gohan~2-ssj', 34, 32, true),
         lore: 'El Supremo Kaiosama Anciano liberó todo su potencial: mucho poder sin el desgaste de una transformación.' },
-      { name: 'Gohan Bestia', aura: '#e0c8ff', bonus: 0.8, fx: { spd: 0.15, crit: 0.2 }, drain: 1.3, sprite: A('gohan~2:ssj'),
+      { name: 'Gohan Bestia', aura: '#e0c8ff', bonus: 0.8, fx: { spd: 0.15, crit: 0.2 }, drain: 1.3, sprite: S('gohan-bestia', 34, 32, true),
         lore: 'Su furia contra Cell Max despertó un poder que supera a los dioses: golpes críticos devastadores.' },
     ],
     gohanf: [{ name: 'Super Saiyajin (furia del futuro)', aura: '#ffc070', bonus: 0.45, fx: { spd: 0.1, def: 0.1 }, sprite: A('gohanf:ssj'),
@@ -74,7 +75,7 @@
       { name: 'Super Saiyajin de la Ira', aura: '#7fd0ff', bonus: 0.6, fx: { cd: 0.15, spd: 0.1 }, sprite: A('ftrunks:ssj'),
         lore: 'La rabia por su futuro destruido, contra Zamasu: un Super Saiyajin con chispas del Blue.' },
     ],
-    piccolo: [{ name: 'Orange Piccolo', aura: '#ff9b3d', bonus: 0.55, fx: { def: 0.25, regen: 0.01 }, sprite: A('piccolo:ssj'),
+    piccolo: [{ name: 'Orange Piccolo', aura: '#ff9b3d', bonus: 0.55, fx: { def: 0.25, regen: 0.01 }, sprite: R('piccolo:ssj', 'piccolo-naranja'),
       lore: 'Shenlong liberó su potencial: un gigante naranja que casi no siente los golpes.' }],
     gogetap: [{ name: 'Super Saiyajin Blue', aura: '#4fd8ff', bonus: 0.4, fx: { cd: 0.15, def: 0.2 }, sprite: S('gogetap~2-ssj'),
       lore: 'La danza de la fusión con el Ki divino: la técnica más fuerte de dos Saiyajin.' }],
@@ -84,7 +85,7 @@
       lore: 'Una fusión de niños en Super Saiyajin 3: fortísimo y travieso, pero el tiempo se le escapa volando.' }],
     gohanc: [{ name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.3, fx: { shock: 0.18, spd: 0.1 }, sprite: S('gohanc~2-ssj'),
       lore: 'Despertó contra Cell al ver caer al Androide 16: los rayos de energía chisporrotean a su alrededor.' }],
-    broly: [{ name: 'Super Saiyajin Legendario', aura: '#7dff6a', bonus: 0.6, fx: { def: 0.2, spd: -0.05 }, drain: 1.1, sprite: A('broly'),
+    broly: [{ name: 'Super Saiyajin Legendario', aura: '#7dff6a', bonus: 0.6, fx: { def: 0.2, spd: -0.05 }, drain: 1.1, sprite: A('brolyb'),
       lore: 'El poder legendario desatado: un monstruo verde que aguanta todo.' }],
     freezerp: [
       { name: '3.ª forma', aura: '#c46bff', bonus: 0.15, fx: { spd: 0.2, cd: 0.1 }, sprite: S('freezerp~2-ssj', 34, 32),
@@ -128,11 +129,12 @@
     list.forEach((f, i) => {
       const key = `${id}~${i + 2}`, sp = f.sprite;
       let o;
-      if (sp && sp.file) {
+      if (sp && sp.file && !sp.from) {
         const anims = { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } };
         if (sp.ko) Object.assign(anims, { kohit: { row: 0, col: 7, count: 1 }, kolie: { row: 0, col: 8, count: 1 }, koup: { row: 0, col: 9, count: 1 } });
         o = { src: `assets/sprites/fusion/${sp.file}.png`, frameW: sp.w, frameH: sp.h, footY: sp.h, fps: 10, scale: 1.25 * Math.min(1, 44 / sp.h), anims, dirs: DIRS_PLAIN };
-      } else o = SPRITE_OVERRIDES[sp ? sp.alias : `${id}:ssj`] || SPRITE_OVERRIDES[`${id}:ssj`] || SPRITE_OVERRIDES[id];
+      } else if (sp && sp.from && SPRITE_OVERRIDES[sp.from]) o = { ...SPRITE_OVERRIDES[sp.from], src: `assets/sprites/fusion/${sp.file}.png` };
+      else o = SPRITE_OVERRIDES[sp ? sp.alias : `${id}:ssj`] || SPRITE_OVERRIDES[`${id}:ssj`] || SPRITE_OVERRIDES[id];
       if (o) SPRITE_OVERRIDES[`${key}:ssj`] = o;
       SPRITE_OVERRIDES[key] = SPRITE_OVERRIDES[id];
     });
