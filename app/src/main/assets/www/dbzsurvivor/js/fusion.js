@@ -308,3 +308,43 @@ function beamAngles(P, def, ang) {
   if (!(P && P.passives && P.passives.multi > 0)) return base;
   return base.flatMap(a => [a, a + 0.3]);
 }
+
+// ─── Fase 5: más jugables con los sprites que ya teníamos de DB Survivors ───
+for (const [atk, ids] of Object.entries({ hellflash: ['gerop'], espada: ['daburap'], kamehameha: ['gohanc'] })) ATTACKS[atk].users.push(...ids);
+const FUSION_CHARS2 = {
+  a19p:    { name: 'Androide 19', title: 'El androide que absorbe energía', hp: 120, speed: 2.45, start: 'kiblast', transform: 'Absorción total',
+             perk: 'Absorción de energía: recupera salud con el tiempo', regen: 0.5, cost: 2500, aura: '#ffb070' },
+  gerop:   { name: 'Dr. Gero', title: 'El creador de los androides', hp: 100, speed: 2.5, start: 'hellflash', transform: 'Energía robada',
+             perk: 'Genio científico: +30% de experiencia', xpBonus: 0.3, cost: 3000, aura: '#ffb070' },
+  daburap: { name: 'Dabura', title: 'El Rey de los Demonios', hp: 135, speed: 2.5, start: 'espada', transform: 'Furia demoníaca',
+             perk: 'Rey del Inframundo: +20% de daño', dmgBonus: 0.2, cost: 4000, aura: '#ff4d4d' },
+  puipuip: { name: 'Pui Pui', title: 'El guerrero del planeta Zoon', hp: 105, speed: 2.75, start: 'kiblast', transform: 'Poder de Babidi',
+             perk: 'Veterano de mil planetas: 1 de cada 8 golpes no le hace daño', dodge: 0.12, cost: 1800, aura: '#c46bff' },
+  gohanc:  { name: 'Gohan joven', title: 'El niño que superó a Cell', hp: 95, speed: 2.75, start: 'kamehameha', transform: 'Super Saiyajin',
+             perk: 'Poder oculto: la transformación es un 40% más poderosa', transformBonus: 0.4, cost: 3500, ssj: true, aura: '#ffe14d' },
+};
+for (const [id, d] of Object.entries(FUSION_CHARS2)) {
+  const { cost, ssj, ...c } = d;
+  c.look = { ...CHARACTERS.goku.look, id, ssjHair: null };
+  c.ssjHair = null;
+  if (ssj) c.transformSprite = true;
+  c.unlock = { kind: 'zeni', cost, text: 'Cómpralo con Zeni' };
+  c.fusion = true;
+  CHARACTERS[id] = c;
+}
+const fusionSheet = (file, w, h, ko) => {
+  const anims = { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } };
+  if (ko) Object.assign(anims, { kohit: { row: 0, col: 7, count: 1 }, kolie: { row: 0, col: 8, count: 1 }, koup: { row: 0, col: 9, count: 1 } });
+  return { src: `assets/sprites/fusion/${file}.png`, frameW: w, frameH: h, footY: h, fps: 10, scale: 1.25 * Math.min(1, 44 / h), anims, dirs: DIRS_PLAIN };
+};
+Object.assign(SPRITE_OVERRIDES, {
+  a19p: fusionSheet('a19p', 32, 32), gerop: fusionSheet('gerop', 32, 32), daburap: fusionSheet('daburap', 64, 64),
+  puipuip: fusionSheet('puipuip', 32, 45), gohanc: fusionSheet('gohanc', 32, 32, true), 'gohanc:ssj': fusionSheet('gohanc-ssj', 32, 32),
+  // Freezer y Cell empiezan en su primera forma y suben con cada transformación (formas en js/fusion-forms.js)
+  freezerp: fusionSheet('freezerp1', 32, 32, true), 'freezerp:ssj': fusionSheet('freezerp2', 34, 42),
+  cellp: fusionSheet('cellp1', 54, 49, true), 'cellp:ssj': fusionSheet('cellp', 54, 54, true),
+});
+CHARACTERS.freezerp.transform = '2.ª forma';
+CHARACTERS.freezerp.title = 'El emperador del universo, en todas sus formas';
+CHARACTERS.cellp.transform = 'Cell Semi-perfecto';
+CHARACTERS.cellp.title = 'De Imperfecto a la forma de vida perfecta';
