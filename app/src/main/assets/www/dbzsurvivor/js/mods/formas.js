@@ -36,7 +36,7 @@
   const R = (from, file) => ({ from, file });   // recolor: misma hoja y animaciones que "from", otra imagen (tools/recolor)
   const FORMS = {
     goku: [
-      { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.12 }, sprite: A('goku:ssj'),
+      { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.12 }, sprite: R('goku:ssj', 'goku-ssj2'),
         lore: 'Más allá del Super Saiyajin: el Ki chisporrotea en descargas eléctricas.' },
       { name: 'Super Saiyajin 3', aura: '#ffe14d', bonus: 0.5, fx: { spd: -0.08 }, drain: 1.15, sprite: S('goku~2-ssj'),
         lore: 'La alcanzó entrenando en el Otro Mundo. Su poder es enorme, pero devora el Ki como ninguna otra.' },
@@ -50,9 +50,9 @@
         lore: 'El dominio completo: esquiva casi todo y responde cada ataque con un contragolpe.' },
     ],
     vegeta: [
-      { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.1 }, sprite: A('vegeta:ssj'),
+      { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.1 }, sprite: R('vegeta:ssj', 'vegeta-ssj2'),
         lore: 'Lo alcanzó entrenando para la saga de Buu: descargas eléctricas a su alrededor.' },
-      { name: 'Majin Vegeta', aura: '#ff4da6', bonus: 0.55, fx: { bleed: 0.008 }, sprite: A('vegeta:ssj'),
+      { name: 'Majin Vegeta', aura: '#ff4da6', bonus: 0.55, fx: { bleed: 0.008 }, sprite: R('vegeta:ssj', 'vegeta-majin'),
         lore: 'Dejó que Babidi lo controlara para recuperar su crueldad: muchísimo poder, pero le va quitando vida.' },
       { name: 'Super Saiyajin Dios', aura: '#ff5a5a', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: S('vegeta~2-ssj'),
         lore: 'El Ki divino lo envuelve: su cuerpo se recupera mientras pelea.' },
@@ -70,9 +70,9 @@
     gohanf: [{ name: 'Super Saiyajin (furia del futuro)', aura: '#ffc070', bonus: 0.45, fx: { spd: 0.1, def: 0.1 }, sprite: A('gohanf:ssj'),
       lore: 'Años de pelear solo contra los androides: no le queda nada que perder.' }],
     ftrunks: [
-      { name: 'Super Trunks', aura: '#fff6a0', bonus: 0.45, fx: { spd: -0.15, def: 0.15 }, sprite: A('ftrunks:ssj'),
+      { name: 'Super Trunks', aura: '#fff6a0', bonus: 0.45, fx: { spd: -0.15, def: 0.15 }, sprite: R('ftrunks:ssj', 'ftrunks-super'),
         lore: 'Músculos enormes contra Cell: mucha fuerza y aguante, pero lento.' },
-      { name: 'Super Saiyajin de la Ira', aura: '#7fd0ff', bonus: 0.6, fx: { cd: 0.15, spd: 0.1 }, sprite: A('ftrunks:ssj'),
+      { name: 'Super Saiyajin de la Ira', aura: '#7fd0ff', bonus: 0.6, fx: { cd: 0.15, spd: 0.1 }, sprite: R('ftrunks:ssj', 'ftrunks-ira'),
         lore: 'La rabia por su futuro destruido, contra Zamasu: un Super Saiyajin con chispas del Blue.' },
     ],
     piccolo: [{ name: 'Orange Piccolo', aura: '#ff9b3d', bonus: 0.55, fx: { def: 0.25, regen: 0.01 }, sprite: R('piccolo:ssj', 'piccolo-naranja'),

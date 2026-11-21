@@ -8,14 +8,17 @@
   const COLA = ['vegeta', 'raditzp', 'nappap', 'broly', 'brolyp', 'gohan', 'bardockp', 'turlesp', 'tarblep', 'kalep', 'cauliflap', 'cabbap'];
   const activo = () => G && G.lv && G.lv.id === 'saiyan' && !G.weekly && !G.snake && G.t >= DESDE && G.t < DESDE + DURA;
   const tieneCola = P => COLA.includes(P.charId) && !P.hidden && !(typeof isFusedBody === 'function' && isFusedBody(P));
-  let luna = 0;   // 0..1: cuánto se ve la luna (aparece y se va suave)
+  // 0..1: cuánto se ve la luna (aparece y se va suave). Sale de G.t, así también se ve igual en los invitados
+  const lunaVis = () => {
+    if (!G || !G.lv || G.lv.id !== 'saiyan' || G.weekly || G.snake) return 0;
+    return Math.max(0, Math.min(1, (G.t - DESDE) / 1.25, (DESDE + DURA + 1.25 - G.t) / 1.25));
+  };
 
   const up = update;
   update = function (dt) {   // eslint-disable-line no-global-assign
     const r = up.apply(this, arguments);
     if (!G || G.mode !== 'play') return r;
     const on = activo();
-    luna = Math.max(0, Math.min(1, luna + (on ? dt : -dt) * 0.8));
     if (on && !G.lunaVista) {
       G.lunaVista = true;
       announce('¡Salió la luna llena!', '#fff2b0');
@@ -27,10 +30,10 @@
       if (debe && !P.ozaru) {
         P.ozaru = true; P.ozaruPisa = 1.2;
         ring(P.x, P.y, 80, 0.6, '#ffb35c'); burst(P.x, P.y, '#ffb35c', 30, 5, 4); G.shake = Math.max(G.shake, 0.6); sfx('power', 0.6);
-        if (P === G.me) announce('¡Miras la luna… y te conviertes en Ozaru!', '#ffb35c');
+        if (P === G.me || (G.net && !P.ally)) announce(G.net ? `¡${P.name} mira la luna y se vuelve Ozaru!` : '¡Miras la luna… y te conviertes en Ozaru!', '#ffb35c');
       } else if (!debe && P.ozaru) {
         P.ozaru = false; poof(P.x, P.y);
-        if (P === G.me) announce('La luna se ocultó: vuelves a tu forma', '#c8e0ff');
+        if (P === G.me && !G.net) announce('La luna se ocultó: vuelves a tu forma', '#c8e0ff');
       }
       if (P.ozaru && (P.ozaruPisa -= dt) <= 0) {   // pisotón
         P.ozaruPisa = 1.2;
@@ -64,7 +67,8 @@
   // El cielo: azul oscuro y la luna arriba a la derecha (sobre el mundo, debajo de los nombres y el HUD)
   const dn = drawNames;
   drawNames = function () {   // eslint-disable-line no-global-assign
-    if (luna > 0 && G) {
+    const luna = lunaVis();
+    if (luna > 0) {
       ctx.save();
       ctx.globalAlpha = 0.32 * luna; ctx.fillStyle = '#0a1040'; ctx.fillRect(0, 0, W, H);
       const x = W - 70, y = 70, g = ctx.createRadialGradient(x, y, 10, x, y, 80);

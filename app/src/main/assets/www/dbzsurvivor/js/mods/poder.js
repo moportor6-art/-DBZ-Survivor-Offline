@@ -58,7 +58,7 @@
     const r = hud.apply(this, arguments);
     if (!enPoder() || G.mode !== 'play' || !G.me) return r;
     const P = G.me;
-    if (P.vacio > 0 && !P.dead) {   // aviso grande y borde rojo
+    if (!P.dead && Math.hypot(P.x, P.y) > radio() + 2) {   // (por la posición: también en los invitados)   // aviso grande y borde rojo
       ctx.save(); ctx.strokeStyle = `rgba(255,60,60,${0.4 + 0.3 * Math.sin(G.t * 10)})`; ctx.lineWidth = 14; ctx.strokeRect(0, 0, W, H); ctx.restore();
       hudText('¡VUELVE AL RING!', W / 2, H / 2 - 80, 22, '#ff5c5c', 'center');
     }
