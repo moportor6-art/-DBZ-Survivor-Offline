@@ -81,6 +81,15 @@ sheetTheme('tierra-dbs', {
   ],
 });
 
+// Nivel 8 · Torneo del Poder: la plataforma de piedra sobre el vacío (el ring que se encoge lo dibuja js/mods/poder.js)
+THEMES['poder'] = { ...THEMES.yermo, bg: '#06060f' };
+sheetTheme('poder', {
+  base: 'poder-ground', alt: 'dbs-waste-ground', altZone: 0.72, edge: '#3a3a44', map: ['#9a9aa4', '#6a6a70', '#44444c'],
+  outline: true,
+  spawn: [],
+  props: [{ names: ['dbs-rock1', 'dbs-rock2', 'dbs-rock3', 'dbs-rock4'], r: 12, max: 1, chance: 0.35, onAlt: true }],
+});
+
 // Los niveles de la fusión usan estos mapas (los de colores de arriba quedan de respaldo)
 for (const [lv, theme] of [['otromundo', 'otromundo-dbs'], ['leyendas', 'tierra-dbs']]) {
   const L = LEVELS.find(l => l.id === lv);

@@ -48,4 +48,6 @@ Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
 
 - Buu's Fury (The Spriters Resource): soldados Majin ripeados por SpYn; mapas de West City, Planeta del Gran Kaio y
   Roshi's Island por -Bwar-; HFIL por Flint829; Templo de Kami por SpYn y Ghost.
+- Dragon Ball Sagas (estilo Legendary Super Warriors): Jiren de Exigeek y Keegixe; Toppo de thekrillmaster
+  (hojas armadas con `tools/hojas/u11.py`).
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).

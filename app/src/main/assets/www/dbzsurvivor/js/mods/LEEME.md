@@ -45,6 +45,10 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `identidad.js` | Firma de cada guerrero (mecánica única), aliados invocados, enemigos aliados, posesión de Babidi | **al final**, después de `ki.js` |
 | `maestria.js` | Las formas se desbloquean derrotando enemigos con cada guerrero (localStorage `fusion.maestria`) | después de `identidad.js` |
 | `companero.js` | Compañero de equipo en solitario: crece contigo, vuelve si cae, dúos de la serie +15%, fusión con Vegeta/Goku | después de `maestria.js` |
+| `jefes.js` | Mecánicas de la serie por jefe (Vegeta Ozaru, cuenta atrás de Freezer, autodestrucción de Cell, absorciones, Hakai…); estado en `e.jf` | después de `companero.js` |
+| `luna.js` | Luna llena en la saga Saiyajin (270–300 s): Ozarus enemigos y los Saiyajin con cola se vuelven Ozaru | después de `jefes.js` |
+| `poder.js` | Nivel 8 · Torneo del Poder: el ring que se encoge y el vacío (datos en `datos/enemigos.js`, suelo en `mapas.js`) | después de `luna.js` |
+| `historia.js` | Escenas con retratos al empezar, al llegar el jefe final y al ganar (localStorage `fusion.historia`) | **la última de todas** (después de `telemetry.js`): es la que congela `update` y necesita `tourPortrait` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
 ## Puntos de enganche dentro del código base

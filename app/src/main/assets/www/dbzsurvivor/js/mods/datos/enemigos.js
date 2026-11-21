@@ -112,3 +112,22 @@ SPRITE_OVERRIDES.msoldado = { src: 'assets/sprites/fusion/majinsoldado.png', fra
   anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } },
   dirs: DIRS_PLAIN, variants: 3, variantRows: 3 };
 LEVELS.find(L => L.id === 'buu').spawns.push({ id: 'msoldado', from: 60, weight: 5 });
+
+// ─── Nivel 8 · Torneo del Poder (js/mods/poder.js): el ring se encoge y fuera de él te consume el vacío ───
+// Jiren y Toppo: hojas armadas con tools/hojas/u11.py del paquete "Dragon Ball Sagas" (sprites de Exigeek y Keegixe /
+// thekrillmaster, estilo Legendary Super Warriors).
+for (const [id, w, h] of [['jiren', 36, 41], ['toppo', 69, 53]]) {
+  SPRITE_OVERRIDES[id] = { src: `assets/sprites/fusion/${id}.png`, frameW: w, frameH: h, footY: h, fps: 8, scale: 1.25 * Math.min(1, 44 / h),
+    anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } }, dirs: DIRS_PLAIN };
+}
+BOSSES.push(
+  { id: 'toppo', name: 'Toppo', hp: 16000, speed: 1.3, r: 24, dmg: 28, scale: 1.4, every: 1.9, patterns: ['slam', 'aimed', 'dash', 'ring'], look: { ...FB('#c03030'), id: 'toppo' } },
+  { id: 'jiren', name: 'Jiren', hp: 34000, speed: 1.8, r: 20, dmg: 32, scale: 1.45, every: 1.5, patterns: ['aimed', 'dash', 'ring', 'slam', 'aimed', 'ring'], look: { ...FB('#c0c0c8'), id: 'jiren' } },
+);
+LEVELS.push({ id: 'poder', num: 8, openAfter: 'leyendas', theme: 'poder',
+  desc: 'El Torneo del Poder: el ring se encoge cada vez más y salir de él es quedar eliminado. Al final te espera Jiren.',
+  hp: 2.6, dmg: 1.5, zeni: 3,
+  spawns: [{ id: 'soldier', from: 0, weight: 10 }, { id: 'ninja', from: 0, weight: 6 }, { id: 'samurai', from: 60, weight: 6 },
+    { id: 'msoldado', from: 90, weight: 6 }, { id: 'gunman', from: 120, weight: 5 }, { id: 'vampire', from: 180, weight: 4 }, { id: 'trex', from: 360, weight: 2 }],
+  swarm: 'soldier', swarmText: '¡Las Tropas del Orgullo te rodean!',
+  bosses: [{ id: 'toppo', at: 240, hp: 16000 }, { id: 'jiren', at: 600, hp: 34000, final: true }] });
