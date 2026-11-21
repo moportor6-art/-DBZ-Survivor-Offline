@@ -42,6 +42,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `graficos.js` | Límite de FPS, 90/120 Hz, resolución, modo batería | `game.js` |
 | `actualizaciones.js` | Ventana de Actualizaciones (la hace `Updater.java`) | `game.js` |
 | `recetas.js` | Receta de evolución en las cartas de subir de nivel | `game.js` |
+| `identidad.js` | Firma de cada guerrero (mecánica única), aliados invocados, enemigos aliados, posesión de Babidi | **al final**, después de `ki.js` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
 ## Puntos de enganche dentro del código base
@@ -69,3 +70,13 @@ Para encontrarlas: `grep -n "maxPassives\|beamAngles\|charRegen\|openAfter" js/g
 - Cooperativo: el invitado manda sus órdenes con el mensaje `tr` de la base y un ángulo de 1001 a 1004 como código.
   Limitación: el invitado no ve el nombre/sprite de la forma alta de los demás (la base no sincroniza la forma).
 - Para darle formas a un guerrero: agrégalo en `FORMS` (y su lore en `FIRST`) de `formas.js`, con su hoja en `SHEETS`.
+
+## Identidad de cada guerrero (`identidad.js`)
+
+- `ID.<guerrero>` = su firma, con ganchos: `setup`, `tick`, `dmg`, `vs`, `hit`, `hurt`, `kill`, `transform`, `revive`
+  y valores `def`, `spd`, `crit`, `exec` (ver el comentario al inicio del archivo).
+- Aliados guerreros (`summonAlly`): jugadores con `ally` y `summon`; pelean con sus técnicas reales (Dabura, Majin Vegeta,
+  Burter, Androide 16...). Enemigos aliados (`spawnFriend`, `possess`): soldados, Saibaimans, Cell Jr., robots y
+  poseídos con la M de Babidi; durante el paso de la base salen de `G.enemies` para que nadie los ataque.
+- Técnicas nuevas: `datos/tecnicas.js` (Fase 8). Formas nuevas: `formas.js` (`sprite: A('clave')` reusa una hoja).
+- Limitación en cooperativo: el invitado no ve a los aliados invocados (la base solo sincroniza a los jugadores de la sala).

@@ -240,3 +240,8 @@ function charRegen(P) {
   if (!c.regenPct) return c.regen || 0;
   return c.regenPct * P.maxHp * (P.hp < P.maxHp * 0.35 ? (c.regenLow || 1) : 1);
 }
+
+// ─── Identidad (js/mods/identidad.js): los que empezaban con una técnica común ahora empiezan con una suya ───
+for (const [id, atk] of Object.entries({ olibu: 'rugido', ginyup: 'milkycannon', taop: 'dodonray', a19p: 'rayosojos', puipuip: 'disparozoon', nappap: 'breakcannon' })) {
+  if (CHARACTERS[id] && ATTACKS[atk]) CHARACTERS[id].start = atk;
+}

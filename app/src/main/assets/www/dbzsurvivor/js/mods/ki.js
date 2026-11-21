@@ -18,7 +18,7 @@
   const HOLD_MS = 220;                 // más que esto apretado = "mantener"
   const CHARGE_RATE = 14;              // Ki por segundo cargando (sin mejoras: de 0 a 100 en ~7 s)
   const CHARGE_SPEED = 0.35;           // velocidad de movimiento mientras cargas
-  const DRAIN = [4, 6.2, 9.6, 14.9, 23];   // Ki por segundo de la forma 1, 2, 3... (la 1.ª sin mejoras: ~25 s con el Ki lleno)
+  const DRAIN = [4, 6.2, 9.6, 14.9, 23, 30, 38];   // Ki por segundo de la forma 1, 2, 3... (la 1.ª sin mejoras: ~25 s con el Ki lleno)
   const KI_UP_MIN = 50;                // Ki mínimo para subir de forma
   const KILL_KI_TRANS = 0.4;           // transformado, los enemigos derrotados dan el 40% del Ki de siempre
   const COUNTER_CD = 0.25;
