@@ -1,5 +1,5 @@
 'use strict';
-// ─── Fusión: efectos de los artículos nuevos de la Tienda de Zeni (definidos en js/fusion.js) ───
+// ─── Fusión: efectos de los artículos nuevos de la Tienda de Zeni (definidos en js/mods/datos/mejoras.js) ───
 // Se carga después de js/game.js y envuelve funciones de la base sin cambiar su lógica:
 //   Deseo de Shenlong: perk() suma el bono a cada estadística; makePlayer() sube la salud máxima;
 //                      updateSpawning() recibe más tiempo de aparición (= más enemigos comunes; jefes, élites y hordas igual)

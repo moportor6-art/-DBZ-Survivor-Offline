@@ -2,7 +2,7 @@
 // ─── Fusión: trajes (sprites de DB Survivors) ───
 // Algunos guerreros pueden elegir traje antes de jugar. Es solo la apariencia: técnicas, ventajas y formas son las
 // mismas. Si el traje trae su versión transformada se usa; si no, al transformarse se ve como siempre.
-// Se carga después de js/fusion-forms.js (las formas de Goku/Vegeta/Gohan respetan el traje).
+// Se carga después de js/mods/formas.js (las formas de Goku/Vegeta/Gohan respetan el traje).
 (() => {
   const KEY = 'fusion.skins';
   const SKINS = {

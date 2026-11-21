@@ -105,7 +105,7 @@ const myChar = () => weeklyChar() || (CHARACTERS[SAVE.char] && (isUnlocked(SAVE.
 // ¿Se ve distinto al transformarse? (pelo Super Saiyajin, o una hoja propia como Piccolo sin capa)
 const hasTransformLook = c => !!(c.ssjHair || c.transformSprite);
 // Niveles: el 1 está abierto; cada uno se abre al ganar el anterior (en el modo prueba, todos)
-const isLevelOpen = id => { const L = levelDef(id); return TEST_MODE || L.bonus || L.num === 1 || !!SAVE.levelsWon[L.openAfter || LEVELS[L.num - 2].id]; };   // openAfter: niveles de la fusión (js/fusion.js)
+const isLevelOpen = id => { const L = levelDef(id); return TEST_MODE || L.bonus || L.num === 1 || !!SAVE.levelsWon[L.openAfter || LEVELS[L.num - 2].id]; };   // openAfter: niveles de la fusión (js/mods/datos/enemigos.js)
 const myLevel = () => SAVE.level === 'weekly' ? (WEEKLY ? 'weekly' : 'saiyan') : (isLevelOpen(SAVE.level) ? levelDef(SAVE.level).id : 'saiyan');
 // Récord de un guerrero en un nivel (los récords de antes de los niveles cuentan para el Nivel 1)
 const bestOf = (lv, ch) => SAVE.best[`${lv}|${ch}`] || (lv === 'saiyan' ? SAVE.best[ch] || 0 : 0);
@@ -1208,7 +1208,7 @@ function fireAttacks(P, dt) {
       sfx('shot');
       P.castT = Math.max(P.castT || 0, 0.2);
     } else if (def.type === 'beam') {
-      for (const an of beamAngles(P, def, ang)) {   // Super Masenko: hacia adelante y hacia atrás; Multiplicación: un rayo más (fusion.js)
+      for (const an of beamAngles(P, def, ang)) {   // Super Masenko: hacia adelante y hacia atrás; Multiplicación: un rayo más (js/mods/datos/mejoras.js)
         G.beams.push({ ang: an, len: s.len, width: s.width, dmg: s.dmg, t: s.dur, dur: s.dur, tick: 0, color: def.color, core: def.core, aid: a.id, owner: P });
       }
       sfx('beam', 0.3);

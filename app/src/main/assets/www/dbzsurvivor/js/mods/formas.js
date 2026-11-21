@@ -41,7 +41,7 @@
   }
 
   // El guerrero en su forma n (1 = la de siempre): una copia propia del jugador, el original no se toca
-  // Con traje (js/fusion-skins.js), la forma se apoya en el traje: sin transformar se sigue viendo con él
+  // Con traje (js/mods/trajes.js), la forma se apoya en el traje: sin transformar se sigue viendo con él
   function formChar(P, id, n) {
     const base = P.skinC || CHARACTERS[id], f = FORMS[id][n - 2];
     return { ...base, transform: f.name, aura: f.aura, transformBonus: (base.transformBonus || 0) + f.bonus,

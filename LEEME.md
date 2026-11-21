@@ -36,6 +36,8 @@ El co-op de DBZ Survivor (PeerJS) puede funcionar si el teléfono tiene internet
 - `app/src/main/assets/www/launcher/` → menú de selección
 - `app/src/main/assets/www/dbsurvivors/` → juego 1 (cambio mínimo: `window.DBS_OFFLINE` activa su modo sin servidor, el mismo que usa al abrirse como archivo)
 - `app/src/main/assets/www/dbzsurvivor/` → juego 2 (PeerJS y la fuente Fredoka incluidas localmente en vez de CDN)
+  - `js/` → el juego base (no se edita) · `js/mods/` → todo lo nuestro (reglas y mapa en `js/mods/LEEME.md`)
+- `tests/smoke.cjs` → prueba automática: juega sola con todos los guerreros y niveles; GitHub no publica la APK si falla
 - `app/src/main/java/.../MainActivity.java` → WebView a pantalla completa que sirve los juegos desde la app
 
 ## Actualizar un juego

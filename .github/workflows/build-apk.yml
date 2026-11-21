@@ -18,6 +18,16 @@ jobs:
           java-version: '17'
       # El runner de GitHub ya trae el SDK de Android (ANDROID_HOME)
       - uses: gradle/actions/setup-gradle@v5
+      # Prueba automática: si el juego tira algún error, aquí se detiene y NO se publica la APK
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probar el juego (54 guerreros y todos los niveles, ~6 min)
+        env:
+          PW_CHANNEL: chrome   # el Google Chrome que ya trae el runner
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          node tests/smoke.cjs
       - name: Manifiesto del contenido (va dentro de la APK)
         run: python3 .github/scripts/manifiesto.py ${{ github.run_number }} ${{ github.sha }} app/src/main/assets/contenido-base.json
       - name: Compilar

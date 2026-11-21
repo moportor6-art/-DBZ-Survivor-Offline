@@ -1,0 +1,59 @@
+# Mods de DBZ Survivor
+
+Todo lo que agregamos al juego original vive en esta carpeta. Los archivos de `js/` (fuera de `mods/`)
+son el juego base de DBZ Survivor (v2.35.1) y **no se editan**. Así, si sale una versión nueva del
+creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
+
+## Reglas
+
+1. **Cambiar algo del juego = un mod.** Para cambiar cómo funciona una función de `game.js`, se
+   "envuelve" desde un mod (ver `kiai.js` o `tienda.js`):
+   ```js
+   (() => {
+     const original = damageEnemy;
+     damageEnemy = function (...args) {
+       // lo nuestro antes o después
+       return original.apply(this, args);
+     };
+   })();
+   ```
+2. **Datos nuevos = `mods/datos/`.** Guerreros, técnicas, enemigos, niveles y artículos de la tienda.
+3. **El orden de carga importa** y está en un solo lugar: los `<script>` de `index.html`, con comentarios.
+   Un archivo nuevo va en el grupo que le corresponde.
+4. **Antes de subir:** `node tests/smoke.cjs --rapida` (1-2 min). GitHub corre la prueba completa
+   y, si falla, no publica la APK.
+
+## Qué hay en cada archivo
+
+| Archivo | Qué hace | Se carga después de |
+|---|---|---|
+| `datos/tecnicas.js` | Técnicas nuevas y usuarios extra de técnicas existentes | `data.js` |
+| `datos/enemigos.js` | Enemigos, jefes, gigantes, niveles 6 y 7, saga de Buu | `datos/tecnicas.js` |
+| `datos/guerreros.js` | Jugables nuevos, sus hojas de sprites, regeneración por raza | `datos/enemigos.js` (reusa hojas de jefes) |
+| `datos/mejoras.js` | Kiai, artículos nuevos de la tienda, `maxPassives`, `beamAngles` | `datos/guerreros.js` |
+| `mapas.js` | Escenarios de los niveles nuevos | `maps.js` |
+| `formas.js` | Formas extra de transformación | `game.js` |
+| `trajes.js` | Trajes (solo apariencia) | `formas.js` |
+| `tienda.js` | Efectos en partida de los artículos nuevos de la tienda | `game.js` |
+| `kiai.js` | Efecto e ícono de la mejora Kiai | `game.js` |
+| `musica.js` | Música mp3 | `game.js` |
+| `misiones.js` | Misiones diarias | `game.js` |
+| `pestanas.js` | Pestañas para filtrar guerreros | `game.js` |
+| `graficos.js` | Límite de FPS, 90/120 Hz, resolución, modo batería | `game.js` |
+| `actualizaciones.js` | Ventana de Actualizaciones (la hace `Updater.java`) | `game.js` |
+| `recetas.js` | Receta de evolución en las cartas de subir de nivel | `game.js` |
+
+## Puntos de enganche dentro del código base
+
+Son las únicas líneas del juego base que cambiamos, porque eran expresiones sueltas que no se
+podían envolver desde afuera. **Si se actualiza el juego base, hay que volver a ponerlas:**
+
+| Archivo base | Antes | Ahora | Función (en) |
+|---|---|---|---|
+| `game.js` y `combos.js` | `MAX_PASSIVES` (10 lugares) | `maxPassives(P)` | `datos/mejoras.js` |
+| `game.js` (`fireAttacks`) | `def.both ? [ang, ang + Math.PI] : [ang]` | `beamAngles(P, def, ang)` | `datos/mejoras.js` |
+| `game.js` (`attackStats`) | `s.count >= 2` | `s.count >= 1` | (Multiplicación desde 1 proyectil) |
+| `game.js` (2 lugares) | `(P.c.regen \|\| 0)` | `charRegen(P)` | `datos/guerreros.js` |
+| `game.js` (`isLevelOpen`) | — | lee `openAfter` | niveles de `datos/enemigos.js` |
+
+Para encontrarlas: `grep -n "maxPassives\|beamAngles\|charRegen\|openAfter" js/game.js js/combos.js`
