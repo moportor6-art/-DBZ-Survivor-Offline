@@ -51,6 +51,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `red.js` | Cooperativo: el anfitrión manda cada 0,3 s el estado de los mods (formas, Ozaru, aliados, marcas, jefes cambiados) en un aviso de texto que el invitado intercepta | antes de `historia.js` |
 | `autoaprender.js` | Auto-aprender: elige solo la carta al subir de nivel (evoluciones primero, técnicas propias, la mejora que falta para cada fusión, estilo de cada guerrero); localStorage `fusion.auto` | después de `red.js` |
 | `editarhud.js` | Editor del HUD (pausa → ✏️ Editar HUD): mover, tamaño, giro, opacidad y ocultar cada pieza; localStorage `fusion.hud`. Debe ser el último que envuelve `drawHUD` | después de `autoaprender.js` |
+| `guardar.js` | Guardar y salir (pausa), autoguardado al cerrar la app y cada 20 s, ▶ Continuar en el menú; localStorage `fusion.partida` (se borra al continuar, al empezar otra o al terminar) | después de `editarhud.js` |
 | `historia.js` | Escenas con retratos al empezar, al llegar el jefe final y al ganar (localStorage `fusion.historia`) | **la última de todas** (después de `telemetry.js`): es la que congela `update` y necesita `tourPortrait` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
