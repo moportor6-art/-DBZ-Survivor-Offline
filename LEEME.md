@@ -50,4 +50,5 @@ Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
   Roshi's Island por -Bwar-; HFIL por Flint829; Templo de Kami por SpYn y Ghost.
 - Dragon Ball Sagas (estilo Legendary Super Warriors): Jiren de Exigeek y Keegixe; Toppo de thekrillmaster
   (hojas armadas con `tools/hojas/u11.py`).
+- Gohan Bestia (estilo SWL+): hoja de BlackSanyT, con AlexKX29 y orumaitoobeso (armada con `tools/swl/gohan_bestia.py`).
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).
