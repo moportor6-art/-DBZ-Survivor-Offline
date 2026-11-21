@@ -290,7 +290,7 @@ SHOP_UPGRADES.push(
   { id: 'pslot', name: 'Casilla de mejora extra', icon: '⊞', color: '#ffb0f0', max: FUSION_PSLOT_MAX, base: 3000, grow: 2.5, per: 1,
     fmt: v => `+${v} casilla${v === 1 ? '' : 's'} de mejora pasiva (${MAX_PASSIVES + v} en total)` },
   { id: 'shenwish', name: 'Deseo de Shenlong', icon: '🐉', color: '#7dff9a', max: 6, base: 2500, grow: 1.6, per: SHENLONG_STAT,
-    fmt: v => `+${Math.round(v * 100)}% a todo (salud, daño, velocidad, recarga de técnicas, carga de Ki, defensa, experiencia y recogida) y +${(v / SHENLONG_STAT * 0.1).toFixed(1)} de salud por segundo, pero salen un ${Math.round(v / SHENLONG_STAT * SHENLONG_ENEMIES * 100)}% más de enemigos` },
+    fmt: v => `+${Math.round(v * 100)}% a todo (salud, daño, velocidad, recarga de técnicas y del Ki, defensa, experiencia y recogida) y +${(v / SHENLONG_STAT * 0.1).toFixed(1)} de salud por segundo, pero salen un ${Math.round(v / SHENLONG_STAT * SHENLONG_ENEMIES * 100)}% más de enemigos` },
   { id: 'transtime', name: 'Dominio de la transformación', icon: '⚡', color: '#ffe14d', max: 8, base: 400, grow: 1.45, per: 0.08,
     fmt: v => `+${Math.round(v * 100)}% de duración de las transformaciones` },
 );
@@ -348,3 +348,7 @@ CHARACTERS.freezerp.transform = '2.ª forma';
 CHARACTERS.freezerp.title = 'El emperador del universo, en todas sus formas';
 CHARACTERS.cellp.transform = 'Cell Semi-perfecto';
 CHARACTERS.cellp.title = 'De Imperfecto a la forma de vida perfecta';
+
+// Recarga global (js/fusion-shop.js): la recarga también acelera el Ki para transformarte
+PASSIVES.focus.desc = '-8% de tiempo de recarga de técnicas y del Ki para transformarte.';
+SHOP_UPGRADES.find(u => u.id === 'cd').fmt = v => `-${Math.round(v * 100)}% de recarga (técnicas y Ki para transformarte)`;

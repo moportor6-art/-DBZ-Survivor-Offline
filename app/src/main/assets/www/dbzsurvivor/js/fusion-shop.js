@@ -31,14 +31,19 @@
     return spawn.call(this, dt * (1 + w * SHENLONG_ENEMIES));
   };
 
-  // Carga de Ki: el Ki que ganas en cada paso del juego (golpes, meditación...) sube un 5% por nivel
+  // Recarga global: el bono de recarga de las técnicas también acelera la carga de Ki para transformarte, en la misma
+  // proporción (−30% de recarga = Ki un 30% más rápido). Suma Concentración, la Tienda (Control del Ki y Deseo de
+  // Shenlong) y la ventaja del guerrero, con el mismo tope que las técnicas (−60%). Sin contar el bono de estar
+  // transformado: transformado no se carga Ki.
+  const rechargeBonus = p => 1 - Math.max(0.4, 1 - 0.08 * ((p.passives && p.passives.focus) || 0) - (p.c.cdBonus || 0) - perk(p, 'cd'));
+  window.fusionRecharge = rechargeBonus;
   const upd = update;
   update = function () {   // eslint-disable-line no-global-assign
     const ps = typeof G !== 'undefined' && G && G.players ? G.players : [], before = ps.map(p => p.ki);
     const r = upd.apply(this, arguments);
     ps.forEach((p, i) => {
-      const w = wish(p), d = p.ki - before[i];
-      if (w && d > 0 && p.ki < 100 && !(p.transformed > 0)) p.ki = Math.min(100, p.ki + d * w * SHENLONG_STAT);
+      const d = p.ki - before[i];
+      if (d > 0 && p.ki < 100 && !(p.transformed > 0)) p.ki = Math.min(100, p.ki + d * rechargeBonus(p));
     });
     return r;
   };
