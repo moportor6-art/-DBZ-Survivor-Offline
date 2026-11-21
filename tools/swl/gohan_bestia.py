@@ -1,6 +1,8 @@
 """Gohan Bestia (hoja SWL+ de BlackSanyT, con AlexKX29 y orumaitoobeso) → hoja del juego.
-Una sola fila de perfil (mira a la derecha; el juego la voltea): 0-3 quieto, 4-7 volar, 8-9 lanzar ki,
-10 golpeado, 11 tirado, 12 levantándose. Uso: gohan_bestia.py <hoja.png> <salida.png>"""
+Una sola fila de perfil (mira a la derecha; el juego la voltea): 0 quieto, 1-4 caminar, 5-6 lanzar ki,
+7 golpeado, 8 tirado, 9 levantándose. Uso: gohan_bestia.py <hoja.png> <salida.png>
+La hoja (de juego de pelea) no trae caminata: se arma desde el cuadro de pie, abriendo y cerrando las
+piernas y balanceando las manos (caminata()).""" 
 import sys
 from PIL import Image
 import numpy as np
@@ -20,7 +22,9 @@ def frame(box):
     ids, cnt = np.unique(sub_l[sub_l > 0], return_counts=True)
     k = ids[cnt.argmax()]
     sub = a[y0:y1, x0:x1].copy()
-    sub[~(solid[y0:y1, x0:x1] & (sub_l == k))] = 0
+    keep = solid[y0:y1, x0:x1] & (sub_l == k)
+    keep = ndimage.binary_fill_holes(keep)   # los huecos del color del fondo dentro del dibujo (sombras) se quedan
+    sub[~keep] = 0
     f = Image.fromarray(sub)
     return f.crop(f.getbbox())
 
@@ -38,9 +42,33 @@ Q = {
     19: [415, 1305, 463, 1364], 142: [186, 2193, 238, 2254], 143: [248, 2191, 296, 2251],
     88: [12, 1763, 68, 1822], 106: [481, 1787, 551, 1821], 96: [424, 1773, 475, 1812],
 }
-ORDEN = [14, 15, 16, 15, 19, 19, 19, 19, 142, 143, 88, 106, 96]
-BOB = [0, 0, 0, 0, 0, -1, -2, -1, 0, 0, 0, 0, 0]   # volar: flota arriba y abajo
-frames = [frame(Q[i]) for i in ORDEN]
+Q[13] = [25, 1302, 63, 1369]   # de pie, tranquilo
+
+def caminata(img, y0, split, manos=(8, 32), manos_y=(26, 54)):
+    """4 cuadros desde uno de pie: las piernas se abren y se cierran (cizalla desde la cintura y0, separadas en la
+    columna split) y las manos se balancean al revés. Los píxeles se estiran para que no queden huecos."""
+    f = np.array(img); H, W = f.shape[:2]
+    def paso(d, brazo, sube):
+        o = np.zeros((H + 2, W + 8, 4), np.uint8); OX = 4
+        for y in range(H):
+            for x in range(W):
+                if f[y, x, 3] == 0: continue
+                ny = y + 1 + sube
+                if y >= y0 and (y >= manos_y[1] - 2 or manos[0] <= x <= manos[1]):
+                    k = round(d * (y - y0) / (H - 1 - y0))
+                    xs = range(x - k, x + 1) if x < split else range(x, x + k + 1)
+                    for nx in xs: o[ny, nx + OX] = f[y, x]
+                elif manos_y[0] <= y < manos_y[1] and (x < manos[0] or x > manos[1]):
+                    o[ny, x + OX + (brazo if x < manos[0] else -brazo)] = f[y, x]
+                else:
+                    o[ny, x + OX] = f[y, x]
+        out = Image.fromarray(o)
+        return out.crop(out.getbbox())
+    return [paso(3, 1, 0), paso(1, 0, -1), paso(0, 0, 0), paso(1, 0, -1)]
+
+pie = frame(Q[13])
+frames = [pie] + caminata(pie, 41, 19) + [frame(Q[i]) for i in (142, 143, 88, 106, 96)]
+BOB = [0, 0, -1, 0, -1, 0, 0, 0, 0, 0]
 cx = [centro_pies(f) for f in frames]
 left = max(c for c in cx); right = max(f.width - c for f, c in zip(frames, cx))
 CW = int(np.ceil(left + right)) + 2

@@ -66,9 +66,9 @@
     gohan: [
       { name: 'Gohan Místico', aura: '#f2f2ff', bonus: 0.35, fx: { cd: 0.15 }, drain: 0.55, sprite: S('gohan~2-ssj', 34, 32, true),
         lore: 'El Supremo Kaiosama Anciano liberó todo su potencial: mucho poder sin el desgaste de una transformación.' },
-      { name: 'Gohan Bestia', aura: '#e0c8ff', bonus: 0.8, fx: { spd: 0.15, crit: 0.2 }, drain: 1.3, sprite: PERFIL('gohan-bestia', 75, 60,   // SWL+ de BlackSanyT (tools/swl/gohan_bestia.py)
-        { idle: { row: 0, col: 0, count: 4 }, walk: { row: 0, col: 4, count: 4 }, cast: { row: 0, col: 8, count: 2 },
-          kohit: { row: 0, col: 10, count: 1 }, kolie: { row: 0, col: 11, count: 1 }, koup: { row: 0, col: 12, count: 1 } }, 0.8),
+      { name: 'Gohan Bestia', aura: '#e0c8ff', bonus: 0.8, fx: { spd: 0.15, crit: 0.2 }, drain: 1.3, sprite: PERFIL('gohan-bestia', 75, 66,   // SWL+ de BlackSanyT (tools/swl/gohan_bestia.py)
+        { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 },
+          kohit: { row: 0, col: 7, count: 1 }, kolie: { row: 0, col: 8, count: 1 }, koup: { row: 0, col: 9, count: 1 } }, 0.72),
         lore: 'Su furia contra Cell Max despertó un poder que supera a los dioses: golpes críticos devastadores.' },
     ],
     gohanf: [{ name: 'Super Saiyajin (furia del futuro)', aura: '#ffc070', bonus: 0.45, fx: { spd: 0.1, def: 0.1 }, sprite: A('gohanf:ssj'),
