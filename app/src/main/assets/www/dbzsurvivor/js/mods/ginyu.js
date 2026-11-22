@@ -7,9 +7,10 @@
 // · Fila 1: sus técnicas. Fila 2: las del cuerpo (3 huecos). Disparan las dos. Al cambiar de cuerpo, las técnicas
 //   nuevas heredan el nivel de las anteriores, hueco por hueco. Las cartas ofrecen técnicas de las dos filas.
 // · Adaptación del cuerpo (hueco propio, no es carta ni cuenta para las pasivas): +1 grado cada 5 niveles del
-//   jugador con un cuerpo puesto (máximo 6). Cada grado: +0,3%/s de vida, +10% de carga de Ki, +8% de daño de la
+//   jugador con un cuerpo puesto (máximo 6). La fila 2 también evoluciona (técnica al máximo + la mejora que pide). Cada grado: +0,3%/s de vida, +10% de carga de Ki, +8% de daño de la
 //   fila 2. Grado 3: +1 proyectil (y un rayo más en abanico) en TODAS las técnicas; grado 6: +2, y además la firma
-//   del dueño original. Al cambiar de cuerpo se queda la mitad de los grados.
+//   completa del dueño original (daño, defensa, velocidad, críticos, rematar, al golpear, al recibir, al derrotar,
+//   al transformarse, cada cuadro y lo de una sola vez, como la vida extra de Cell). Al cambiar de cuerpo se queda la mitad de los grados.
 // Estado en el jugador: cuerpo { id, c, name, lookId, enemy }, atk2 [{ id, lvl, cd }], adapt, adaptHit, cuerpoCd.
 // Se guarda (js/mods/guardar.js lo copia por ser dato) y se manda a los invitados (js/mods/red.js).
 (() => {
@@ -37,6 +38,15 @@
   const formas = P => 1 + ((window.FUSION_FORMS || {})[P.cuerpo && P.cuerpo.c] || []).length;
 
   // Las formas del cuerpo robado: KiForms trabaja con el id del guerrero; para Ginyu con cuerpo, el del cuerpo
+  // Con dos Ginyu en el cooperativo, KiForms.count/list (que reciben solo 'ginyup') usan el que está pidiendo Ki
+  // ahora (handleKi lo marca); si no, el propio
+  let pidiendo = null;
+  const ginyuActual = () => {
+    const ok = q => q && esGinyu(q) && q.cuerpo;
+    if (ok(pidiendo)) return pidiendo;
+    if (ok(G.me)) return G.me;
+    return G.players.find(q => ok(q) && !q.ally) || null;
+  };
   if (window.KiForms) {
     const K = window.KiForms, set0 = K.set, count0 = K.count;
     K.set = function (P, n) {
@@ -49,11 +59,11 @@
     };
     const list0 = K.list;
     K.list = function (id) {
-      if (id === 'ginyup' && G && G.players) { const P = G.players.find(q => esGinyu(q) && q.cuerpo && q.cuerpo.c && (q === G.me || !q.ally)); if (P) return list0.call(this, P.cuerpo.c); }
+      if (id === 'ginyup' && G && G.players) { const P = ginyuActual(); if (P && P.cuerpo.c) return list0.call(this, P.cuerpo.c); }
       return list0.apply(this, arguments);
     };
     K.count = function (id) {
-      if (id === 'ginyup' && G && G.players) { const P = G.players.find(q => esGinyu(q) && q.cuerpo && (q === G.me || !q.ally)); if (P) return formas(P); }
+      if (id === 'ginyup' && G && G.players) { const P = ginyuActual(); if (P) return formas(P); }
       return count0.apply(this, arguments);
     };
   }
@@ -106,7 +116,8 @@
   const hk = handleKi;
   handleKi = function (P, ang) {   // eslint-disable-line no-global-assign
     if (ang === OP) { if (P) cambiar(P); return; }
-    return hk.apply(this, arguments);
+    pidiendo = P;
+    try { return hk.apply(this, arguments); } finally { pidiendo = null; }
   };
   function pedir() {
     const P = G && G.me;
@@ -141,6 +152,39 @@
     }
     return r;
   };
+  // Lo que la firma del dueño hace una sola vez (vida extra…) y al transformarse
+  const up2 = update;
+  update = function () {   // eslint-disable-line no-global-assign
+    const r = up2.apply(this, arguments);
+    if (!G || G.mode !== 'play') return r;
+    for (const P of G.players) {
+      if (!esGinyu(P) || P.gone || P.dead) continue;
+      const F = grado(P) >= MAXG && dueño(P);
+      if (F && F.setup && P._setupDe !== P.cuerpo.name) { P._setupDe = P.cuerpo.name; try { F.setup(P); } catch (e) { /* nada */ } }
+      const tr = P.transformed > 0;
+      if (F && F.transform && tr && !P._gTr) { try { F.transform(P); } catch (e) { /* nada */ } }
+      P._gTr = tr;
+    }
+    return r;
+  };
+  const ps = playerSpeed;
+  playerSpeed = function (P) {   // eslint-disable-line no-global-assign
+    const F = grado(P) >= MAXG && dueño(P);
+    return ps.apply(this, arguments) * (F && F.spd ? 1 + F.spd(P) : 1);
+  };
+  const de = damageEnemy;
+  damageEnemy = function (e, amount, src, kb, owner, aid) {   // eslint-disable-line no-global-assign
+    const F = owner && e && !e.dead && grado(owner) >= MAXG && dueño(owner);
+    if (F) {
+      if (F.vs) amount *= F.vs(owner, e, aid) || 1;
+      if (F.crit && Math.random() < F.crit) amount *= 2;
+      if (F.exec && !e.boss && e.hp - amount < e.maxHp * F.exec) amount = Math.max(amount, e.hp + 1);
+      arguments[1] = amount;
+    }
+    const r = de.apply(this, arguments);
+    if (F && F.hit) { try { F.hit(owner, e, aid); } catch (err) { /* nada */ } }
+    return r;
+  };
   const dueño = P => { const id = P.cuerpo && P.cuerpo.c; return id && id !== 'ginyup' && window.IDENTIDAD ? window.IDENTIDAD[id] : null; };
 
   // Firma del dueño en grado 6: daño, defensa y al derrotar
@@ -155,7 +199,9 @@
   hurtPlayer = function (P, amount) {   // eslint-disable-line no-global-assign
     const F = grado(P) >= MAXG && dueño(P);
     if (F && F.def) arguments[1] = amount * (1 - F.def);
-    return hp.apply(this, arguments);
+    const antes = P ? P.hp : 0, r = hp.apply(this, arguments);
+    if (F && F.hurt && P.hp < antes) { try { F.hurt(P, antes - P.hp); } catch (e) { /* nada */ } }
+    return r;
   };
   const ke = killEnemy;
   killEnemy = function (e, owner) {   // eslint-disable-line no-global-assign
@@ -196,12 +242,18 @@
   };
 
   // ─── Cartas: también las técnicas del cuerpo ───
+  // Evolución de la fila 2: técnica al máximo + la mejora que pide (y que el cuerpo pueda aprenderla)
+  const evoFila2 = (P, a) => {
+    const evo = EVOLUTION_OF[a.id];
+    return !!evo && !ATTACKS[a.id].evolved && a.lvl >= MAX_ATTACK_LEVEL && P.passives[ATTACKS[evo].needs] > 0 && canLearn(P.cuerpo.c || 'ginyup', evo);
+  };
   const cp = cardPool;
   cardPool = function (P) {   // eslint-disable-line no-global-assign
     const opts = cp.apply(this, arguments);
     if (!esGinyu(P) || !P.cuerpo) return opts;
     const atk2 = P.atk2 || [];
     for (const a of atk2) if (a.lvl < MAX_ATTACK_LEVEL) opts.push({ kind: 'up', id: a.id, fila: 2 });
+    for (const a of atk2) if (evoFila2(P, a)) opts.unshift({ kind: 'evolve', id: a.id, fila: 2 });   // las evoluciones, primero
     if (atk2.length < SLOTS2) {
       const m = MAJ()[P.cuerpo.id] || {};
       for (const id of tecnicasDe(m, P.cuerpo)) if (!atk2.some(a => a.id === id) && !P.attacks.some(a => a.id === id)) opts.push({ kind: 'new', id, fila: 2 });
@@ -221,6 +273,16 @@
     if (!(o && o.fila === 2 && esGinyu(P))) return ao.apply(this, arguments);
     P.atk2 = P.atk2 || [];
     if (o.kind === 'up') { const a = P.atk2.find(x => x.id === o.id); if (a && a.lvl < MAX_ATTACK_LEVEL) a.lvl++; }
+    else if (o.kind === 'evolve') {
+      const a = P.atk2.find(x => x.id === o.id);
+      if (a && evoFila2(P, a)) {
+        const evo = ATTACKS[EVOLUTION_OF[a.id]];
+        a.id = EVOLUTION_OF[a.id]; a.lvl = MAX_ATTACK_LEVEL; a.cd = 0.3;
+        addText(P.x, P.y - 34, '¡{name}!', evo.color, true, { name: evo.name });
+        if (P === G.me) announce('¡{name} evolucionó a {evo}!', '#ffd93b', { name: ATTACKS[o.id].name, evo: evo.name });
+        sfx('power');
+      }
+    }
     else if (o.kind === 'new' && P.atk2.length < SLOTS2 && ATTACKS[o.id] && !P.atk2.some(x => x.id === o.id)) P.atk2.push({ id: o.id, lvl: 1, cd: 0.3 });
   };
 
@@ -241,9 +303,11 @@
       const x = 8 + (i + 1) * (s + gap), a = atk2[i];
       if (!a) { emptySlot(x, y, s); continue; }
       hudSlots.push({ x, y, s, kind: 'attack', id: a.id });
-      hudSlot(x, y, s, a.lvl, MAX_ATTACK_LEVEL, false);
+      const ev = !!ATTACKS[a.id].evolved;
+      hudSlot(x, y, s, ev ? MAX_ATTACK_LEVEL : a.lvl, MAX_ATTACK_LEVEL, ev);
+      if (ev) hudText('★', x + s - 6, y + 10, 10, '#ffd93b', 'center');
       drawAttackIcon(a.id, x + 3, y + 1, s - 6);
-      hudSlotLevel(x, y, s, a.lvl, MAX_ATTACK_LEVEL);
+      if (!ev) hudSlotLevel(x, y, s, a.lvl, MAX_ATTACK_LEVEL);
       ctx.fillStyle = '#c27aff'; ctx.fillRect(x + 2, y + 2, 4, 4);
     }
     return y + s;

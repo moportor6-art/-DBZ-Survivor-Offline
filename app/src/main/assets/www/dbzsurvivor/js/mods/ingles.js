@@ -5,8 +5,8 @@
 //     llevan nombres o números se reconocen con patrones (PAT).
 //   · Los botones y pantallas que arman los mods (historia, editor del HUD, guardar, auto-aprender…) se traducen
 //     en el DOM: un observador cambia los textos que estén en el diccionario o coincidan con un patrón.
-// Va después de todos los mods (al final de index.html). Falta: las firmas de identidad, el lore de las formas y
-// los nombres de las técnicas nuevas siguen en español.
+// Va después de todos los mods (al final de index.html). Los datos (técnicas, guerreros, formas, firmas, tienda)
+// están en js/mods/ingles-datos.js.
 (() => {
   if (typeof LANG === 'undefined' || LANG !== 'en') return;
   const D = {
@@ -230,12 +230,17 @@
     [/^Terminar la historia: (.+) · Todas las estrellas: (.+)$/, (m, a, b) => `Finish the story: ${a.replace('cobrado', 'claimed')} · All stars: ${b.replace('cobrado', 'claimed')}`],
     [/^▶ Continuar$/, '▶ Continue'], [/^(.+) · Nivel (\d+) · (\d+:\d+) · Nv (\d+)$/, '$1 · Level $2 · $3 · Lv $4'],
     [/^(.+) \(oculto\)$/, (m, x) => `${D[x] || x} (hidden)`],
+    [/^¡Ginyu tomó el cuerpo de (.+)!$/, "Ginyu took $1's body!"], [/^¡Adaptación grado (\d+)!$/, 'Adaptation grade $1!'],
+    [/^¡Ginyu domina el cuerpo de (.+): su firma es tuya!$/, "Ginyu masters $1's body: its signature is yours!"],
+    [/^Adaptación al cuerpo de (.+): grado (\d+)\/(\d+)$/, 'Adaptation to $1\'s body: grade $2/$3'], [/^Adaptación: Ginyu todavía no tomó ningún cuerpo$/, 'Adaptation: Ginyu has not taken a body yet'],
+    [/^Ginyu \((.+)\)$/, (m, x) => `Ginyu (${(EN_TEXT[x] && EN_TEXT[x] !== x) ? EN_TEXT[x] : x})`], [/^(.+) · cuerpo$/, '$1 · body'], [/^Cambio$/, 'Swap'],
     [/^🏆 ¡Terminaste la historia! \+(\d+) Zeni$/, '🏆 You finished the story! +$1 Zeni'], [/^🌟 ¡Todas las estrellas! \+(\d+) Zeni$/, '🌟 All stars! +$1 Zeni'],
   ];
   const tr = s => {
     if (typeof s !== 'string') return s;
     const k = s.trim();
     if (D[k] !== undefined) return s.replace(k, D[k]);
+    if (EN_TEXT[k] !== undefined && EN_TEXT[k] !== k) return s.replace(k, EN_TEXT[k]);
     for (const [re, rep] of PAT) if (re.test(k)) return s.replace(k, k.replace(re, rep));
     return s;
   };
@@ -258,7 +263,7 @@
   hudText = function (text) { arguments[0] = tr(text); return ht.apply(this, arguments); };   // eslint-disable-line no-global-assign
 
   // 3) DOM que arman los mods
-  const ZONAS = '#capScr, #historia, #hudEd, #btnContinue, #btnSaveQuit, #btnHistoria, #btnHudEd, #autoBtn, .auto-row, .cap-res, #goTitle, #goRank, #btnDaily';
+  const ZONAS = '#capScr, #historia, #hudEd, #btnContinue, #btnSaveQuit, #btnHistoria, #btnHudEd, #autoBtn, .auto-row, .cap-res, #goTitle, #goRank, #btnDaily, #btnCuerpo, #choices';
   const walk = root => {
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     for (let n = w.nextNode(); n; n = w.nextNode()) { const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }

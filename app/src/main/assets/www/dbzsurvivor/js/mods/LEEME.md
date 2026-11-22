@@ -59,6 +59,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `capitulos.js` | Modo Historia: 14 capítulos con guerrero, jefes, escenas, estrellas y Zeni; misiones y logros en la misma pantalla; localStorage `fusion.capitulos` | antes de `historia.js` (usa `window.dialogo`) |
 | `historia.js` | Escenas con retratos al empezar, al llegar el jefe final y al ganar (localStorage `fusion.historia`) | **la última de todas** (después de `telemetry.js`): es la que congela `update` y necesita `tourPortrait` |
 | `ingles.js` | Inglés para lo de los mods: diálogos y títulos (en los datos), avisos del lienzo (t, hudText) y botones/pantallas (observador del DOM) | **al final**, después de `historia.js` |
+| `ingles-datos.js` | Inglés de los datos de los mods por id: técnicas, guerreros, formas, firmas, mejoras y tienda | después de `ingles.js` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
 ## Puntos de enganche dentro del código base
