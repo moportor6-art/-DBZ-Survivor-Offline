@@ -4495,6 +4495,9 @@ function drawBossPointers() {
     hudText(`${dist} m`, x, y + 33, 12, '#ffb0b8', 'center');
   }
 }
+// Piezas del HUD: el editor (js/mods/editarhud.js) las mueve, agranda, gira u oculta. Cada parte de drawHUD se
+// dibuja entre hudPieza(id) y hudPiezaFin(id); sin editor, no hacen nada.
+let hudPieza = () => {}, hudPiezaFin = () => {};
 function drawHUD() {
   if (G.snake) snakeDrawHud();   // los kilómetros del Camino de la Serpiente
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -4503,10 +4506,13 @@ function drawHUD() {
   if (G.net && G.net.role === 'client' && Net.lag > 2000) hudText(t('Conexión lenta con el anfitrión...'), W / 2, Math.min(150, H * 0.3), 15, '#ffb0a0', 'center');
   const P = G.me, compact = W < 640;
   // Barra de experiencia superior
+  hudPieza('xp');
   pbar(2, 2, W - 4, 6, G.xp / G.xpNext, '#3da5ff', '#b8e4ff');
+  hudPiezaFin('xp');
 
   // Panel del personaje
   const pw = compact ? 170 : 220;
+  hudPieza('guerrero');
   panel(8, 14, pw, 58);
   const inGogeta = G.fusion && G.fusion.phase === 'fused' && G.fusion.ids.includes(P.id);
   if (inGogeta) drawPortraitTo(ctx, GOGETA.look, false, 14, 18, 48);
@@ -4518,7 +4524,9 @@ function drawHUD() {
   pbar(66, 44, barW, 9, P.hp / P.maxHp, P.hp / P.maxHp > 0.3 ? '#4dff6a' : '#ff4d4d');
   hudText(P.dead ? t('Caído') : `${Math.ceil(P.hp)}/${P.maxHp}`, 66 + barW / 2, 66, 11, '#ffffff', 'center');
   if (reserve) hudReserveSenzu(66 + barW + 13, 48, P.senzuLeft > 0);
+  hudPiezaFin('guerrero');
   // Esferas del Dragón (5 casilleros después del deseo Atraer las esferas)
+  hudPieza('esferas');
   for (let i = 0; i < ballsNeeded(); i++) {
     const x = 18 + i * 18, y = 84;
     if (i < G.dragonBalls) drawDragonBall(ctx, x, y, 6, i + 1, false);
@@ -4527,12 +4535,19 @@ function drawHUD() {
       ctx.strokeStyle = 'rgba(255,184,28,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.stroke();
     }
   }
+  hudPiezaFin('esferas');
   // Técnicas y mejoras de la partida
+  hudPieza('tecnicas');
   const loadoutEnd = drawLoadout(P, 96, compact);
+  hudPiezaFin('tecnicas');
   // Efectos de los deseos, a la derecha de las esferas (después de drawLoadout: agrega sus ayudas a hudSlots)
+  hudPieza('esferas');
   drawWishEffects(P, 18 + ballsNeeded() * 18 + 2, 84);
+  hudPiezaFin('esferas');
   // Compañeros
   let ty = loadoutEnd + 6;
+  const lejos = [];
+  hudPieza('equipo');
   G.players.forEach((Q, i) => {
     if (Q === P || Q.gone || Q.ally) return;
     const qFused = G.fusion && G.fusion.phase === 'fused' && G.fusion.ids.includes(Q.id);
@@ -4545,11 +4560,16 @@ function drawHUD() {
     pbar(40, ty + 19, 118, 4, Q.dead ? 0 : Q.hp / Q.maxHp, Q.dead ? '#777' : '#4dff6a');
     ty += 34;
     if (Q.hidden) return;
+    lejos.push([Q, i]);
+  });
+  hudPiezaFin('equipo');
+  for (const [Q, i] of lejos) {   // flechas al borde (fuera de la pieza: no se mueven con ella)
     const dx = Q.x - P.x, dy = Q.y - P.y;
     if (Math.abs(dx) > BW / 2 || Math.abs(dy) > BH / 2) edgeArrow(dx, dy, PLAYER_COLORS[i % 4]);
-  });
+  }
   // Tiempo y bajas
   const L = hudLayout();
+  hudPieza('reloj');
   if (L.narrow) { // celular en vertical: un solo panel bajo los botones
     panel(L.statsX, L.statsY, 138, 36);
     hudText(fmtTime(G.t), L.statsX + 38, L.statsY + 24, 17, '#ffffff', 'center');
@@ -4560,10 +4580,14 @@ function drawHUD() {
     hudText(fmtTime(G.t), W / 2, 41, 20, '#ffffff', 'center');
     if (G.lv.infinite) hudText(t('Vuelta {n}', { n: kaioRound() }), W / 2 - 58, 38, 13, '#ffb0bc', 'right');   // a la izquierda del reloj
     if (G.speed > 1) hudText(`x${FAST_SPEED}`, W / 2 + 58, 30, 14, '#ffd93b', 'left');
+    hudPiezaFin('reloj');
     // Bajas: a la izquierda de los botones (mapa, música y pausa), o bajo el reloj si no hay espacio
+    hudPieza('bajas');
     panel(L.killsX, L.killsY, 100, 38);
     hudText(`☠ ${G.kills}`, L.killsX + 50, L.killsY + 25, 15, '#ffffff', 'center');
+    hudPiezaFin('bajas');
   }
+  if (L.narrow) hudPiezaFin('reloj');
 
   // Barra de Ki: carga, transformación (con segundos restantes) o fusión
   // En pantallas táctiles la barra deja sitio al botón ¡KI! de la derecha
@@ -4596,6 +4620,7 @@ function drawHUD() {
       : focus >= 1 ? `${t('¡KI CONCENTRADO!')} ${kiVerb}: ${P.c.transform} ${t('(+50% de duración, +25% de daño)')}`
       : `${t('¡KI AL MÁXIMO!')} ${kiVerb}: ${P.c.transform} · ${t('Concentrando {n}%', { n: Math.floor(focus * 100) })}`;
   } else { frac = P.ki / 100; color = '#ff9b3d'; label = `KI · ${Math.floor(P.ki)}%`; labelColor = '#ffd27a'; }
+  hudPieza('ki');
   panel(kx - 10, ky - 25, kw + 20, kh + 33);   // marco como el resto del HUD
   // Llena, transformado o fusionado: la barra brilla
   if (frac >= 1 || (P.transformed > 0) || (F && F.ids && F.ids.includes(P.id))) {
@@ -4619,22 +4644,27 @@ function drawHUD() {
   let ks = touchUi ? 13 : 14;
   for (; ks > 9; ks--) { ctx.font = `700 ${ks}px ${FONT}`; if (ctx.measureText(label).width <= kw + 12) break; }
   hudText(label, kx + kw / 2, ky - 7, ks, labelColor, 'center');
+  hudPiezaFin('ki');
 
   // Jefe
   // Jefes (uno o varios a la vez)
-  const bossList = G.enemies.filter(e => e.boss);
+  const bossList = G.enemies.filter(e => e.boss && !e.friend);   // (los poseídos por Babidi no tienen barra)
   const bossBar = (boss, by) => {
     const bw = Math.min(420, W - 40), bx = (W - bw) / 2;
     hudText(boss.def.name, W / 2, by, 15, '#ff8a9a', 'center');
     pbar(bx, by + 6, bw, 10, boss.hp / boss.maxHp, '#ff3d5c', '#ffb0bc');
   };
+  hudPieza('jefe');
   if (bossList.length >= BOSS_STRIP_MIN) drawBossStrip(bossList, P, L.bossY, bossBar);
   else bossList.forEach((boss, i) => bossBar(boss, L.bossY + i * BOSS_BAR_GAP));
+  hudPiezaFin('jefe');
   for (const boss of bossList) {
     const dx = boss.x - P.x, dy = boss.y - P.y;
     if (Math.abs(dx) > BW / 2 || Math.abs(dy) > BH / 2) edgeArrow(dx, dy, '#ff3d5c');
   }
+  hudPieza('mapa');
   drawHudMap();
+  hudPiezaFin('mapa');
   // Radar del Dragón: flecha en el borde hacia cada esfera tirada fuera de pantalla, con la distancia
   // (va después del mapa para que no la tape)
   for (const p of G.pickups) {
@@ -4644,8 +4674,10 @@ function drawHUD() {
   }
   // Anuncio
   if (G.banner) {
-    ctx.globalAlpha = Math.min(1, G.banner.t * 2);
+    hudPieza('avisos');
+    ctx.globalAlpha *= Math.min(1, G.banner.t * 2);
     hudText(t(G.banner.text, G.banner.params), W / 2, H * 0.26, compact ? 18 : 26, G.banner.color, 'center');
+    hudPiezaFin('avisos');
     ctx.globalAlpha = 1;
   }
   if (P.dead && G.players.length > 1) hudText(t('Has caído: un compañero puede reanimarte si se queda a tu lado'), W / 2, H * 0.36, 15, '#ffb0bc', 'center');

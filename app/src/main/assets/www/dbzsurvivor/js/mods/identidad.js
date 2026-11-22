@@ -57,7 +57,7 @@
   }
   function friendDmg(e) {
     const o = e.friend.owner;
-    return (7 + 1.4 * G.level) * e.friend.power * Math.max(0.6, dmgMult(o) * 0.55);
+    return (7 + 1.4 * G.level) * e.friend.power * Math.max(0.6, dmgMult(o) * 0.55) * (e.friend.buff > 0 ? 1.6 : 1);
   }
   function tickFriends(dt) {
     const k = dt * 60;
@@ -65,13 +65,14 @@
       if (e.dead) continue;
       const f = e.friend;
       f.t -= dt; f.cd -= dt;
+      if (f.buff > 0) { f.buff -= dt; if (Math.random() < dt * 6) G.fx.push({ type: 'spark', x: e.x + rand(-8, 8), y: e.y - rand(4, 24), vx: 0, vy: -0.6, t: 0.4, color: '#ff9bd6', size: 2 }); }
       if (e.flash > 0) e.flash -= dt;
       if (e.stun > 0) e.stun -= dt;
       if (f.t <= 0 || !f.owner || f.owner.dead || f.owner.gone) { endFriend(e); continue; }
       const t = nearestHostile(e.x, e.y, 420);
       const tx = t ? t.x : f.owner.x + 40, ty = t ? t.y : f.owner.y + 10;
       const d = Math.hypot(tx - e.x, ty - e.y) || 1, reach = t ? e.r + t.r + 6 : 50;
-      if (d > reach) { const sp = Math.max(1.2, e.speed * 1.25) * k; e.x += (tx - e.x) / d * Math.min(sp, d - reach + 1); e.y += (ty - e.y) / d * Math.min(sp, d - reach + 1); }
+      if (d > reach) { const sp = Math.max(1.2, e.speed * 1.25) * (f.buff > 0 ? 1.3 : 1) * k; e.x += (tx - e.x) / d * Math.min(sp, d - reach + 1); e.y += (ty - e.y) / d * Math.min(sp, d - reach + 1); }
       if (Math.abs(tx - e.x) > 2) e.facing = tx > e.x ? 1 : -1;
       if (t && f.cd <= 0) {
         const ranged = (e.def.shooter || e.boss) && d < 230;
@@ -86,6 +87,7 @@
   }
   function endFriend(e) {
     const f = e.friend;
+    if (f.perm && f.t > 0 && f.owner && !f.owner.dead && !f.owner.gone) return;   // permanente: solo termina si Babidi cae
     if (f.kind === 'possess' && e.boss && !e.dead) { delete e.friend; addText(e.x, e.y - 30, '¡Se liberó de la magia!', '#ff9bd6', true); G.enemies.push(e); FR = FR.filter(x => x !== e); return; }
     if ((f.kind === 'kamikaze' || f.kind === 'possess') && f.owner) {   // se lanzan contra los enemigos y explotan
       G.novas.push({ x: e.x, y: e.y, r: 0, maxR: 80, dmg: friendDmg(e) * 3, hit: new Set(), color: '#ff9b3d', kb: 20, owner: f.owner, aid: 'ki' });
@@ -93,6 +95,35 @@
     } else poof(e.x, e.y);
     e.dead = true;
   }
+  // Babidi: posesión permanente. Un jefe o élite que iba a morir (y no es el jefe final) se queda con Babidi
+  // para siempre: primero se cuenta como derrotado (experiencia, Zeni, cofres, bajas…) y después vuelve a la
+  // pelea como aliado Majin. Deja de ser "jefe" (no tiene barra arriba ni pausa el nivel) pero pega como uno.
+  // Hasta 6 a la vez: si llega otro, el más viejo se lanza contra los enemigos y explota.
+  const babidiVivo = () => G.players.find(Q => Q.charId === 'babidip' && !Q.ally && !Q.dead && !Q.gone);
+  const keBab = killEnemy;
+  killEnemy = function (e, owner) {   // eslint-disable-line no-global-assign
+    const B = (e.boss || e.elite) && !e.final && !e.friend && !e.vanish && !e.possessed && G.mode === 'play' && babidiVivo();
+    const r = keBab.apply(this, arguments);
+    if (!B) return r;
+    try {
+      const mios = [...FR, ...G.enemies].filter(x => x.friend && x.friend.perm && x.friend.owner === B && !x.dead);
+      if (mios.length >= 6) endFriend(mios[0]);
+      e.dead = false; e.possessed = true;
+      e.hp = e.maxHp = Math.max(1, Math.round((e.maxHp || 100) * 0.6));
+      const power = e.boss ? 4 : 2.5;
+      e.wasBoss = e.boss; e.boss = false; e.elite = false; e.final = false;
+      G.enemies = G.enemies.filter(x => x !== e);
+      makeFriend(e, B, Infinity, 'possess', 'M');
+      e.friend.perm = true; e.friend.power = power;
+      if (inUpdate) FR.push(e); else G.enemies.push(e);
+      burst(e.x, e.y, '#ff4da6', 26, 5, 3);
+      try { playAnim('wring', e.x, e.y, 2); } catch (err) { /* sin anillo */ }
+      addText(e.x, e.y - 40, '¡M! Ahora sirve a Babidi', '#ff4da6', true);
+      say(B, `¡${(e.def && e.def.name) || 'Tú'}, ahora eres mío para siempre!`, '#ff4da6');
+    } catch (err) { /* nunca rompe la partida */ }
+    return r;
+  };
+
   // Babidi: la marca Majin. Los jefes finales no se pueden controlar
   function possess(P, e) {
     const secs = e.boss ? 6 : e.elite ? 9 : 10;
@@ -159,6 +190,13 @@
       if (o.dead) dismissAlly(A);
     }
   }
+
+  // Hechizo de poder de Babidi: sus guerreros invocados pegan un 50% más mientras dura
+  const dmB = dmgMult;
+  dmgMult = function (P) {   // eslint-disable-line no-global-assign
+    const m = dmB.apply(this, arguments);
+    return P && P.babBuff > 0 ? m * 1.5 : m;
+  };
 
   // ─── Firmas ───
   const every = (P, key, secs, dt) => { P[key] = (P[key] ?? secs * 0.5) - dt; if (P[key] <= 0) { P[key] = secs; return true; } return false; };
@@ -287,9 +325,22 @@
 
   // Tanda 6: saga de Majin Buu
   const BABIDI_FORMS = { 1: [['puipuip', 'puipui'], ['yakonp', 'yakon']], 2: [['daburap', 'dabura']], 3: [['vegeta', 'majinvegeta']], 4: [['majinbuu', 'buu']] };
-  ID.babidip = { firma: 'Mago malvado: pega poco, pero cada 14 s invoca 2 soldados Majin, cada 10 s pone la marca Majin al enemigo más fuerte cerca (los jefes, 6 s; los finales no) y cada forma de su transformación invoca a un guerrero: Pui Pui y Yakon → Dabura → Majin Vegeta → Majin Buu.',
+  ID.babidip = { firma: 'Mago malvado: pega poco, pero cada 14 s invoca 2 soldados Majin, cada 10 s pone la marca Majin al enemigo más fuerte cerca (los jefes, 6 s; los finales no) y cada forma de su transformación invoca a un guerrero: Pui Pui y Yakon → Dabura → Majin Vegeta → Majin Buu. Cada 9 s, Hechizo de poder: cura a sus guerreros (30%) y a los compañeros cercanos (8%), y sus aliados pegan un 50-60% más por 6 s. Los jefes y élites que iban a morir (menos el final) se quedan con él para siempre.',
     dmg: () => 0.8,
     tick(P, dt) {
+      // Hechizo de poder: cura y potencia a todos sus aliados
+      for (const A of alliesOf(P)) if (A.babBuff > 0) A.babBuff -= dt;
+      if (every(P, 'hechT', 9, dt)) {
+        const mis = alliesOf(P), amigos = [...FR, ...G.enemies].filter(x => x.friend && x.friend.owner === P && !x.dead);
+        const cerca = G.players.filter(Q => Q !== P && !Q.ally && !Q.dead && !Q.gone && Math.hypot(Q.x - P.x, Q.y - P.y) < 240);
+        if (mis.length || amigos.length || cerca.length) {
+          for (const A of mis) { A.hp = Math.min(A.maxHp, A.hp + A.maxHp * 0.3); A.babBuff = 6; burst(A.x, A.y - 10, '#ff9bd6', 10, 3, 2); }
+          for (const x of amigos) { x.friend.buff = 6; if (!x.friend.perm) x.friend.t += 2; burst(x.x, x.y - 10, '#ff9bd6', 8, 3, 2); }
+          for (const Q of cerca) { healPlayer(Q, Q.maxHp * 0.08); burst(Q.x, Q.y - 10, '#ff9bd6', 8, 3, 2); }
+          ring(P.x, P.y, 90, 0.4, '#ff4da6');
+          say(P, '¡Hechizo de poder!', '#ff9bd6');
+        }
+      }
       if (every(P, 'majT', 14, dt)) { for (let i = 0; i < 2; i++) spawnFriend(P, 'msoldado', 14, 'summon', { mark: 'M' }); say(P, '¡Pa-pa-ra-pa!', '#ff9bd6'); }
       if (every(P, 'posT', 10, dt)) {
         const e = nearestHostile(P.x, P.y, 280, x => !x.final && (x.boss || x.elite)) || nearestHostile(P.x, P.y, 220, x => !x.final);

@@ -351,7 +351,7 @@
     if (P.transformed > 0) {
       const n = P.formN || 1, max = window.KiForms ? window.KiForms.count(P.charId) : 1;
       // Marca del 50%: desde ahí puedes subir de forma
-      if (n < max) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(Math.round(kx + 2 + (kw - 4) * KI_UP_MIN / 100), ky - 1, 2, kh + 2); }
+      if (n < max) { hudPieza('ki'); ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(Math.round(kx + 2 + (kw - 4) * KI_UP_MIN / 100), ky - 1, 2, kh + 2); hudPiezaFin('ki'); }
       const rate = drainRate(P);
       text = `Forma ${n}/${max} · ${P.freeKi > 0 ? 'Ki infinito' : `−${rate.toFixed(1)} Ki/s`}`
         + (n < max ? (P.ki >= KI_UP_MIN || P.freeKi > 0 ? ` · ▲ toca ${key}` : ` · ▲ con ${KI_UP_MIN}%`) : '')
@@ -364,7 +364,9 @@
     } else return r;
     let s = touchUi ? 13 : 14;
     for (; s > 8; s--) { ctx.font = `700 ${s}px ${FONT}`; if (ctx.measureText(text).width <= kw + 16) break; }
+    hudPieza('ki');   // la línea va con la barra de Ki si la mueves en el editor del HUD
     hudText(text, kx + kw / 2, ky - 30, s, color, 'center');
+    hudPiezaFin('ki');
     return r;
   };
 

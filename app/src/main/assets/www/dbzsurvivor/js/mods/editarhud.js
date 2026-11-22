@@ -3,9 +3,10 @@
 // agranda/achica y se gira; abajo hay botones para tamaño, giro, transparencia, ocultar y reiniciar.
 // Guardado en localStorage 'fusion.hud': { pieza: { x, y, s, r, a, h } } (desplazamiento en px, escala, grados,
 // opacidad, oculta).
-// Cómo funciona con el lienzo: el HUD del juego se dibuja todo junto en drawHUD, así que este archivo (el último
-// que envuelve drawHUD) separa el HUD de cada pieza cambiada (rectángulos que salen de las mismas cuentas del
-// juego) y lo vuelve a pegar con su posición, escala, giro y opacidad. Si no cambiaste nada, no hace nada. Los botones (¡KI!, pausa, mapa, música, sonido) son HTML: se mueven con CSS.
+// Cómo funciona con el lienzo: drawHUD (game.js) marca cada parte con hudPieza(id)/hudPiezaFin(id) y aquí cada
+// pieza cambiada se dibuja con su posición, escala, giro y opacidad. Los rectángulos (mismas cuentas que el juego)
+// solo sirven para el centro de giro y para tocarlas en el editor. Los botones (¡KI!, pausa, mapa, música, sonido,
+// auto-aprender) son HTML: se mueven con CSS.
 (() => {
   const KEY = 'fusion.hud';
   let cfg = {};
@@ -53,66 +54,63 @@
       return [(W - w) / 2, H * 0.26 - (W < 640 ? 22 : 30), w, W < 640 ? 30 : 40];
     } },
   ];
-  const SOLIDAS = ['xp', 'guerrero', 'tecnicas', 'reloj', 'bajas', 'ki', 'jefe', 'mapa'];
   const BOTONES = [
     { id: 'btnTransform', name: 'Botón ¡KI!' }, { id: 'btnPause', name: 'Pausa', noHide: true }, { id: 'btnMap', name: 'Botón del mapa' },
-    { id: 'btnMusic', name: 'Música' }, { id: 'btnSfx', name: 'Sonido' },
+    { id: 'btnMusic', name: 'Música' }, { id: 'btnSfx', name: 'Sonido' }, { id: 'btnAuto', name: 'Auto-aprender' },
   ];
   const rectOf = p => { try { return p.r(); } catch (e) { return null; } };
+  const byIdP = id => PIEZAS.find(p => p.id === id);
 
-  // ─── Pegar el HUD por piezas ───
-  const mk = () => { const c = document.createElement('canvas'); return { c, x: c.getContext('2d') }; };
-  const mundo = mk(), hud = mk();
-  const hd = drawHUD;
-  // Solo se copian los rectángulos de las piezas cambiadas (no la pantalla entera): antes del HUD se guarda el mundo
-  // de esos rectángulos y se dejan vacíos; el HUD se dibuja normal; lo que quedó en ellos es solo HUD (se copia
-  // aparte); se devuelve el mundo a su lugar y el HUD de cada pieza se pega movido, escalado y girado.
-  drawHUD = function () {   // eslint-disable-line no-global-assign
-    const act = G && G.me ? PIEZAS.filter(p => custom(p.id)) : [];
-    if (!act.length) return hd.apply(this, arguments);
-    const cw = canvas.width, ch = canvas.height;
-    for (const o of [mundo, hud]) if (o.c.width !== cw || o.c.height !== ch) { o.c.width = cw; o.c.height = ch; }
-    const dev = r => { const x = Math.max(0, Math.floor(r[0] * DPR)), y = Math.max(0, Math.floor(r[1] * DPR)); return [x, y, Math.min(cw, Math.ceil((r[0] + r[2]) * DPR)) - x, Math.min(ch, Math.ceil((r[1] + r[3]) * DPR)) - y]; };
-    const rects = act.map(p => [p, rectOf(p)]).filter(([, r]) => r).map(([p, r]) => [p, r, dev(r)]).filter(([, , d]) => d[2] > 0 && d[3] > 0);
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-    for (const [, , [x, y, w, h]] of rects) { mundo.x.clearRect(x, y, w, h); mundo.x.drawImage(canvas, x, y, w, h, x, y, w, h); }
-    for (const [, , [x, y, w, h]] of rects) ctx.clearRect(x, y, w, h);
+  // ─── Dibujar cada pieza en su lugar ───
+  // drawHUD (game.js) marca cada parte con hudPieza(id) … hudPiezaFin(id). Aquí cada pieza cambiada se dibuja
+  // con su propio desplazamiento, tamaño, giro y opacidad alrededor del centro de su rectángulo: cada una por
+  // separado, así nunca arrastra pedazos de otra aunque sus rectángulos se encimen.
+  const pila = [];
+  // Opacidad de la pieza: el HUD del juego a veces pone ctx.globalAlpha = 1 (retrato, minimapa…). Mientras se
+  // dibuja una pieza con opacidad propia, todo lo que se asigne a globalAlpha se multiplica por la de la pieza
+  // (y una pieza oculta queda en 0), así nada se "escapa" de la transparencia.
+  let mul = 1;
+  const GA = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'globalAlpha');
+  if (GA && GA.set) {
+    Object.defineProperty(ctx, 'globalAlpha', {
+      configurable: true,
+      get() { const v = GA.get.call(this); return mul ? Math.min(1, v / mul) : 0; },
+      set(v) { GA.set.call(this, v * mul); },
+    });
+  }
+  hudPieza = function (id) {   // eslint-disable-line no-global-assign
+    const on = G && G.me && custom(id);
+    ctx.save();
+    pila.push({ id, on, slots: on ? new Set(hudSlots) : null });
+    if (!on) return;
+    const c = get(id), r = rectOf(byIdP(id));
+    const top = pila[pila.length - 1];
+    top.mul = mul;
+    if (c.h) { mul = 0; GA.set.call(ctx, 0); }   // oculta: se dibuja invisible (las casillas siguen calculándose)
+    else { const a = GA.get.call(ctx); mul *= c.a; GA.set.call(ctx, a * c.a); }
+    if (!r) { ctx.translate(c.x, c.y); return; }
+    const cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2;
+    ctx.translate(cx + c.x, cy + c.y); ctx.rotate(c.r * Math.PI / 180); ctx.scale(c.s, c.s); ctx.translate(-cx, -cy);
+    pila[pila.length - 1].centro = [cx, cy];
+  };
+  hudPiezaFin = function (id) {   // eslint-disable-line no-global-assign
+    const top = pila.pop();
     ctx.restore();
-    let res;
-    try { res = hd.apply(this, arguments); } finally {
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
-      for (const [, , [x, y, w, h]] of rects) { hud.x.clearRect(x, y, w, h); hud.x.drawImage(canvas, x, y, w, h, x, y, w, h); }
-      for (const [, , [x, y, w, h]] of rects) { ctx.clearRect(x, y, w, h); ctx.drawImage(mundo.c, x, y, w, h, x, y, w, h); }
-      // los paneles sin cambios que se tocan con una pieza movida: su parte en el cruce vuelve a su lugar
-      for (const p of PIEZAS) {
-        if (custom(p.id) || !SOLIDAS.includes(p.id)) continue;
-        const r0 = rectOf(p);
-        if (!r0) continue;
-        const r = dev(r0);
-        for (const [, , q] of rects) {
-          const x = Math.max(r[0], q[0]), y = Math.max(r[1], q[1]), w = Math.min(r[0] + r[2], q[0] + q[2]) - x, h = Math.min(r[1] + r[3], q[1] + q[3]) - y;
-          if (w > 0 && h > 0) { ctx.drawImage(hud.c, x, y, w, h, x, y, w, h); hud.x.clearRect(x, y, w, h); }   // (y no viaja con la pieza movida)
-        }
-      }
-      for (const [p, r, [x, y, w, h]] of rects) {
-        const c = get(p.id);
-        if (c.h) continue;
-        ctx.save();
-        ctx.globalAlpha = c.a;
-        ctx.translate(x + w / 2 + c.x * DPR, y + h / 2 + c.y * DPR); ctx.rotate(c.r * Math.PI / 180); ctx.scale(c.s, c.s);
-        ctx.drawImage(hud.c, x, y, w, h, -w / 2, -h / 2, w, h);
-        ctx.restore();
-        if (p.id === 'tecnicas' || p.id === 'esferas') {   // las casillas (para ver qué hace cada una) siguen a la pieza
-          const kinds = p.id === 'tecnicas' ? ['attack', 'passive'] : ['effect'], cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2;
-          for (const s of hudSlots) if (kinds.includes(s.kind)) {
-            s.x = cx + c.x + (s.x - cx) * c.s; s.y = cy + c.y + (s.y - cy) * c.s; s.s *= c.s; if (s.w) s.w *= c.s;
-          }
-        }
-      }
-      ctx.restore();
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    if (top && top.mul != null) mul = top.mul;
+    if (!top || !top.on || !top.centro) return;
+    // Las casillas (para ver qué hace cada técnica) siguen a la pieza
+    const c = get(id), [cx, cy] = top.centro;
+    for (const sl of hudSlots) if (!top.slots.has(sl)) {
+      sl.x = cx + c.x + (sl.x - cx) * c.s; sl.y = cy + c.y + (sl.y - cy) * c.s; sl.s *= c.s; if (sl.w) sl.w *= c.s;
     }
-    return res;
+  };
+  const hd = drawHUD;
+  drawHUD = function () {   // eslint-disable-line no-global-assign
+    pila.length = 0;
+    try { return hd.apply(this, arguments); } finally {
+      while (pila.length) { pila.pop(); ctx.restore(); }   // por si una parte se cortó a la mitad
+      mul = 1;
+    }
   };
 
   // ─── Botones HTML ───

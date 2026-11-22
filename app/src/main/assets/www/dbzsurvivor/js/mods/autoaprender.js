@@ -1,5 +1,5 @@
 // ─── Auto-aprender: elige solo las cartas al subir de nivel ─────────────────
-// Con la opción encendida (pausa → Opciones, o el botón 🤖 en la pantalla de subir de nivel), la carta se elige
+// Con la opción encendida (botón 🤖 de la partida, pausa → Opciones, o el botón en la pantalla de subir de nivel), la carta se elige
 // sola a los 0,45 s. Cómo puntúa cada carta:
 //   · Evolución (fusión de técnica + mejora): siempre primero.
 //   · Técnicas: la inicial y las propias del guerrero (las que casi nadie más tiene) primero; después las que
@@ -138,7 +138,28 @@
       host.appendChild(row);
     }
   } catch (e) { /* sin opción en la pausa */ }
+  // Botón 🤖 en la partida (junto a mapa, música y pausa; se puede mover con el editor del HUD)
+  const fab = document.createElement('button');
+  fab.id = 'btnAuto'; fab.className = 'btn-music btn-auto';
+  fab.textContent = '🤖';
+  fab.title = 'Auto-aprender mejoras (toca para encender o apagar)';
+  fab.onclick = e => {
+    set(!on());
+    if (typeof sayHud === 'function') sayHud(on());
+    e.currentTarget.blur();
+  };
+  document.body.appendChild(fab);
+  // Aviso corto al tocarlo (usa el anuncio del juego si hay partida)
+  function sayHud(v) { try { if (G && G.me) announce(v ? '🤖 Auto-aprender: SÍ' : '🤖 Auto-aprender: NO', v ? '#7dff6a' : '#ffb0bc'); } catch (e) { /* nada */ } }
+  const st2 = document.createElement('style');
+  st2.textContent = `.btn-music.btn-auto { display: none; font-size: 18px; padding: 0; }
+    body.playing .btn-music.btn-auto { display: block; right: calc(196px + var(--sb, 0px)); }
+    @media (max-width: 599px) { body.playing .btn-music.btn-auto { top: auto; bottom: 96px; right: auto; left: 12px; } }`;
+  document.head.appendChild(st2);
+
   function syncUi() {
+    const f = $('btnAuto');
+    if (f) f.classList.toggle('off', !on());
     const b = $('autoBtn');
     if (b) b.textContent = on() ? '🤖 Auto-aprender: SÍ (toca para elegir tú)' : '🤖 Auto-aprender: NO';
     const c = $('autoChk');

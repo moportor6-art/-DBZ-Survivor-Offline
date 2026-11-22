@@ -680,6 +680,8 @@ body.snake-run #tabMap { display: none; }   /* sin mapa en el Camino de la Serpi
 /* Con la pausa abierta no hacen falta los botones de arriba (la pausa tiene volumen, mapa y Continuar)
    y así no se montan sobre la caja */
 #pause:not(.hidden) ~ .btn-pause, #pause:not(.hidden) ~ .btn-music { display: none; }
+/* El botón ¡KI! (y el de auto-aprender) no se ven encima de la pausa ni de otras pantallas sobre la partida */
+.screen.overlay:not(.hidden) ~ .btn-ki, .screen.overlay:not(.hidden) ~ #btnAuto { display: none; }
 /* Novedades */
 .news-link { position: relative; }
 .news-link.has-new::after { content: ''; position: absolute; top: -2px; right: -8px; width: 7px; height: 7px; border-radius: 50%;
