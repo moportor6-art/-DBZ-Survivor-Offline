@@ -50,5 +50,7 @@ Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
   Roshi's Island por -Bwar-; HFIL por Flint829; Templo de Kami por SpYn y Ghost.
 - Dragon Ball Sagas (estilo Legendary Super Warriors): Jiren de Exigeek y Keegixe; Toppo de thekrillmaster
   (hojas armadas con `tools/hojas/u11.py`).
-- Gohan Bestia (estilo SWL+): hoja de BlackSanyT, con AlexKX29 y orumaitoobeso (armada con `tools/swl/gohan_bestia.py`).
+- Gohan Bestia: hoja "Ultimate LSW" de Andresz2021 (armada con `tools/swl/gohan_bestia2.py`; la anterior, de BlackSanyT con AlexKX29 y orumaitoobeso, queda en `tools/swl/gohan_bestia.py`).
+- Black Freezer: hoja de autor desconocido (armada con `tools/swl/black_freezer.py`).
+- Tanda Harukanaru (Zarbon y su forma monstruo, Dodoria, Nail, Rey Cold, Cui, Appule, mercenarios de Freezer, Gozu, Mezu, Vegeta con rastreador, Freezer en su nave, 2.ª, 3.ª, final y 100%, y Mecha Freezer): sprites de *Dragon Ball Z: Harukanaru Densetsu* ripeados por Metal-Franky (armados con `tools/swl/harukanaru/build_all.py`).
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).

@@ -104,6 +104,24 @@ for (const [id, w] of [['ozaru', 34], ['annihil', 66], ['deathm', 66]]) {
 LEVELS.find(L => L.id === 'saiyan').spawns.push({ id: 'ozaru', from: 420, weight: 1 });   // se suma; lo demás queda igual
 LEVELS.find(L => L.id === 'leyendas').spawns.push({ id: 'annihil', from: 300, weight: 1 }, { id: 'deathm', from: 300, weight: 1 });
 
+// ─── Tanda Harukanaru (hojas de Harukanaru Goku Densetsu, ripeadas por Metal-Franky) ───
+// Namek: Appule y los mercenarios de Freezer. Otro Mundo: Gozu y Mezu, los guardianes del Infierno.
+Object.assign(ENEMIES, {
+  appulee: { name: 'Appule', hp: 70, speed: 1.15, r: 12, dmg: 11, xp: 4, scale: 1, shooter: true, shootChance: 0.6, look: FL('#c46bff', '#2a2a33', '#2a2a33') },
+  suie: { name: 'Mercenario de Freezer', hp: 55, speed: 1.0, r: 12, dmg: 10, xp: 3, scale: 1, lunge: true, look: FL('#5a9adf', '#2a2a33', '#2a2a33') },
+  gozue: { name: 'Gozu', hp: 110, speed: 0.95, r: 14, dmg: 15, xp: 6, scale: 1.1, look: FL('#4fd8c8', '#ffffff', '#ffffff') },
+  mezue: { name: 'Mezu', hp: 110, speed: 1.05, r: 14, dmg: 14, xp: 6, scale: 1.1, lunge: true, look: FL('#e84a30', '#ffffff', '#ffffff') },
+});
+for (const [id, w, h] of [['appulee', 33, 45], ['suie', 33, 42], ['gozue', 34, 45], ['mezue', 34, 43]]) {
+  ENEMIES[id].look.id = id;
+  SPRITE_OVERRIDES[id] = { src: `assets/sprites/fusion/${id}.png`, frameW: w, frameH: h, footY: h, fps: 10, scale: 1.25 * Math.min(1, 44 / h),
+    anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } }, dirs: DIRS_PLAIN };
+}
+LEVELS.find(L => L.id === 'namek').spawns.push({ id: 'suie', from: 90, weight: 4 }, { id: 'appulee', from: 200, weight: 3 });
+LEVELS.find(L => L.id === 'otromundo').spawns.push({ id: 'gozue', from: 150, weight: 3 }, { id: 'mezue', from: 150, weight: 3 });
+// Mecha Freezer con su hoja de Harukanaru (la reconstrucción cibernética, antes era la de DB Survivors)
+SPRITE_OVERRIDES.mechafz = { ...SPRITE_OVERRIDES.mechafz, src: 'assets/sprites/fusion/mechafz.png', frameW: 27, frameH: 37, footY: 37, scale: 1.25 * Math.min(1, 44 / 37) };
+
 // ─── Soldados Majin de Buu's Fury (tools/hojas/majin_soldier.py): 3 variantes, normal, élite y súper ───
 // Los invoca Babidi (js/mods/identidad.js) y aparecen en la saga de Buu.
 ENEMIES.msoldado = { name: 'Soldado Majin', hp: 80, speed: 0.95, r: 14, dmg: 12, xp: 5, scale: 1.1,

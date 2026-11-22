@@ -136,11 +136,12 @@ Object.assign(SPRITE_OVERRIDES, {
   a19p: fusionSheet('a19p', 32, 32), gerop: fusionSheet('gerop', 32, 32), daburap: fusionSheet('daburap', 64, 64),
   puipuip: fusionSheet('puipuip', 32, 45), gohanc: fusionSheet('gohanc', 32, 32, true), 'gohanc:ssj': fusionSheet('gohanc-ssj', 32, 32),
   // Freezer y Cell empiezan en su primera forma y suben con cada transformación (formas en js/mods/formas.js)
-  freezerp: fusionSheet('freezerp1', 32, 32, true), 'freezerp:ssj': fusionSheet('freezerp2', 34, 42),
+  // La nave flotante y la 2.ª forma: hojas de Harukanaru Goku Densetsu (Metal-Franky)
+  freezerp: fusionSheet('freezerp-nave', 32, 40), 'freezerp:ssj': fusionSheet('freezerp-2', 33, 47),
   cellp: fusionSheet('cellp1', 54, 49, true), 'cellp:ssj': fusionSheet('cellp', 54, 54, true),
 });
 CHARACTERS.freezerp.transform = '2.ª forma';
-CHARACTERS.freezerp.title = 'El emperador del universo, en todas sus formas';
+CHARACTERS.freezerp.title = 'El emperador del universo, en todas sus formas: de su nave a Black Freezer';
 CHARACTERS.cellp.transform = 'Cell Semi-perfecto';
 CHARACTERS.cellp.title = 'De Imperfecto a la forma de vida perfecta';
 
@@ -204,7 +205,36 @@ Object.assign(SPRITE_OVERRIDES, {
   spopovichp: fusionSheet('spopovichp', 68, 66, true), yamup: fusionSheet('yamup', 72, 64, true), a13p: fusionSheet('a13p', 68, 67),
   bulmap: fusionSheet('bulmap', 32, 32), dendep: fusionSheet('dendep', 32, 32), popop: fusionSheet('popop', 32, 32),
 });
-SPRITE_OVERRIDES.yamup.scale = 0.72;   // Yamu es de tamaño humano: que no se vea tan grande como Spopovich
+SPRITE_OVERRIDES.yamup.scale = 0.72;
+
+// ─── Tanda Harukanaru (hojas de Harukanaru Goku Densetsu, ripeadas por Metal-Franky) ───
+// El imperio de Freezer, Nail y el Rey Cold. Zarbon se transforma en su forma monstruosa.
+const FUSION_CHARS5 = {
+  zarbonp: { name: 'Zarbon', title: 'El guerrero más elegante de Freezer', hp: 115, speed: 2.6, start: 'elegantblaster', transform: 'Zarbon monstruo',
+             perk: 'Belleza y fuerza: +15% de daño', dmgBonus: 0.15, cost: 2500, aura: '#9dff8a' },
+  dodoriap: { name: 'Dodoria', title: 'El brazo derecho de Freezer', hp: 150, speed: 2.3, start: 'maximumbuster', transform: 'Furia de Dodoria',
+              perk: 'Cuerpo enorme: aguanta más que nadie del ejército (150 de salud)', cost: 2200, aura: '#ff8ad8' },
+  nailp: { name: 'Nail', title: 'El guerrero más fuerte de Namek', hp: 120, speed: 2.7, start: 'ondanail', transform: 'Poder de Namek',
+           perk: 'Regeneración namekiana', cost: 2500, aura: '#9dff8a' },
+  coldp: { name: 'Rey Cold', title: 'El padre de Freezer y Cooler', hp: 135, speed: 2.4, start: 'rayocold', transform: 'Poder del Rey',
+           perk: 'Soberano del universo: +25% de Zeni y +10% de daño', zeniBonus: 0.25, dmgBonus: 0.1, cost: 4000, aura: '#e8e0ff' },
+  cuip: { name: 'Cui', title: 'El rival de Vegeta en el ejército de Freezer', hp: 95, speed: 2.8, start: 'bombacui', transform: 'Poder de Cui',
+          perk: 'Ágil: el Ki se carga un 20% más rápido', kiBonus: 0.2, cost: 1500, aura: '#c46bff' },
+};
+for (const [id, d] of Object.entries(FUSION_CHARS5)) {
+  const { cost, ...c } = d;
+  c.look = { ...CHARACTERS.goku.look, id, ssjHair: null };
+  c.ssjHair = null;
+  c.unlock = { kind: 'zeni', cost, text: 'Cómpralo con Zeni' };
+  c.fusion = true;
+  CHARACTERS[id] = c;
+}
+Object.assign(SPRITE_OVERRIDES, {
+  zarbonp: fusionSheet('zarbonp', 33, 41), 'zarbonp:ssj': fusionSheet('zarbonp-ssj', 33, 42), dodoriap: fusionSheet('dodoriap', 33, 39),
+  nailp: fusionSheet('nailp', 33, 37), coldp: fusionSheet('coldp', 34, 48), cuip: fusionSheet('cuip', 31, 38),
+});
+SPRITE_OVERRIDES.coldp.scale = 1.05;   // el Rey Cold es más alto que los demás
+   // Yamu es de tamaño humano: que no se vea tan grande como Spopovich
 
 // ─── Identidad de los regeneradores ───
 // Antes era una cantidad fija (0,4-1 de salud por segundo), casi nada frente al daño de los enemigos.
@@ -215,6 +245,7 @@ SPRITE_OVERRIDES.yamup.scale = 0.72;   // Yamu es de tamaño humano: que no se v
 const REGEN_IDENTITY = {
   // Namekianos: se regeneran de verdad, y aún más rápido cuando están graves (Piccolo se rehace el brazo)
   piccolo:    { pct: 0.012, low: 2,   perk: 'Regeneración namekiana: recupera un 1,2% de su salud por segundo, el doble con poca vida' },
+  nailp:      { pct: 0.012, low: 2,   perk: 'Regeneración namekiana: recupera un 1,2% de su salud por segundo, el doble con poca vida' },
   dendep:     { pct: 0.015, low: 2,   perk: 'Curación namekiana: recupera un 1,5% de su salud por segundo, el doble con poca vida' },
   // Majin: el cuerpo de goma se rehace solo, sobre todo cuando lo destrozan
   majinbuu:   { pct: 0.018, low: 2.5, perk: 'Cuerpo de goma: recupera un 1,8% de su salud por segundo, y 2,5 veces más con poca vida' },

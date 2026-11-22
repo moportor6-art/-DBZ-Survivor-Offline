@@ -7,7 +7,9 @@
   const KEY = 'fusion.skins';
   const SKINS = {
     gohan: [{ id: 'naranja', name: 'Traje naranja', file: 'skin-gohan-def' }, { id: 'escuela', name: 'Uniforme escolar', file: 'skin-gohan-escuela' }],
-    vegeta: [{ id: 'armadura', name: 'Armadura Saiyajin', file: 'skin-vegeta-arm', ssj: 'skin-vegeta-arm-ssj' }],
+    vegeta: [{ id: 'armadura', name: 'Armadura Saiyajin', file: 'skin-vegeta-arm', ssj: 'skin-vegeta-arm-ssj' },
+      // Con rastreador, como llegó a la Tierra (hoja de Harukanaru Goku Densetsu, Metal-Franky)
+      { id: 'scouter', name: 'Armadura con rastreador', file: 'skin-vegeta-scouter', w: 27, h: 40, noKo: true }],
     ftrunks: [{ id: 'armadura', name: 'Armadura Saiyajin', file: 'skin-ftrunks-arm', ssj: 'skin-ftrunks-arm-ssj' }],
   };
   let chosen = {};
@@ -15,11 +17,11 @@
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(chosen)); } catch (e) { /* sin almacenamiento */ } };
 
   // Hojas: <guerrero>@<traje>; transformado, la del traje o la de siempre; con formas, la forma de siempre
-  const sheet = (file, ko) => fusionSheet(file, file.includes('escuela') ? 34 : 32, 32, ko);
+  const sheet = (file, ko, s = {}) => fusionSheet(file, s.w || (file.includes('escuela') ? 34 : 32), s.h || 32, ko && !s.noKo);
   for (const [id, list] of Object.entries(SKINS)) {
     for (const s of list) {
       const key = `${id}@${s.id}`;
-      SPRITE_OVERRIDES[key] = sheet(s.file, true);
+      SPRITE_OVERRIDES[key] = sheet(s.file, true, s);
       SPRITE_OVERRIDES[`${key}:ssj`] = s.ssj ? sheet(s.ssj, false) : SPRITE_OVERRIDES[`${id}:ssj`];
       const forms = (window.FUSION_FORMS || {})[id] || [];
       forms.forEach((f, i) => {

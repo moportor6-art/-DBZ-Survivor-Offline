@@ -161,14 +161,15 @@
     puipui: { c: 'puipuip', atk: ['disparozoon'] }, dabura: { c: 'daburap', atk: ['escupitajo', 'espadainfernal'] }, vegetas: { c: 'vegeta', atk: ['bigbangatk'] },
     yakon: { c: 'yakonp', atk: ['garras'] }, taob: { c: 'taop', atk: ['dodonray', 'columna'] }, pikkon: { c: 'pikkonp', atk: ['huracan'] },
     janemba: { c: 'janembap', atk: ['ilusion'] }, mechafz: { c: 'freezerp', atk: ['deathbeam', 'supernova'] }, goldenfz: { c: 'freezerp', atk: ['deathball', 'supernova'] },
-    coolerb: { c: 'coolerp', atk: ['supernova'] }, brolyb: { c: 'broly', atk: ['erasercannon', 'gigameteor'] },
+    coolerb: { c: 'coolerp', atk: ['supernova'] }, coldb: { c: 'coldp', atk: ['rayocold', 'supernova'] }, brolyb: { c: 'broly', atk: ['erasercannon', 'gigameteor'] },
     // jefes sin guerrero jugable: sus técnicas
-    coldb: { atk: ['deathbeam', 'supernova'] }, bills: { atk: ['planetburst', 'deathball'] }, toppo: { atk: ['thunderflash', 'kiexplosion'] },
+    bills: { atk: ['planetburst', 'deathball'] }, toppo: { atk: ['thunderflash', 'kiexplosion'] },
     jiren: { atk: ['megaton', 'kiexplosion', 'kiburst'] },
     // enemigos comunes y élites
     saibaman: { atk: ['kiexplosion'] }, celljr: { atk: ['kiburst', 'gotenfist'] }, soldier: { atk: ['pistolaray'] }, esoldier: { atk: ['pistolaray', 'kiblast'] },
     mercenary: { atk: ['pistolaray'] }, criminal: { atk: ['pistolaray'] }, gunman: { atk: ['pistolaray'] }, bandit: { atk: ['pistolaray'] },
     eggbot: { atk: ['rayosojos'] }, cyborg: { atk: ['kigrenade'] }, destroyer: { atk: ['buster'] }, bomber: { atk: ['capsulabomba'] },
+    appulee: { atk: ['kiblast'] }, suie: { atk: ['pistolaray', 'kiblast'] }, gozue: { atk: ['kiblast'] }, mezue: { atk: ['kiblast'] },
     msoldier: { atk: ['rafagamajin'] }, msoldado: { atk: ['rafagamajin'] }, majin: { atk: ['rafagamajin', 'kiblast'] },
     ninja: { atk: ['kienzan'] }, samurai: { atk: ['cortesamurai'] }, skeleton: { atk: ['espada'] }, phantom: { atk: ['fantasmas'] },
     vampire: { atk: ['absorcion'] }, mummy: { atk: ['embestida'] }, ozaru: { atk: ['rugido', 'kiblast'] }, annihil: { atk: ['buster', 'rocketpunch'] },
