@@ -4,16 +4,26 @@
 // El capítulo termina al derrotar al jefe final. Estrellas:
 //   ★ ganar · ★★ terminar con la mitad de la vida o más · ★★★ el reto del capítulo (rápido, sin bajar de 30%…)
 // Cada estrella nueva da Zeni. Un capítulo se abre al ganar el anterior. En la misma pantalla están las
-// Misiones diarias y los Logros. Ganar un capítulo no cuenta como ganar el nivel ni para los récords.
+// Misiones diarias y los Logros. Ganar un capítulo no cuenta como ganar el nivel, ni para los récords, ni da los
+// logros del final de partida. 'medio': escenas cuando un jefe baja de cierta vida.
 // Progreso en localStorage 'fusion.capitulos' ({ id: estrellas }).
 (() => {
   const KEY = 'fusion.capitulos';
+  // Jefes nuevos con los sprites de los guerreros jugables (Cui, Dodoria, Zarbon, Black Freezer)
+  const lookDe = (id, alt) => ({ ...((CHARACTERS[id] || {}).look || FB('#cccccc')), id: alt || id });
+  BOSSES.push(
+    { id: 'cuib', name: 'Cui', hp: 2600, speed: 1.6, r: 16, dmg: 14, scale: 1.15, every: 2.2, patterns: ['aimed', 'dash', 'aimed'], look: lookDe('cuip') },
+    { id: 'dodoriab', name: 'Dodoria', hp: 4200, speed: 1.2, r: 20, dmg: 18, scale: 1.3, every: 2.4, patterns: ['aimed', 'slam', 'dash'], look: lookDe('dodoriap') },
+    { id: 'zarbonb', name: 'Zarbon', hp: 6500, speed: 1.5, r: 18, dmg: 20, scale: 1.25, every: 2, patterns: ['aimed', 'dash', 'ring', 'aimed'], look: lookDe('zarbonp') },
+    { id: 'blackfz', name: 'Black Freezer', hp: 30000, speed: 1.9, r: 18, dmg: 34, scale: 1.3, every: 1.4, patterns: ['aimed', 'dash', 'ring', 'slam', 'aimed'], look: lookDe('freezerp', 'freezerp~6:ssj') },
+  );
   // b: jefes [id, segundo, final] · reto: { t: 'rapido', s } derrotar al jefe final en menos de s segundos desde que
   // llega · { t: 'vida', min } no bajar nunca de esa fracción · { t: 'bajas', n } derrotar n enemigos
   const CAPS = [
     { id: 'raditz', saga: 'Saga Saiyajin', titulo: 'El hermano de Goku', char: 'goku', nivel: 'saiyan', b: [['raditz', 150, 1]], reto: { t: 'rapido', s: 90 },
       intro: [['raditz', 'Kakarotto, eres un Saiyajin como yo. Ven conmigo a conquistar planetas… o tu hijo pagará las consecuencias.'], ['yo', '¡Devuélveme a Gohan! Nunca seré como tú.'], ['piccolo', 'Por esta vez pelearé a tu lado, Goku. No te acostumbres.']],
       final: [['raditz', '¿Ustedes dos contra mí? Qué ternura.']],
+      medio: [{ jefe: 'raditz', hp: 0.5, lines: [['piccolo', 'Goku, sujétalo un momento. Mi Makankosappo ya casi está listo.'], ['yo', '¡Hazlo, Piccolo!']] }],
       fin: [['piccolo', 'Lo derrotamos… pero dijo que vienen dos Saiyajin más fuertes.'], ['yo', 'Entonces habrá que entrenar como nunca.']] },
     { id: 'nappa', saga: 'Saga Saiyajin', titulo: 'Los Saibaiman', char: 'piccolo', nivel: 'saiyan', b: [['nappa', 180, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['nappa', '¡Planten los Saibaiman! A ver cuánto aguantan los terrícolas.'], ['yo', 'Gohan, quédate detrás de mí. Aguantaremos hasta que llegue Goku.']],
@@ -22,14 +32,26 @@
     { id: 'vegeta', saga: 'Saga Saiyajin', titulo: 'El príncipe de los Saiyajin', char: 'goku', nivel: 'saiyan', b: [['vegetas', 200, 1]], reto: { t: 'rapido', s: 150 },
       intro: [['yo', 'Llegué tarde… pero ya estoy aquí.'], ['vegeta', 'Un guerrero de clase baja que se cree mucho. Te mostraré la diferencia.']],
       final: [['vegeta', 'Si no puedo vencerte así, ¡destruiré este planeta entero!'], ['yo', '¡Kaioken!']],
+      medio: [{ jefe: 'vegetas', hp: 0.5, lines: [['vegeta', 'Crearé una luna artificial… ¡y verás el verdadero poder de un Saiyajin!'], ['yo', '¡Cuidado, se está transformando en Ozaru!']] }],
       fin: [['vegeta', 'Esto no ha terminado, Kakarotto… ¡Volveré!'], ['krilin', 'Las Esferas de Namek pueden revivir a todos. ¡Vamos!']] },
+    { id: 'namek', saga: 'Saga de Freezer', titulo: 'Rumbo a Namek', char: 'vegeta', nivel: 'namek', b: [['cuib', 60], ['dodoriab', 130], ['zarbonb', 240, 1]], reto: { t: 'bajas', n: 300 },
+      intro: [['yo', 'Las Esferas del Dragón de Namek serán mías. La inmortalidad es para el príncipe de los Saiyajin.'], ['cuip', '¡Vegeta! Freezer me ordenó acabar contigo.']],
+      final: [['zarbonb', 'Qué pena estropear una cara tan bonita como la mía… pero tendré que hacerlo.']],
+      medio: [{ jefe: 'zarbonb', hp: 0.5, lines: [['zarbonb', 'Odio mostrar esta forma… ¡Pero tú me obligaste!'], ['yo', '¿Ese es tu secreto? Qué asco.']] }],
+      fin: [['yo', 'Ahora sé dónde están las esferas. Freezer, ya voy por ti.']] },
     { id: 'ginyu', saga: 'Saga de Freezer', titulo: 'Las Fuerzas Especiales Ginyu', char: 'vegeta', nivel: 'namek', b: [['recoome', 60], ['burter', 120], ['jeice', 160], ['ginyu', 240, 1]], reto: { t: 'bajas', n: 350 },
       intro: [['ginyu', '¡Recoome! ¡Burter! ¡Jeice! ¡Las Fuerzas Especiales Ginyu están aquí!'], ['yo', 'Payasos con poses. Ninguno me llega a los talones.']],
       final: [['ginyu', 'Ese cuerpo tuyo… me vendría muy bien.']],
+      medio: [{ jefe: 'ginyu', hp: 0.5, lines: [['ginyu', '¡Cambio de cuerpo!'], ['yo', 'No tocarás este cuerpo, payaso.']] }],
       fin: [['yo', 'Ahora solo queda Freezer.']] },
+    { id: 'nail', saga: 'Saga de Freezer', titulo: 'El guerrero de Namek', char: 'nailp', nivel: 'namek', b: [['freezer', 200, 1, 0.55]], reto: { t: 'vida', min: 0.3 },
+      intro: [['freezer', '¿Un namekiano quiere jugar al héroe? Qué divertido.'], ['yo', 'Le prometí al Gran Patriarca que protegería las esferas. No pasarás.']],
+      final: [['freezer', 'Te dejaré atacar primero. Así verás la diferencia.']],
+      fin: [['yo', 'Gané tiempo… Piccolo, mi poder es tuyo. Fusiónate conmigo.']] },
     { id: 'freezer', saga: 'Saga de Freezer', titulo: 'El Super Saiyajin legendario', char: 'goku', nivel: 'namek', b: [['freezer', 180, 1]], reto: { t: 'rapido', s: 120 },
       intro: [['freezer', 'Nadie en el universo me ha hecho sangrar. Tú no serás el primero.'], ['yo', 'Lastimaste a mis amigos. Eso no te lo voy a perdonar.']],
       final: [['freezer', 'Si no puedo ganarte, ¡destruiré Namek contigo!'], ['yo', 'Entonces terminaré esto antes de que explote.']],
+      medio: [{ jefe: 'freezer', hp: 0.5, lines: [['freezer', 'Le di al núcleo del planeta. En unos minutos Namek dejará de existir.'], ['yo', 'Entonces tengo que terminar esto ya.']] }],
       fin: [['yo', 'Vete, Freezer. Y no vuelvas a hacerle daño a nadie.']] },
     { id: 'androides', saga: 'Saga de Cell', titulo: 'Los androides', char: 'ftrunks', nivel: 'cell', b: [['a19', 60], ['gero', 120], ['a17', 180], ['a18', 230, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['yo', 'En mi futuro, estos androides destruyeron todo. Esta vez será diferente.'], ['gero', '¡Despierten, 17 y 18! Acaben con ellos.']],
@@ -38,6 +60,7 @@
     { id: 'cell', saga: 'Saga de Cell', titulo: 'El Cell Game', char: 'gohan', nivel: 'cell', b: [['cellsemi', 90], ['cell', 240, 1]], reto: { t: 'rapido', s: 100 },
       intro: [['cell', 'Bienvenidos a mi torneo. Muéstrenme el poder que se esconde en ese niño.'], ['goku', 'Gohan, tú puedes. Ahora te toca a ti.'], ['yo', 'Ya no voy a contenerme.']],
       final: [['cell', '¡Si no puedo ganar, me llevaré la Tierra conmigo!'], ['yo', '¡No! ¡Esta vez no!']],
+      medio: [{ jefe: 'cell', hp: 0.25, lines: [['cell', 'Si yo pierdo, ¡todos pierden! Voy a inflarme y explotar.'], ['goku', '¡Gohan, termínalo antes de que explote!']] }],
       fin: [['goku', 'Lo hiciste, hijo. Estoy orgulloso de ti.']] },
     { id: 'babidi', saga: 'Saga de Majin Buu', titulo: 'La nave de Babidi', char: 'vegeta', nivel: 'buu', b: [['puipui', 60], ['babidib', 140], ['dabura', 230, 1]], reto: { t: 'bajas', n: 400 },
       intro: [['babidib', '¡Con la energía de esta pelea, Majin Buu despertará!'], ['yo', 'Un brujo enano no me va a dar órdenes.']],
@@ -50,6 +73,7 @@
     { id: 'kidbuu', saga: 'Saga de Majin Buu', titulo: 'La Genkidama final', char: 'goku', nivel: 'buu', b: [['buu', 200, 1]], reto: { t: 'rapido', s: 150 },
       intro: [['vegeta', 'Kakarotto… yo lo distraigo. Junta la energía de todos.'], ['yo', 'Gracias, Vegeta. ¡Terrícolas, préstenme su energía!']],
       final: [['buu', '¡Buu destruye! ¡Buu destruye todo!']],
+      medio: [{ jefe: 'buu', hp: 0.5, lines: [['vegeta', '¡Kakarotto, apúrate con esa Genkidama! No aguantaré mucho más.'], ['yo', '¡Ya casi, Vegeta!']] }],
       fin: [['yo', 'Ojalá renazcas como alguien bueno… y peleemos otra vez.']] },
     { id: 'otromundo', saga: 'Películas', titulo: 'El Otro Mundo se deforma', char: 'goku', nivel: 'otromundo', b: [['yakon', 90], ['janemba', 230, 1]], reto: { t: 'bajas', n: 350 },
       intro: [['pikkon', 'Algo salió de la máquina de las almas. Los muertos están volviendo a la Tierra.'], ['yo', 'Entonces habrá que cerrarle el paso.']],
@@ -58,14 +82,20 @@
     { id: 'broly', saga: 'Películas', titulo: 'El Saiyajin legendario', char: 'vegeta', nivel: 'leyendas', b: [['coolerb', 90], ['brolyb', 230, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['coolerb', 'Mi hermano fue un débil. Yo vengo a terminar lo que empezó.'], ['yo', 'Otro de la familia de Freezer… Qué cansado.']],
       final: [['brolyb', 'Kakarotto… ¿Dónde estás, Kakarotto?'], ['yo', 'Ese poder… no puede ser.']],
+      medio: [{ jefe: 'brolyb', hp: 0.5, lines: [['brolyb', '¡Soy un demonio!'], ['yo', 'Cuanto más lo golpeo, más fuerte se vuelve…']] }],
       fin: [['yo', 'El príncipe de los Saiyajin no se arrodilla ante nadie.']] },
     { id: 'bills', saga: 'Dragon Ball Super', titulo: 'El Dios de la Destrucción', char: 'goku', nivel: 'leyendas', b: [['goldenfz', 110], ['bills', 260, 1]], reto: { t: 'rapido', s: 120 },
       intro: [['freezer', 'Un mes de entrenamiento y mira lo que logré. ¡Golden Freezer!'], ['yo', 'Tú también entrenaste, ¿eh? Esto va a ser divertido.']],
       final: [['bills', 'Tengo hambre y estoy aburrido. Sorpréndeme o destruyo la Tierra.'], ['yo', '¡Le daré todo lo que tengo!']],
       fin: [['bills', 'Nada mal. Quizás no destruya la Tierra… hoy.']] },
+    { id: 'black', saga: 'Dragon Ball Super', titulo: 'El regreso de Freezer', char: 'gohan', nivel: 'leyendas', b: [['goldenfz', 90], ['blackfz', 240, 1]], reto: { t: 'rapido', s: 120 },
+      intro: [['freezer', 'Diez años de entrenamiento en la Habitación del Tiempo. Ya no soy el mismo.'], ['yo', 'Te derroté una vez. Puedo hacerlo otra.']],
+      final: [['blackfz', 'Black Freezer. Ni Goku ni Vegeta pudieron conmigo.'], ['yo', 'Entonces conocerás a la Bestia.']],
+      fin: [['yo', 'Ya no voy a esconderme detrás de nadie.']] },
     { id: 'poder', saga: 'Dragon Ball Super', titulo: 'El Torneo del Poder', char: 'goku', nivel: 'poder', b: [['toppo', 150], ['jiren', 300, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['goku', 'Ocho universos y un solo ring. El que cae afuera queda eliminado.'], ['toppo', '¡En nombre de la justicia, el Universo 11 no va a perder!']],
       final: [['jiren', 'La fuerza lo es todo. Lo demás no importa.'], ['yo', 'Entonces te mostraré la fuerza de los que pelean juntos.']],
+      medio: [{ jefe: 'jiren', hp: 0.35, lines: [['jiren', 'Nunca había tenido que llegar tan lejos.'], ['yo', '¡Entonces sigue! ¡Esto apenas empieza!']] }],
       fin: [['jiren', '…Interesante. Tal vez estaba equivocado.'], ['yo', '¡Ganamos! El Universo 7 sigue en pie.']] },
   ];
   window.CAPITULOS = CAPS;
@@ -86,7 +116,7 @@
     newGame([{ id: 0, name: myName(), charId: C.char, perks: myPerks() }], null, 0, 1, C.nivel);
     G.historia = C.id;
     const L = levelDef(C.nivel);
-    G.bosses = C.b.map(([id, at, fin]) => { const lb = L.bosses.find(q => q.id === id); return { id, at, hp: lb ? lb.hp : (BOSSES.find(q => q.id === id) || {}).hp, final: !!fin }; });
+    G.bosses = C.b.map(([id, at, fin, mult = 1]) => { const lb = L.bosses.find(q => q.id === id); return { id, at, hp: Math.round((lb ? lb.hp : (BOSSES.find(q => q.id === id) || {}).hp) * mult), final: !!fin }; });
     G.hMin = 1; G.hFinT = 0;
     announce(`Capítulo ${i + 1}: ${C.titulo}`, '#ffd93b');
   }
@@ -99,6 +129,13 @@
     if (P && !P.dead) G.hMin = Math.min(G.hMin, P.hp / P.maxHp);
     if (!G.hIntro && G.t > 0.4) { G.hIntro = true; window.dialogo && window.dialogo(C.intro); }
     else if (!G.hFinal && G.enemies.some(e => e.boss && e.final && !e.dead)) { G.hFinal = true; G.hFinT = G.t; window.dialogo && window.dialogo(C.final); }
+    else if (C.medio) {   // escenas a mitad de la pelea: cuando el jefe baja de cierta vida
+      C.medio.forEach((m, k) => {
+        if ((G.hMedio || (G.hMedio = []))[k]) return;
+        const e = G.enemies.find(q => q.boss && q.id === m.jefe && !q.dead);
+        if (e && e.hp <= e.maxHp * m.hp && !(window.dialogo && document.querySelector('#historia:not(.hidden)'))) { G.hMedio[k] = true; window.dialogo && window.dialogo(m.lines); }
+      });
+    }
     return r;
   };
 
@@ -106,6 +143,9 @@
   let ultimo = -1;
   const retry = $('btnRetry').onclick;
   $('btnRetry').onclick = function () { if (ultimo >= 0 && !(G && G.net)) jugar(ultimo); else retry.apply(this, arguments); };
+  // Los capítulos no dan los logros del final de la partida (ganar un nivel, sin transformarse…)
+  const ach = achEndRun;
+  achEndRun = function () { if (G && G.historia) return; return ach.apply(this, arguments); };   // eslint-disable-line no-global-assign
   // Los capítulos no entran al ranking
   const rs = rankSubmit;
   rankSubmit = function () {   // eslint-disable-line no-global-assign

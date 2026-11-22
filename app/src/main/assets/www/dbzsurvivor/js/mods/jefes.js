@@ -122,6 +122,21 @@
       e.dmg = e.jf.base.dmg * (1 + ira * 0.8); e.speed = e.jf.base.speed * (1 + ira * 0.4);
       if (ira > 0.5 && once(e, 'furia')) announce('¡La furia de Broly no deja de crecer!', '#6aff8a');
     },
+    zarbonb(e) {   // Zarbon: a la mitad muestra su forma de monstruo
+      if (e.hp < e.maxHp * 0.5 && once(e, 'monstruo')) {
+        e.def = { ...e.def, look: { ...e.def.look, id: 'zarbonp:ssj' } }; heal(e, 0.15);
+        powerUp(e, { name: 'Zarbon (monstruo)', dmg: 1.35, scale: 1.1, spd: 0.9, color: '#7dff6a', text: '¡Zarbon se transforma en monstruo!' });
+      }
+    },
+    dodoriab(e) {   // Dodoria: embiste más fuerte cuanto más lo lastimas
+      if (!e.jf.base) e.jf.base = { dmg: e.dmg, speed: e.speed };
+      const ira = 1 - e.hp / e.maxHp;
+      e.dmg = e.jf.base.dmg * (1 + ira * 0.6); e.speed = e.jf.base.speed * (1 + ira * 0.5);
+    },
+    blackfz(e, dt) {   // Black Freezer: triple Rayo Mortal Negro (zonas marcadas) y al 30% se lanza con todo
+      if ((e.jf.rayo = (e.jf.rayo ?? 4) - dt) <= 0) { e.jf.rayo = e.jf.todo ? 4 : 6; hakai(e, 3, 70, e.dmg * 2.4); }
+      if (e.hp < e.maxHp * 0.3 && once(e, 'todo')) { heal(e, 0.08); powerUp(e, { spd: 1.25, dmg: 1.25, color: '#c04070', text: '¡Black Freezer se lanza con todo su poder!' }); }
+    },
     goldenfz(e) {
       if (G.t - e.spawnT > 60 && once(e, 'agotado')) {
         powerUp(e, { name: 'Golden Freezer (agotado)', spd: 0.6, dmg: 0.8, color: '#ffd93b', text: '¡Golden Freezer se quedó sin energía! Es tu momento' });

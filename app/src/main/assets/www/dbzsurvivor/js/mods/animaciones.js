@@ -4,7 +4,8 @@
 //     así la usan los guerreros, los enemigos que vuelan, el menú y la selección).
 //   · Cargar Ki: aura blanca grande que late, columna de luz, polvo que se abre en el suelo y piedritas que suben.
 //   · Transformarse: columna de luz, aura que crece, el guerrero tiembla y destella, anillos y temblor de pantalla
-//     (Goku al Super Saiyajin: la animación completa de DB Survivors).
+//     (Goku al Super Saiyajin: la animación completa de DB Survivors; los demás parpadean entre la forma de antes
+//     y la nueva, cada vez más rápido).
 //   · Kaioken: aura roja que late más fuerte cuanto más alto el multiplicador.
 //   · Golpes: chispa de impacto en los enemigos.
 // Si las imágenes no cargan, todo se dibuja como antes.
@@ -111,8 +112,11 @@
     const t = G.t;
     // ¿se acaba de transformar o subió de forma? (se ve igual en los invitados: sale del estado que se dibuja)
     const tr = P.transformed > 0, form = P.formN || 1;
-    if ((tr && !P._anTr) || (tr && form > (P._anForm || 1))) { P._anCut = { t0: performance.now(), goku: P.charId === 'goku' && !P._anTr && form === 1 }; G.shake = Math.max(G.shake || 0, 0.35); }
-    P._anTr = tr; P._anForm = form;
+    if ((tr && !P._anTr) || (tr && form > (P._anForm || 1))) {
+      P._anCut = { t0: performance.now(), goku: P.charId === 'goku' && !P._anTr && form === 1, prevC: P._anC || P.c, prevTr: !!P._anTr };
+      G.shake = Math.max(G.shake || 0, 0.35);
+    }
+    P._anTr = tr; P._anForm = form; P._anC = P.c;
     const cut = P._anCut, k = cut ? (performance.now() - cut.t0) / 1000 / TR_DUR : 1;
     if (cut && k >= 1) P._anCut = null;
     try {
@@ -138,6 +142,18 @@
       c.fillStyle = '#ffffff'; c.beginPath(); c.ellipse(P.x, P.y - 14, 13, 20, 0, 0, Math.PI * 2); c.fill(); c.restore();
     }
     return r;
+  };
+
+  // Todos los demás: mientras junta poder, el guerrero parpadea entre su forma de antes y la nueva, cada vez más
+  // rápido (como en la serie, cuando el pelo cambia de color a golpes)
+  const fl = fighterLook;
+  fighterLook = function (P) {   // eslint-disable-line no-global-assign
+    const r = fl.apply(this, arguments), cut = P && P._anCut;
+    if (!cut || cut.goku) return r;
+    const el = (performance.now() - cut.t0) / 1000, k = el / TR_DUR;
+    if (k >= 0.62) return r;
+    const fase = Math.floor(el * (5 + 26 * k)) % 2;
+    return fase ? { ch: cut.prevC, tr: cut.prevTr } : r;
   };
 
   // ─── Chispas de impacto en los golpes de los guerreros ───
