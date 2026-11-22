@@ -54,3 +54,5 @@ Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
 - Black Freezer: hoja de autor desconocido (armada con `tools/swl/black_freezer.py`).
 - Tanda Harukanaru (Zarbon y su forma monstruo, Dodoria, Nail, Rey Cold, Cui, Appule, mercenarios de Freezer, Gozu, Mezu, Vegeta con rastreador, Freezer en su nave, 2.ª, 3.ª, final y 100%, y Mecha Freezer): sprites de *Dragon Ball Z: Harukanaru Densetsu* ripeados por Metal-Franky (armados con `tools/swl/harukanaru/build_all.py`).
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).
+- Efectos de aura, transformación de Goku, impactos y fuego: de DB Survivors (dbsurvivors.xyz), sacados con
+  `tools/hojas/dbs_fx.py` del juego incluido en la app.

@@ -56,7 +56,7 @@
 
   const vistas = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
   const marcar = k => { try { const v = vistas(); v[k] = 1; localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* sin guardar */ } };
-  const puede = () => G && G.lv && !G.net && !G.weekly && !G.lv.bonus && !G.snake
+  const puede = () => G && G.lv && !G.net && !G.weekly && !G.lv.bonus && !G.snake && !G.historia   // (los capítulos traen sus propias escenas)
     && (!navigator.webdriver || window.FORCE_HISTORIA);   // las pruebas automáticas no se detienen a leer
 
   // ─── La caja de diálogo ───
@@ -119,6 +119,11 @@
     return true;
   }
   window.abrirHistoria = abrir;
+  // Diálogo suelto (lo usa el Modo Historia, js/mods/capitulos.js): sin marca de "ya visto"
+  window.dialogo = (lines, done) => {
+    if (!lines || !lines.length) { if (done) done(); return false; }
+    cur = { lines, i: 0, done }; box.classList.remove('hidden'); mostrar(); return true;
+  };
   box.querySelector('.h-next').addEventListener('click', e => { e.stopPropagation(); avanzar(); });
   box.querySelector('.h-skip').addEventListener('click', e => { e.stopPropagation(); cerrar(); });
   box.addEventListener('pointerdown', e => e.stopPropagation());

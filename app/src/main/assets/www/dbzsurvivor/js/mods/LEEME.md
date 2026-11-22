@@ -45,6 +45,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `identidad.js` | Firma de cada guerrero (mecánica única), aliados invocados, enemigos aliados, posesión de Babidi | **al final**, después de `ki.js` |
 | `maestria.js` | Las formas se desbloquean derrotando enemigos con cada guerrero (localStorage `fusion.maestria`) | después de `identidad.js` |
 | `companero.js` | Compañero de equipo en solitario: crece contigo, vuelve si cae, dúos de la serie +15%, fusión con Vegeta/Goku | después de `maestria.js` |
+| `animaciones.js` | Aura de DB Survivors teñida por forma (reemplaza drawAura), carga de Ki, transformación (Goku: la animación de DB Survivors), Kaioken, chispas de impacto. Recursos en assets/sprites/fx (tools/hojas/dbs_fx.py) | después de `companero.js` |
 | `jefes.js` | Mecánicas de la serie por jefe (Vegeta Ozaru, cuenta atrás de Freezer, autodestrucción de Cell, absorciones, Hakai…); estado en `e.jf` | después de `companero.js` |
 | `luna.js` | Luna llena en la saga Saiyajin (270–300 s): Ozarus enemigos y los Saiyajin con cola se vuelven Ozaru | después de `jefes.js` |
 | `poder.js` | Nivel 8 · Torneo del Poder: el ring que se encoge y el vacío (datos en `datos/enemigos.js`, suelo en `mapas.js`) | después de `luna.js` |
@@ -53,6 +54,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `editarhud.js` | Editor del HUD (pausa → ✏️ Editar HUD): mover, tamaño, giro, opacidad y ocultar cada pieza; localStorage `fusion.hud`. Debe ser el último que envuelve `drawHUD` | después de `autoaprender.js` |
 | `guardar.js` | Guardar y salir (pausa), autoguardado al cerrar la app y cada 20 s, ▶ Continuar en el menú; localStorage `fusion.partida` (se borra al continuar, al empezar otra o al terminar) | después de `editarhud.js` |
 | `bestia.js` | Técnicas de forma: Gohan Bestia (Despertar de la Bestia al entrar y Makankosappo automático) y Black Freezer (onda Poder Black al entrar y triple Rayo Mortal Negro automático) | después de `guardar.js` |
+| `capitulos.js` | Modo Historia: 14 capítulos con guerrero, jefes, escenas, estrellas y Zeni; misiones y logros en la misma pantalla; localStorage `fusion.capitulos` | antes de `historia.js` (usa `window.dialogo`) |
 | `historia.js` | Escenas con retratos al empezar, al llegar el jefe final y al ganar (localStorage `fusion.historia`) | **la última de todas** (después de `telemetry.js`): es la que congela `update` y necesita `tourPortrait` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
 
