@@ -58,3 +58,5 @@ reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).
 - Efectos de aura, transformación de Goku, impactos y fuego: de DB Survivors (dbsurvivors.xyz), sacados con
   `tools/hojas/dbs_fx.py` del juego incluido en la app.
+- Transformaciones cuadro a cuadro (Goku SSJ3, Vegeta SSJ, Gogeta, Vegito, Super Buu, Kid Buu, Broly): hojas de
+  Dragon Ball Z: Buu's Fury ripeadas por SpYn, cortadas con `tools/hojas/transformaciones.py`.

@@ -4,8 +4,8 @@
 //     así la usan los guerreros, los enemigos que vuelan, el menú y la selección).
 //   · Cargar Ki: aura blanca grande que late, columna de luz, polvo que se abre en el suelo y piedritas que suben.
 //   · Transformarse: columna de luz, aura que crece, el guerrero tiembla y destella, anillos y temblor de pantalla
-//     (Goku al Super Saiyajin: la animación completa de DB Survivors; los demás parpadean entre la forma de antes
-//     y la nueva, cada vez más rápido).
+//     (Goku al Super Saiyajin: la animación completa de DB Survivors; Goku SSJ3, Vegeta, Gogeta, Vegito, Super Buu,
+//     Kid Buu y Broly: las de Buu's Fury; los demás parpadean entre la forma de antes y la nueva, cada vez más rápido).
 //   · Kaioken: aura roja que late más fuerte cuanto más alto el multiplicador.
 //   · Golpes: chispa de impacto en los enemigos.
 // Si las imágenes no cargan, todo se dibuja como antes.
@@ -62,6 +62,18 @@
 
   // ─── Cargar Ki, transformarse y Kaioken (alrededor del guerrero) ───
   const TR_DUR = 0.95;
+  // Transformaciones cuadro a cuadro de Buu's Fury (tools/hojas/transformaciones.py): guerrero:forma → tira
+  // w×h por cuadro, n cuadros, s escala (la del sprite del guerrero), pie: px que se bajan para apoyar los pies
+  const tira = (f, w, h, n, s, pie) => ({ img: img(`assets/sprites/fx/tr_${f}.png`), w, h, n, s, pie });
+  const CUTS = {
+    'goku:3': tira('goku_ssj3', 32, 32, 7, 1.25, 2),
+    'vegeta:1': tira('vegeta_ssj', 32, 32, 6, 1.25, 2),
+    'gogetap:1': tira('gogeta', 32, 32, 7, 1.25, 2),
+    'vegetto:1': tira('vegito', 32, 32, 8, 1.25, 2),
+    'kidbuup:1': tira('kidbuu', 32, 48, 7, 1.25, 4),
+    'majinbuu:2': tira('superbuu', 64, 64, 6, 0.93, 4),
+    'broly:2': tira('broly', 64, 64, 6, 0.86, 4),
+  };
   function columna(c, x, y, w, alpha, color) {   // columna de luz que sube desde los pies
     const g = c.createLinearGradient(0, y - 190, 0, y);
     g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.6, color); g.addColorStop(1, 'rgba(255,255,255,0.9)');
@@ -115,13 +127,18 @@
   }
   const dp = drawPlayer;
   drawPlayer = function (c, P, overlay) {   // eslint-disable-line no-global-assign
-    if (P && overlay && !P.dead && G) { const r = dp.apply(this, arguments); try { marcaM(c, P); } catch (e) { /* nada */ } return r; }
+    if (P && overlay && !P.dead && G) {
+      const cu = P._anCut, kk = cu ? (performance.now() - cu.t0) / 1000 / TR_DUR : 1;
+      if (cu && cu.cuadro && kk < (cu.cuadro === 'dbs' ? 0.68 : 0.8) && !P.ozaru) return;   // durante la animación cuadro a cuadro no se dibuja el sprite encima
+      const r = dp.apply(this, arguments); try { marcaM(c, P); } catch (e) { /* nada */ } return r;
+    }
     if (!P || overlay || P.dead || P.gone || P.hidden || !G) return dp.apply(this, arguments);
     const t = G.t;
     // ¿se acaba de transformar o subió de forma? (se ve igual en los invitados: sale del estado que se dibuja)
     const tr = P.transformed > 0, form = P.formN || 1;
     if ((tr && !P._anTr) || (tr && form > (P._anForm || 1))) {
-      P._anCut = { t0: performance.now(), goku: P.charId === 'goku' && !P._anTr && form === 1, prevC: P._anC || P.c, prevTr: !!P._anTr };
+      const key = `${P.charId}:${form}`, cc = (P.charId === 'goku' && !P._anTr && form === 1) ? 'dbs' : (CUTS[key] && ok(CUTS[key].img) ? key : null);
+      P._anCut = { t0: performance.now(), goku: !!cc, cuadro: cc, prevC: P._anC || P.c, prevTr: !!P._anTr };
       G.shake = Math.max(G.shake || 0, 0.35);
     }
     P._anTr = tr; P._anForm = form; P._anC = P.c;
@@ -131,10 +148,18 @@
       if (P.charging && !tr) cargando(c, P, t);
       if (cut && k < 1) {
         transformando(c, P, t, k, P.c.aura || '#ffd93b');
-        if (cut.goku && k < 0.68 && ok(SSJ) && !P.ozaru) {   // Goku: la transformación cuadro a cuadro de DB Survivors
+        if (cut.cuadro === 'dbs' && k < 0.68 && ok(SSJ) && !P.ozaru) {   // Goku al SSJ: la transformación cuadro a cuadro de DB Survivors
           const fr = Math.min(11, Math.floor(k / 0.68 * 12)), s = 1.45;
           c.save(); c.imageSmoothingEnabled = false;
           c.drawImage(SSJ, fr * 32, 0, 32, 34, Math.round(P.x - 16 * s + Math.sin(t * 70) * 1.5), Math.round(P.y - 34 * s + 6), Math.round(32 * s), Math.round(34 * s));
+          c.restore();
+          return;
+        }
+        const T = cut.cuadro && CUTS[cut.cuadro];
+        if (T && k < 0.8 && !P.ozaru) {   // las de Buu's Fury: SSJ3, Vegeta, Gogeta, Vegito, Super Buu, Kid Buu, Broly
+          const n = T.n, fr = Math.min(n - 1, Math.floor(k / 0.8 * n)), s = T.s, w = T.w * s, h = T.h * s;
+          c.save(); c.imageSmoothingEnabled = false;
+          c.drawImage(T.img, fr * T.w, 0, T.w, T.h, Math.round(P.x - w / 2 + Math.sin(t * 70) * (fr < n - 2 ? 1.2 : 0)), Math.round(P.y - h + T.pie * s), Math.round(w), Math.round(h));
           c.restore();
           return;
         }
