@@ -106,9 +106,17 @@
     const r = keBab.apply(this, arguments);
     if (!B) return r;
     try {
-      const mios = [...FR, ...G.enemies].filter(x => x.friend && x.friend.perm && x.friend.owner === B && !x.dead);
-      if (mios.length >= 6) endFriend(mios[0]);
-      e.dead = false; e.possessed = true;
+      const mios = alliesOf(B, 'majin').filter(A => A.summon.perm);
+      if (mios.length >= 6) { mios[0].summon.perm = false; mios[0].summon.host = null; dismissAlly(mios[0]); }
+      e.dead = false; e.possessed = true; e.wasBoss = e.boss;
+      e.hp = e.maxHp = Math.max(1, Math.round((e.maxHp || 100) * 0.6));
+      if (possessAsAlly(B, e, Infinity, true)) {
+        e.boss = false; e.elite = false; e.final = false;
+        say(B, `¡${(e.def && e.def.name) || 'Tú'}, ahora eres mío para siempre!`, '#ff4da6');
+        return r;
+      }
+      const mios2 = [...FR, ...G.enemies].filter(x => x.friend && x.friend.perm && x.friend.owner === B && !x.dead);
+      if (mios2.length >= 6) endFriend(mios2[0]);
       e.hp = e.maxHp = Math.max(1, Math.round((e.maxHp || 100) * 0.6));
       const power = e.boss ? 4 : 2.5;
       e.wasBoss = e.boss; e.boss = false; e.elite = false; e.final = false;
@@ -127,11 +135,66 @@
   // Babidi: la marca Majin. Los jefes finales no se pueden controlar
   function possess(P, e) {
     const secs = e.boss ? 6 : e.elite ? 9 : 10;
+    if (possessAsAlly(P, e, secs, false)) return;
     G.enemies = G.enemies.filter(x => x !== e);
     makeFriend(e, P, secs, 'possess', 'M');
     FR.push(e);
     burst(e.x, e.y, '#ff4da6', 18, 4, 3);
     addText(e.x, e.y - 34, '¡M!', '#ff4da6', true);
+  }
+
+  // ─── Los poseídos por Babidi pelean con su identidad ───
+  // En vez de un "zombi" que solo pega, el poseído se vuelve un guerrero aliado (como Dabura o Pui Pui) con su
+  // aspecto y sus técnicas de siempre: los jefes que también son jugables usan las del guerrero (Raditz, los
+  // androides, la Fuerza Ginyu, Cell…), y los demás, una técnica que les queda (Saibaman: explosión, soldados:
+  // pistola de rayos, Cell Jr.: ráfagas…). Pueden recibir daño y el Hechizo de poder los cura.
+  // Al terminar la posesión temporal, el jefe o élite vuelve a ser enemigo (con la vida que le quedó) y los
+  // comunes se lanzan contra los enemigos y explotan, como antes.
+  const MAJIN = {
+    // jefes → guerrero jugable (técnicas extra además de la inicial)
+    raditz: { c: 'raditzp', atk: ['doublesunday'] }, nappa: { c: 'nappap', atk: ['bomberdx'] }, freezer: { c: 'freezerp', atk: ['deathbeam'] },
+    cell: { c: 'cellp', atk: ['kamehameha'] }, cellimp: { c: 'cellp', atk: ['absorcion'] }, cellsemi: { c: 'cellp', atk: ['kiburst'] },
+    buu: { c: 'kidbuup', atk: ['planetburst'] }, fatbuu: { c: 'majinbuu', atk: ['caramelo'] }, superbuu: { c: 'majinbuu', atk: ['caramelo', 'vaporbuu'] },
+    recoome: { c: 'recoomep', atk: ['recoomekick'] }, burter: { c: 'burterp', atk: ['machattack'] }, jeice: { c: 'jeicep', atk: ['crusher'] },
+    ginyu: { c: 'ginyup', atk: ['milkycannon'] }, a19: { c: 'a19p', atk: ['absorcion'] }, gero: { c: 'gerop', atk: ['absorcion'] },
+    a16: { c: 'a16p', atk: ['hellflash', 'rocketpunch'] }, a17: { c: 'a17p', atk: ['disparo17', 'barrera'] }, a18: { c: 'a18p', atk: ['disparo18'] },
+    puipui: { c: 'puipuip', atk: ['disparozoon'] }, dabura: { c: 'daburap', atk: ['escupitajo', 'espadainfernal'] }, vegetas: { c: 'vegeta', atk: ['bigbangatk'] },
+    yakon: { c: 'yakonp', atk: ['garras'] }, taob: { c: 'taop', atk: ['dodonray', 'columna'] }, pikkon: { c: 'pikkonp', atk: ['huracan'] },
+    janemba: { c: 'janembap', atk: ['ilusion'] }, mechafz: { c: 'freezerp', atk: ['deathbeam', 'supernova'] }, goldenfz: { c: 'freezerp', atk: ['deathball', 'supernova'] },
+    coolerb: { c: 'coolerp', atk: ['supernova'] }, brolyb: { c: 'broly', atk: ['erasercannon', 'gigameteor'] },
+    // jefes sin guerrero jugable: sus técnicas
+    coldb: { atk: ['deathbeam', 'supernova'] }, bills: { atk: ['planetburst', 'deathball'] }, toppo: { atk: ['thunderflash', 'kiexplosion'] },
+    jiren: { atk: ['megaton', 'kiexplosion', 'kiburst'] },
+    // enemigos comunes y élites
+    saibaman: { atk: ['kiexplosion'] }, celljr: { atk: ['kiburst', 'gotenfist'] }, soldier: { atk: ['pistolaray'] }, esoldier: { atk: ['pistolaray', 'kiblast'] },
+    mercenary: { atk: ['pistolaray'] }, criminal: { atk: ['pistolaray'] }, gunman: { atk: ['pistolaray'] }, bandit: { atk: ['pistolaray'] },
+    eggbot: { atk: ['rayosojos'] }, cyborg: { atk: ['kigrenade'] }, destroyer: { atk: ['buster'] }, bomber: { atk: ['capsulabomba'] },
+    msoldier: { atk: ['rafagamajin'] }, msoldado: { atk: ['rafagamajin'] }, majin: { atk: ['rafagamajin', 'kiblast'] },
+    ninja: { atk: ['kienzan'] }, samurai: { atk: ['cortesamurai'] }, skeleton: { atk: ['espada'] }, phantom: { atk: ['fantasmas'] },
+    vampire: { atk: ['absorcion'] }, mummy: { atk: ['embestida'] }, ozaru: { atk: ['rugido', 'kiblast'] }, annihil: { atk: ['buster', 'rocketpunch'] },
+    deathm: { atk: ['buster', 'rocketpunch'] }, wolf: { atk: ['lobo'] }, bearthief: { atk: ['espada'] },
+  };
+  const majinDe = e => MAJIN[e.id] || (e.def && MAJIN[e.def.id]) || { atk: ['embestida'] };   // animales: embestida
+  function possessAsAlly(P, e, secs, perm) {
+    try {
+      if (!e || !e.def || !e.def.look) return null;
+      const m = majinDe(e), donor = m.c && CHARACTERS[m.c] ? m.c : 'goku';
+      const big = e.boss || e.wasBoss;
+      const A = summonAlly(P, donor, secs, { tag: 'majin', attacks: m.atk || [], name: e.def.name || 'Majin',
+        hp: big ? 1.8 : e.elite ? 1.3 : 0.7, c: { name: e.def.name, aura: '#ff4da6', look: e.def.look, ssjHair: null } });
+      if (!A) return null;
+      if (!m.c) {   // sin guerrero jugable: solo sus técnicas (no las del donante)
+        const lv = A.attacks[0] ? A.attacks[0].lvl : 1;
+        A.attacks = (m.atk || ['kiblast']).filter(id => ATTACKS[id]).slice(0, 3).map(id => ({ id, lvl: lv, cd: 0.5 + Math.random() }));
+      }
+      A.x = e.x; A.y = e.y;
+      Object.assign(A.summon, { host: e, perm, majin: true });
+      G.enemies = G.enemies.filter(x => x !== e); FR = FR.filter(x => x !== e);
+      e.possAlly = A;
+      burst(e.x, e.y, '#ff4da6', 18, 4, 3);
+      addText(e.x, e.y - 34, '¡M!', '#ff4da6', true);
+      return A;
+    } catch (err) { return null; }
   }
 
   // ─── Aliados guerreros: pelean con sus técnicas de verdad (Dabura, Majin Vegeta, Burter, Androide 16...) ───
@@ -164,7 +227,24 @@
   }
   function dismissAlly(A) {
     if (!A || A.gone) return;
-    A.gone = true; A.hp = Math.max(1, A.hp);
+    A.gone = true;
+    const S = A.summon, e = S && S.host;
+    if (e && !S.released) {
+      S.released = true;
+      if (!S.perm && (e.boss || e.elite) && !e.dead) {   // la magia se acaba: vuelve a ser enemigo con la vida que le quedó
+        e.x = A.x; e.y = A.y; e.possAlly = null; delete e.friend;
+        e.hp = Math.max(1, e.hp * Math.max(0.15, A.dead ? 0.15 : A.hp / A.maxHp));
+        G.enemies.push(e);
+        addText(e.x, e.y - 30, '¡Se liberó de la magia!', '#ff9bd6', true);
+        poof(A.x, A.y); A.hp = Math.max(1, A.hp); return;
+      }
+      if (!A.dead && S.owner) {   // los comunes (o si Babidi cae): se lanzan y explotan
+        G.novas.push({ x: A.x, y: A.y, r: 0, maxR: 80, dmg: (7 + 1.4 * G.level) * (S.perm ? 6 : 3), hit: new Set(), color: '#ff9b3d', kb: 20, owner: S.owner, aid: 'ki' });
+        burst(A.x, A.y, '#ff9b3d', 14, 4, 3);
+        A.hp = Math.max(1, A.hp); return;
+      }
+    }
+    A.hp = Math.max(1, A.hp);
     poof(A.x, A.y);
   }
   const alliesOf = (P, tag) => G.players.filter(A => A.summon && A.summon.owner === P && !A.gone && (!tag || A.summon.tag === tag));
@@ -325,7 +405,7 @@
 
   // Tanda 6: saga de Majin Buu
   const BABIDI_FORMS = { 1: [['puipuip', 'puipui'], ['yakonp', 'yakon']], 2: [['daburap', 'dabura']], 3: [['vegeta', 'majinvegeta']], 4: [['majinbuu', 'buu']] };
-  ID.babidip = { firma: 'Mago malvado: pega poco, pero cada 14 s invoca 2 soldados Majin, cada 10 s pone la marca Majin al enemigo más fuerte cerca (los jefes, 6 s; los finales no) y cada forma de su transformación invoca a un guerrero: Pui Pui y Yakon → Dabura → Majin Vegeta → Majin Buu. Cada 9 s, Hechizo de poder: cura a sus guerreros (30%) y a los compañeros cercanos (8%), y sus aliados pegan un 50-60% más por 6 s. Los jefes y élites que iban a morir (menos el final) se quedan con él para siempre.',
+  ID.babidip = { firma: 'Mago malvado: pega poco, pero cada 14 s invoca 2 soldados Majin, cada 10 s pone la marca Majin al enemigo más fuerte cerca (los jefes, 6 s; los finales no) y cada forma de su transformación invoca a un guerrero: Pui Pui y Yakon → Dabura → Majin Vegeta → Majin Buu. Cada 9 s, Hechizo de poder: cura a sus guerreros (30%) y a los compañeros cercanos (8%), y sus aliados pegan un 50-60% más por 6 s. Los jefes y élites que iban a morir (menos el final) se quedan con él para siempre. Sus poseídos pelean con sus propias técnicas (Recoome con su Eraser Gun, los androides con las suyas, los Saibaman explotan…).',
     dmg: () => 0.8,
     tick(P, dt) {
       // Hechizo de poder: cura y potencia a todos sus aliados
