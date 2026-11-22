@@ -46,6 +46,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `maestria.js` | Las formas se desbloquean derrotando enemigos con cada guerrero (localStorage `fusion.maestria`) | después de `identidad.js` |
 | `companero.js` | Compañero de equipo en solitario: crece contigo, vuelve si cae, dúos de la serie +15%, fusión con Vegeta/Goku | después de `maestria.js` |
 | `potencial.js` | Poses de Recoome, Spopovich se infla y explota, y un efecto propio al transformarse para los de "Potencial liberado" y las Fuerzas Ginyu | antes de `animaciones.js` |
+| `ginyu.js` | Ginyu: Cambio de cuerpo permanente (botón 👤/tecla B, 60 s), segunda fila de 3 técnicas del cuerpo, formas del cuerpo, Adaptación 0-6 (vida, Ki, daño, proyectiles extra, firma del dueño en el 6). Usa `window.MAJIN_TABLA` de identidad.js | después de `potencial.js` |
 | `animaciones.js` | Aura de DB Survivors teñida por forma (reemplaza drawAura), carga de Ki, transformación (Goku: la animación de DB Survivors), Kaioken, chispas de impacto. Recursos en assets/sprites/fx (tools/hojas/dbs_fx.py) | después de `companero.js` |
 | `jefes.js` | Mecánicas de la serie por jefe (Vegeta Ozaru, cuenta atrás de Freezer, autodestrucción de Cell, absorciones, Hakai…); estado en `e.jf` | después de `companero.js` |
 | `luna.js` | Luna llena en la saga Saiyajin (270–300 s): Ozarus enemigos y los Saiyajin con cola se vuelven Ozaru | después de `jefes.js` |

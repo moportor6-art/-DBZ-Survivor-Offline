@@ -689,5 +689,6 @@
   document.head.appendChild(css);
 
   window.IDENTIDAD = ID;   // (para la prueba automática)
+  window.MAJIN_TABLA = MAJIN;   // (el cambio de cuerpo de Ginyu, js/mods/ginyu.js)
   window.summonAlly = summonAlly; window.dismissAlly = dismissAlly;   // (para js/mods/companero.js)
 })();

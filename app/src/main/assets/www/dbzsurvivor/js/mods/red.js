@@ -2,7 +2,7 @@
 // La instantánea del anfitrión (js/net.js) solo lleva lo del juego base. Sin tocar net.js, el anfitrión manda
 // cada 0,3 s un aviso de texto "invisible" (evento 't' con el texto MARCA) cuyos parámetros traen el estado
 // de los mods; en el invitado, localText lo intercepta y lo aplica en vez de dibujarlo:
-//   p: [id, forma, banderas (1 cargando Ki · 2 Ozaru · 4 Ki infinito), nid marcado por Raditz]
+//   p: [id, forma, banderas (1 cargando Ki · 2 Ozaru · 4 Ki infinito), nid marcado por Raditz, Ginyu: cuerpo/fila 2/Adaptación]
 //   a: aliados invocados / compañero [id, guerrero, nombre, etiqueta]  (el invitado crea su copia para dibujarlos)
 //   e: enemigos cambiados por los mods [nid, marca, Majin, nombre, aspecto, escala]
 //   b: cuentas atrás de jefes [nid, Namek, autodestrucción]
@@ -15,7 +15,8 @@
     const p = [], a = [], e = [], b = [];
     for (const P of G.players) {
       if (P.gone) continue;
-      p.push([P.id, P.formN || 1, (P.charging ? 1 : 0) | (P.ozaru ? 2 : 0) | (P.freeKi > 0 ? 4 : 0), P.mark && !P.mark.dead ? P.mark.nid : 0]);
+      p.push([P.id, P.formN || 1, (P.charging ? 1 : 0) | (P.ozaru ? 2 : 0) | (P.freeKi > 0 ? 4 : 0), P.mark && !P.mark.dead ? P.mark.nid : 0,
+        P.cuerpo || P.atk2 ? { cu: P.cuerpo || null, a2: (P.atk2 || []).map(a => [a.id, a.lvl]), ad: P.adapt || 0, cd: Math.ceil(P.cuerpoCd || 0) } : 0]);   // Ginyu (js/mods/ginyu.js)
       if (P.ally && P.summon) a.push([P.id, P.charId, P.name, P.summon.tag || '']);
     }
     for (const q of G.enemies) {
@@ -48,9 +49,14 @@
         G.players.push(A);
       } catch (err) { /* sin copia: no se dibuja */ }
     }
-    for (const [id, n, f, mark] of s.p || []) {
+    for (const [id, n, f, mark, gy] of s.p || []) {
       const P = G.players.find(q => q.id === id);
       if (!P) continue;
+      if (gy) {   // Ginyu: su cuerpo, la segunda fila y la Adaptación
+        P.atk2 = gy.a2.map(([aid, lvl]) => ({ id: aid, lvl, cd: 1 })); P.adapt = gy.ad; P.cuerpoCd = gy.cd;
+        if (gy.cu && (!P.cuerpo || P.cuerpo.name !== gy.cu.name)) P.cuerpo = gy.cu;
+        if (P.cuerpo && window.GinyuCuerpo && (!P.skinC || P.skinC._k !== window.GinyuCuerpo.claveDe(P))) window.GinyuCuerpo.vestir(P);
+      }
       if ((P.formN || 1) !== n && window.KiForms && 1 + ((window.FUSION_FORMS || {})[P.charId] || []).length >= n) window.KiForms.set(P, n);   // (sin la maestría: esa es del anfitrión)
       P.charging = !!(f & 1); P.ozaru = !!(f & 2); P.freeKi = f & 4 ? 1 : 0;
       P.mark = mark ? G.enemies.find(q => q.nid === mark) || null : null;
