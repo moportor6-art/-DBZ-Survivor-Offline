@@ -106,8 +106,16 @@
       c.beginPath(); c.ellipse(P.x, P.y - 12, r, r * 0.8, 0, 0, Math.PI * 2); c.stroke(); c.restore();
     }
   }
+  function marcaM(c, P) {   // la "M" de Babidi en la frente de Majin Vegeta
+    if (!(P.transformed > 0) || !P.c || P.c.transform !== 'Majin Vegeta' || P.ozaru || P.dir === 'up') return;
+    const fx = P.dir === 'side' ? (P.facing || 1) * 2 : 0, x = Math.round(P.x + fx - 3), y = Math.round(P.y - 13);
+    c.save(); c.fillStyle = '#b0003a';
+    for (const [dx, dy] of [[0, 0], [0, 1], [0, 2], [1, 0], [2, 1], [3, 0], [4, 0], [4, 1], [4, 2]]) c.fillRect(x + dx, y + dy, 1, 1);
+    c.restore();
+  }
   const dp = drawPlayer;
   drawPlayer = function (c, P, overlay) {   // eslint-disable-line no-global-assign
+    if (P && overlay && !P.dead && G) { const r = dp.apply(this, arguments); try { marcaM(c, P); } catch (e) { /* nada */ } return r; }
     if (!P || overlay || P.dead || P.gone || P.hidden || !G) return dp.apply(this, arguments);
     const t = G.t;
     // ¿se acaba de transformar o subió de forma? (se ve igual en los invitados: sale del estado que se dibuja)
@@ -137,6 +145,7 @@
       }
     } catch (e) { /* sin efectos */ }
     const r = dp.apply(this, arguments);
+    marcaM(c, P);
     if (cut && k < 0.68) {   // destello: el guerrero brilla y tiembla mientras junta poder
       c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.25 + 0.25 * Math.sin(t * 40);
       c.fillStyle = '#ffffff'; c.beginPath(); c.ellipse(P.x, P.y - 14, 13, 20, 0, 0, Math.PI * 2); c.fill(); c.restore();

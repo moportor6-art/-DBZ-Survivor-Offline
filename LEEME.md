@@ -42,7 +42,9 @@ El co-op de DBZ Survivor (PeerJS) puede funcionar si el teléfono tiene internet
 
 ## Actualizar un juego
 
-Reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del creador, vuelve a aplicar el cambio indicado arriba, sube `versionCode` en `app/build.gradle` y recompila.
+DB Survivors se actualiza solo: `.github/workflows/actualizar-dbsurvivors.yml` corre todos los días `tools/dbsurvivors/actualizar.py`
+(baja la versión de dbsurvivors.xyz y vuelve a poner `window.DBS_OFFLINE`); si cambió, la sube y compila. Para hacerlo a mano:
+reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del creador, vuelve a aplicar el cambio indicado arriba, sube `versionCode` en `app/build.gradle` y recompila.
 
 ## Créditos de sprites y mapas
 

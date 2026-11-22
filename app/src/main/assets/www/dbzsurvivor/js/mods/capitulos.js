@@ -3,7 +3,8 @@
 // sus jefes (en el orden de la saga) y escenas con retratos al empezar, cuando llega el jefe y al ganar.
 // El capítulo termina al derrotar al jefe final. Estrellas:
 //   ★ ganar · ★★ terminar con la mitad de la vida o más · ★★★ el reto del capítulo (rápido, sin bajar de 30%…)
-// Cada estrella nueva da Zeni. Un capítulo se abre al ganar el anterior. En la misma pantalla están las
+// Cada estrella nueva da Zeni. Un capítulo se abre al ganar el anterior; el final (La batalla final), al ganarlos
+// todos, y da un premio grande. Juntar las 3 estrellas en todos da otro. En la misma pantalla están las
 // Misiones diarias y los Logros. Ganar un capítulo no cuenta como ganar el nivel, ni para los récords, ni da los
 // logros del final de partida. 'medio': escenas cuando un jefe baja de cierta vida.
 // Progreso en localStorage 'fusion.capitulos' ({ id: estrellas }).
@@ -15,6 +16,9 @@
     { id: 'cuib', name: 'Cui', hp: 2600, speed: 1.6, r: 16, dmg: 14, scale: 1.15, every: 2.2, patterns: ['aimed', 'dash', 'aimed'], look: lookDe('cuip') },
     { id: 'dodoriab', name: 'Dodoria', hp: 4200, speed: 1.2, r: 20, dmg: 18, scale: 1.3, every: 2.4, patterns: ['aimed', 'slam', 'dash'], look: lookDe('dodoriap') },
     { id: 'zarbonb', name: 'Zarbon', hp: 6500, speed: 1.5, r: 18, dmg: 20, scale: 1.25, every: 2, patterns: ['aimed', 'dash', 'ring', 'aimed'], look: lookDe('zarbonp') },
+    { id: 'appuleb', name: 'Appule', hp: 3200, speed: 1.5, r: 16, dmg: 15, scale: 1.3, every: 2, patterns: ['aimed', 'dash', 'ring'], look: (ENEMIES.appulee || {}).look || FB('#c070ff') },
+    { id: 'gozub', name: 'Gozu', hp: 5000, speed: 1.3, r: 18, dmg: 18, scale: 1.45, every: 2.2, patterns: ['slam', 'dash', 'aimed'], look: (ENEMIES.gozue || {}).look || FB('#4fd8c8') },
+    { id: 'mezub', name: 'Mezu', hp: 5000, speed: 1.4, r: 18, dmg: 18, scale: 1.45, every: 2.2, patterns: ['aimed', 'ring', 'dash'], look: (ENEMIES.mezue || {}).look || FB('#ff8a5c') },
     { id: 'blackfz', name: 'Black Freezer', hp: 30000, speed: 1.9, r: 18, dmg: 34, scale: 1.3, every: 1.4, patterns: ['aimed', 'dash', 'ring', 'slam', 'aimed'], look: lookDe('freezerp', 'freezerp~6:ssj') },
   );
   // b: jefes [id, segundo, final] · reto: { t: 'rapido', s } derrotar al jefe final en menos de s segundos desde que
@@ -39,6 +43,10 @@
       final: [['zarbonb', 'Qué pena estropear una cara tan bonita como la mía… pero tendré que hacerlo.']],
       medio: [{ jefe: 'zarbonb', hp: 0.5, lines: [['zarbonb', 'Odio mostrar esta forma… ¡Pero tú me obligaste!'], ['yo', '¿Ese es tu secreto? Qué asco.']] }],
       fin: [['yo', 'Ahora sé dónde están las esferas. Freezer, ya voy por ti.']] },
+    { id: 'appule', saga: 'Saga de Freezer', titulo: 'Escondidos en Namek', char: 'krilin', nivel: 'namek', b: [['appuleb', 160, 1]], reto: { t: 'bajas', n: 250 },
+      intro: [['gohan', 'Krilin, hay soldados de Freezer por todas partes buscando las esferas.'], ['yo', 'Tranquilo, Gohan. Nos ocultamos el ki y los vamos sacando de a uno.']],
+      final: [['appuleb', '¡Ahí están los terrícolas! ¡Freezer me recompensará por sus cabezas!']],
+      fin: [['yo', 'Uf… Ese era de los débiles. No quiero ni pensar en los fuertes.']] },
     { id: 'ginyu', saga: 'Saga de Freezer', titulo: 'Las Fuerzas Especiales Ginyu', char: 'vegeta', nivel: 'namek', b: [['recoome', 60], ['burter', 120], ['jeice', 160], ['ginyu', 240, 1]], reto: { t: 'bajas', n: 350 },
       intro: [['ginyu', '¡Recoome! ¡Burter! ¡Jeice! ¡Las Fuerzas Especiales Ginyu están aquí!'], ['yo', 'Payasos con poses. Ninguno me llega a los talones.']],
       final: [['ginyu', 'Ese cuerpo tuyo… me vendría muy bien.']],
@@ -53,6 +61,11 @@
       final: [['freezer', 'Si no puedo ganarte, ¡destruiré Namek contigo!'], ['yo', 'Entonces terminaré esto antes de que explote.']],
       medio: [{ jefe: 'freezer', hp: 0.5, lines: [['freezer', 'Le di al núcleo del planeta. En unos minutos Namek dejará de existir.'], ['yo', 'Entonces tengo que terminar esto ya.']] }],
       fin: [['yo', 'Vete, Freezer. Y no vuelvas a hacerle daño a nadie.']] },
+    { id: 'trunks', saga: 'Saga de Cell', titulo: 'El guerrero del futuro', char: 'ftrunks', nivel: 'leyendas', b: [['mechafz', 120], ['coldb', 220, 1]], reto: { t: 'rapido', s: 90 },
+      intro: [['coldb', 'Hijo mío, este planeta pagará por lo que te hizo ese Saiyajin.'], ['freezer', 'Primero voy a destruir a sus amigos, uno por uno.'], ['yo', 'No hará falta que Goku venga. Yo me encargo.']],
+      final: [['coldb', '¿Un joven con una espada contra el rey del universo? Qué insolencia.']],
+      medio: [{ jefe: 'coldb', hp: 0.5, lines: [['coldb', 'Espera… podemos hacer un trato. Únete a nosotros.'], ['yo', 'No hago tratos con tiranos.']] }],
+      fin: [['yo', 'Goku llega en unas horas. Tengo que advertirle sobre los androides.']] },
     { id: 'androides', saga: 'Saga de Cell', titulo: 'Los androides', char: 'ftrunks', nivel: 'cell', b: [['a19', 60], ['gero', 120], ['a17', 180], ['a18', 230, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['yo', 'En mi futuro, estos androides destruyeron todo. Esta vez será diferente.'], ['gero', '¡Despierten, 17 y 18! Acaben con ellos.']],
       final: [['a18', 'Qué aburrido. ¿Este es el famoso guerrero del futuro?']],
@@ -75,6 +88,10 @@
       final: [['buu', '¡Buu destruye! ¡Buu destruye todo!']],
       medio: [{ jefe: 'buu', hp: 0.5, lines: [['vegeta', '¡Kakarotto, apúrate con esa Genkidama! No aguantaré mucho más.'], ['yo', '¡Ya casi, Vegeta!']] }],
       fin: [['yo', 'Ojalá renazcas como alguien bueno… y peleemos otra vez.']] },
+    { id: 'serpiente', saga: 'Películas', titulo: 'Los guardianes del Infierno', char: 'goku', nivel: 'otromundo', b: [['gozub', 150], ['mezub', 170, 1]], reto: { t: 'vida', min: 0.3 },
+      intro: [['pikkon', 'Las puertas del Infierno se abrieron. Gozu y Mezu dejaron escapar a todos.'], ['yo', '¡Entonces los devolvemos adentro!']],
+      final: [['mezub', '¡Nadie pasa por la puerta del Infierno sin permiso de Enma!']],
+      fin: [['pikkon', 'Las puertas están cerradas otra vez. Pero algo más grande se está moviendo.']] },
     { id: 'otromundo', saga: 'Películas', titulo: 'El Otro Mundo se deforma', char: 'goku', nivel: 'otromundo', b: [['yakon', 90], ['janemba', 230, 1]], reto: { t: 'bajas', n: 350 },
       intro: [['pikkon', 'Algo salió de la máquina de las almas. Los muertos están volviendo a la Tierra.'], ['yo', 'Entonces habrá que cerrarle el paso.']],
       final: [['janemba', '¡¡Ja… nem… baaa!!']],
@@ -97,12 +114,19 @@
       final: [['jiren', 'La fuerza lo es todo. Lo demás no importa.'], ['yo', 'Entonces te mostraré la fuerza de los que pelean juntos.']],
       medio: [{ jefe: 'jiren', hp: 0.35, lines: [['jiren', 'Nunca había tenido que llegar tan lejos.'], ['yo', '¡Entonces sigue! ¡Esto apenas empieza!']] }],
       fin: [['jiren', '…Interesante. Tal vez estaba equivocado.'], ['yo', '¡Ganamos! El Universo 7 sigue en pie.']] },
+    { id: 'final', saga: 'Final', titulo: 'La batalla final', especial: true, char: 'gogetap', nivel: 'leyendas', b: [['freezer', 60], ['cell', 150], ['buu', 240], ['brolyb', 330], ['jiren', 420, 1]], reto: { t: 'vida', min: 0.25 },
+      intro: [['goku', 'Todos los enemigos que derrotamos volvieron al mismo tiempo.'], ['vegeta', 'Kakarotto… detesto decirlo, pero esta vez hay que fusionarse.'], ['yo', '¡Soy Gogeta! Y esto se termina hoy.']],
+      final: [['jiren', 'Uno contra uno. Muéstrame si su unión es fuerza de verdad.']],
+      medio: [{ jefe: 'jiren', hp: 0.4, lines: [['jiren', 'Esta fuerza… no la había sentido nunca.'], ['yo', '¡Es la fuerza de todos los que pelearon antes que nosotros!']] }],
+      fin: [['goku', 'Lo logramos, Vegeta.'], ['vegeta', 'No te acostumbres, Kakarotto.'], ['piccolo', 'La Tierra está a salvo. Esta vez, de verdad.']] },
   ];
   window.CAPITULOS = CAPS;
+  const PREMIO_FINAL = 10000, PREMIO_ESTRELLAS = 15000;
 
   const prog = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
   const setProg = p => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* nada */ } };
-  const abierto = i => i === 0 || (typeof TEST_MODE !== 'undefined' && TEST_MODE) || (prog()[CAPS[i - 1].id] || 0) >= 1;
+  const abierto = i => i === 0 || (typeof TEST_MODE !== 'undefined' && TEST_MODE)
+    || (CAPS[i].especial ? CAPS.every((c, j) => j === i || (prog()[c.id] || 0) >= 1) : (prog()[CAPS[i - 1].id] || 0) >= 1);
   const premio = i => Math.round(250 * (1 + i * 0.15) / 10) * 10;   // Zeni por estrella nueva
   const retoTxt = r => r.t === 'rapido' ? `Derrota al jefe final en menos de ${r.s} s desde que llega` : r.t === 'vida' ? `No bajes nunca del ${Math.round(r.min * 100)}% de vida` : `Derrota ${r.n} enemigos`;
   const capDe = id => CAPS.find(c => c.id === id);
@@ -170,12 +194,15 @@
     const p = prog(), antes = p[C.id] || 0;
     let z = 0;
     if (est > antes) { z = (est - antes) * premio(i); p[C.id] = est; setProg(p); SAVE.zeni += z; }
+    let extra = '';
+    if (C.especial && est > 0 && !p._final) { p._final = 1; setProg(p); SAVE.zeni += PREMIO_FINAL; z += PREMIO_FINAL; extra += '<br>🏆 ¡Terminaste la historia! +' + PREMIO_FINAL + ' Zeni'; }
+    if (!p._todas && CAPS.every(c => (p[c.id] || 0) >= 3)) { p._todas = 1; setProg(p); SAVE.zeni += PREMIO_ESTRELLAS; z += PREMIO_ESTRELLAS; extra += '<br>🌟 ¡Todas las estrellas! +' + PREMIO_ESTRELLAS + ' Zeni'; }
     writeSave();
     try {
       $('goTitle').textContent = won ? `¡Capítulo ${i + 1} superado!` : `Capítulo ${i + 1}: ${C.titulo}`;
       const box = document.createElement('p');
       box.className = 'cap-res';
-      box.innerHTML = `<span class="cap-stars">${'★'.repeat(est)}${'☆'.repeat(3 - est)}</span>${z ? ` · +${z} Zeni` : ''}<br><small>★ ganar · ★ mitad de la vida o más · ★ ${retoTxt(R)}</small>`;
+      box.innerHTML = `<span class="cap-stars">${'★'.repeat(est)}${'☆'.repeat(3 - est)}</span>${z ? ` · +${z} Zeni` : ''}<br><small>★ ganar · ★ mitad de la vida o más · ★ ${retoTxt(R)}</small>${extra}`;
       $('goTitle').after(box);
     } catch (e) { /* sin detalle */ }
     return res;
@@ -218,12 +245,13 @@
       el.className = 'cap' + (open ? '' : ' lock');
       el.innerHTML = `<canvas width="64" height="64"></canvas><div><b>${i + 1}. ${C.titulo}</b>
         <small>Juegas con ${nombre(C.char)} · contra ${C.b.map(q => nombre(q[0])).join(', ')}</small>
-        <small>★★★ ${retoTxt(C.reto)}</small></div><span class="cap-stars">${open ? '★'.repeat(s) + '☆'.repeat(3 - s) : '🔒'}</span>`;
+        <small>★★★ ${retoTxt(C.reto)} · ${premio(i)} Zeni por estrella</small>${C.especial && !open ? '<small>Se abre al ganar todos los capítulos</small>' : ''}</div><span class="cap-stars">${open ? '★'.repeat(s) + '☆'.repeat(3 - s) : '🔒'}</span>`;
       retrato(el.querySelector('canvas'), jefe);
       el.onclick = () => { if (open) jugar(i); };
       list.appendChild(el);
     });
-    $('capTot').textContent = `Estrellas: ${tot} / ${CAPS.length * 3}`;
+    $('capTot').innerHTML = `Estrellas: ${tot} / ${CAPS.length * 3}`
+      + `<br><small>Terminar la historia: ${p._final ? '✓ cobrado' : '+' + PREMIO_FINAL + ' Zeni'} · Todas las estrellas: ${p._todas ? '✓ cobrado' : '+' + PREMIO_ESTRELLAS + ' Zeni'}</small>`;
   }
   const abrirScr = () => { pintar(); $('menu').classList.add('hidden'); scr.classList.remove('hidden'); scr.scrollTop = 0; };
   $('capBack').onclick = () => { scr.classList.add('hidden'); $('menu').classList.remove('hidden'); };

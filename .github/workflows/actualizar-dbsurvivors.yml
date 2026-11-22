@@ -1,0 +1,33 @@
+name: DB Survivors al día
+
+# Todos los días baja la versión de dbsurvivors.xyz; si cambió, la sube a la rama del juego y compila
+# (la app la recibe sola con el actualizador, como cualquier otro cambio)
+on:
+  schedule:
+    - cron: '23 10 * * *'   # 4:23 en México
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: apk-coleccion
+      - name: Bajar la versión de la página
+        run: python3 tools/dbsurvivors/actualizar.py
+      - name: Subir si cambió y compilar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then echo "DB Survivors ya estaba al día"; exit 0; fi
+          git config user.name "moportor6-art"
+          git config user.email "moportor6-art@users.noreply.github.com"
+          git add app/src/main/assets/www/dbsurvivors
+          git commit -m "DB Survivors al día ($(date -u +%Y-%m-%d))"
+          git push origin apk-coleccion
+          gh workflow run build-apk.yml --ref apk-coleccion

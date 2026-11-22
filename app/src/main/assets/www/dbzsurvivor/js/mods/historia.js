@@ -70,6 +70,16 @@
       display: flex; gap: 12px; align-items: center; padding: 10px 12px; background: rgba(10,15,46,0.94); border: 3px solid #ffd93b;
       border-radius: 12px; color: #fff; font-family: inherit; box-shadow: 0 6px 24px rgba(0,0,0,0.6); }
     #historia.hidden { display: none; }
+    #historia.h-in { animation: hIn 0.28s ease-out; }
+    @keyframes hIn { from { transform: translate(-50%, 40px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    #historia.h-shake { animation: hShake 0.45s; }
+    @keyframes hShake { 0%, 100% { transform: translate(-50%, 0); } 20% { transform: translate(calc(-50% - 7px), 2px); } 40% { transform: translate(calc(-50% + 6px), -2px); }
+      60% { transform: translate(calc(-50% - 4px), 1px); } 80% { transform: translate(calc(-50% + 3px), 0); } }
+    #historia canvas.h-grito { animation: hGrito 0.12s linear 5; }
+    @keyframes hGrito { 0% { transform: translate(0, 0); } 25% { transform: translate(-2px, 1px); } 50% { transform: translate(2px, -1px); } 75% { transform: translate(-1px, -1px); } }
+    #hFlash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 59; }
+    #hFlash.on { animation: hFlash 0.5s ease-out; }
+    @keyframes hFlash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
     #historia canvas { width: 84px; height: 84px; flex: none; background: #1d2a6b; border-radius: 8px; image-rendering: pixelated; }
     #historia.der { flex-direction: row-reverse; text-align: right; }
     #historia .h-txt { flex: 1; min-width: 0; } #historia b { color: #ffd93b; font-size: 17px; }
@@ -79,6 +89,9 @@
     #historia .h-skip { background: #8a93c8; }`;
   document.head.appendChild(st);
   document.body.appendChild(box);
+  const flash = document.createElement('div');
+  flash.id = 'hFlash';
+  document.body.appendChild(flash);
   const cv = box.querySelector('canvas'), cx = cv.getContext('2d');
 
   let cur = null;   // { lines, i, done }
@@ -100,15 +113,42 @@
     retrato(w.id);
     box.classList.toggle('der', !!w.yo);
     box.querySelector('b').textContent = w.name;
-    box.querySelector('p').textContent = text;
     box.querySelector('.h-next').textContent = cur.i < cur.lines.length - 1 ? 'Siguiente ▸' : 'Continuar ▸';
+    // Animación: la caja entra, las letras salen de a poco, el retrato tiembla con los gritos y los ataques
+    // fuertes hacen un destello
+    const cv2 = box.querySelector('canvas');
+    for (const k of ['h-in', 'h-shake']) box.classList.remove(k);
+    void box.offsetWidth;
+    if (cur.i === 0) box.classList.add('h-in');
+    const grito = /!\s*$|¡.*!/.test(text);
+    cv2.classList.toggle('h-grito', grito);
+    if (/kamehameha|genkidama|kikoho|makankosappo|final flash|hakai|boom|explot|kaioken|big bang|rayo mortal|destru/i.test(text)) {
+      flash.classList.remove('on'); void flash.offsetWidth; flash.classList.add('on');
+      box.classList.add('h-shake');
+    }
+    escribir(text);
   };
+  let typing = 0;
+  function escribir(text) {
+    const p = box.querySelector('p');
+    clearInterval(typing);
+    let n = 0;
+    p.textContent = '';
+    typing = setInterval(() => {
+      n = Math.min(text.length, n + 2);
+      p.textContent = text.slice(0, n);
+      if (n >= text.length) { clearInterval(typing); typing = 0; }
+    }, 22);
+    p.dataset.full = text;
+  }
+  const completar = () => { if (!typing) return false; clearInterval(typing); typing = 0; const p = box.querySelector('p'); p.textContent = p.dataset.full; return true; };
   const cerrar = () => {
     if (!cur) return;
+    clearInterval(typing); typing = 0;
     const done = cur.done; cur = null; box.classList.add('hidden');
     if (done) done();
   };
-  const avanzar = () => { if (!cur) return; if (++cur.i >= cur.lines.length) cerrar(); else { sfx('menu', 0.3); mostrar(); } };
+  const avanzar = () => { if (!cur || completar()) return; if (++cur.i >= cur.lines.length) cerrar(); else { sfx('menu', 0.3); mostrar(); } };
   function abrir(nivel, momento, done) {
     const lines = S[nivel] && S[nivel][momento], k = nivel + '.' + momento;
     if (!lines || !lines.length || vistas()[k]) return false;

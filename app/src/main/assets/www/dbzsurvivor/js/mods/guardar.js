@@ -3,8 +3,8 @@
 // · Si la app se cierra o pasa a segundo plano en medio de una partida, se guarda sola (y cada 20 s de juego).
 // · En el menú aparece "▶ Continuar" con el guerrero, el nivel y el tiempo; al continuar, la partida arranca en pausa.
 // La partida guardada se borra al continuarla, al empezar otra o cuando termina (así no se puede repetir un final).
-// Se guarda lo que es dato (jugador, enemigos, jefes, objetos, tiempo, niveles, esferas…); lo que se vuelve a armar
-// solo (el compañero, los dibujos, los proyectiles en el aire) no. No se puede en línea, en el desafío semanal ni
+// Se guarda lo que es dato (jugador, enemigos, jefes, objetos, tiempo, niveles, esferas, aliados invocados con el
+// tiempo que les queda); lo que se vuelve a armar solo (el compañero, los dibujos, los proyectiles en el aire) no. No se puede en línea, en el desafío semanal ni
 // en el Camino de la Serpiente. localStorage 'fusion.partida'.
 (() => {
   const KEY = 'fusion.partida', VER = 1;
@@ -43,6 +43,9 @@
     return {
       v: VER, fecha: Date.now(), nivel: G.lv.id, speed: G.speed,
       g: datos(g, new Set()), yo: datos(P, SKIP), enemigos,
+      // aliados invocados con tiempo (no el compañero: ese vuelve solo)
+      aliados: G.players.filter(A => A.ally && A.summon && !A.gone && !A.dead && A.summon.tag !== 'companero' && A.summon.t < 1e8)
+        .map(A => ({ charId: A.charId, t: A.summon.t, tag: A.summon.tag, x: A.x, y: A.y, hp: A.hp / A.maxHp })),
       resumen: { guerrero: P.c.name, charId: P.charId, nivelNum: G.lv.num, t: Math.floor(G.t), lvl: G.level },
     };
   }
@@ -76,6 +79,12 @@
       const e = { ...d, def };
       delete e.defName; delete e.defLook;
       G.enemies.push(e);
+    }
+    for (const a of s.aliados || []) {   // los aliados invocados vuelven con el tiempo que les quedaba
+      try {
+        const A = window.summonAlly && window.summonAlly(P, a.charId, a.t, { tag: a.tag });
+        if (A) { A.x = a.x; A.y = a.y; A.hp = Math.max(1, A.maxHp * a.hp); }
+      } catch (e) { /* sin aliado */ }
     }
     borrar();   // ya se usó: si vuelves a salir, se guarda de nuevo
     announce('¡Partida recuperada! Toca continuar cuando estés listo', '#7dff6a');
