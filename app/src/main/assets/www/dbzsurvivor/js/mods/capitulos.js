@@ -252,7 +252,9 @@
 
   // ─── Pantalla del Modo Historia ───
   const st = document.createElement('style');
-  st.textContent = `#capScr .cap-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  st.textContent = `#capScr { overflow-y: auto; justify-content: flex-start; padding-top: 3vh; -webkit-overflow-scrolling: touch; }
+    #capScr .box { width: min(760px, 100%); }
+    #capScr .cap-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
     #capScr h3 { margin: 12px 0 2px; color: #ffd93b; font-size: 16px; }
     #capScr .cap { display: flex; gap: 10px; align-items: center; background: rgba(10,15,46,0.7); border: 2px solid #3a4a9a; border-radius: 10px; padding: 8px; text-align: left; }
     #capScr .cap.lock { opacity: 0.5; } #capScr .cap canvas { width: 56px; height: 56px; flex: none; background: #1d2a6b; border-radius: 8px; image-rendering: pixelated; }
@@ -261,7 +263,7 @@
     #capScr .cap-tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; } .cap-res { margin: 4px 0 8px; } .cap-res small { opacity: 0.8; }`;
   document.head.appendChild(st);
   const scr = document.createElement('div');
-  scr.id = 'capScr'; scr.className = 'screen hidden';
+  scr.id = 'capScr'; scr.className = 'screen overlay hidden';
   scr.innerHTML = `<div class="box"><h2>📖 Modo Historia</h2>
     <div class="cap-tabs"><button class="btn small" id="capMis">Misiones diarias</button><button class="btn small" id="capLog">Logros</button></div>
     <p id="capTot" style="margin:8px 0 0"></p><div class="cap-list" id="capList"></div>
