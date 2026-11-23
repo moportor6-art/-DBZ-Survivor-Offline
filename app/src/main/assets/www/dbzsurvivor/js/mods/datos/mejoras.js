@@ -45,3 +45,14 @@ PASSIVES.focus.desc = '-8% de tiempo de recarga de técnicas y del Ki para trans
 // Dominio del Ki (carta): con el Ki estilo ESF también baja el gasto de las transformaciones (js/mods/ki.js)
 PASSIVES.kictl.desc = 'El Ki se carga un 15% más rápido y tus transformaciones gastan un 5% menos.';
 SHOP_UPGRADES.find(u => u.id === 'cd').fmt = v => `-${Math.round(v * 100)}% de recarga (técnicas y Ki para transformarte)`;
+
+// ─── Pasivas nuevas (su efecto está en js/mods/poderes.js) ───
+// users: solo esos guerreros pueden aprenderla (poderes.js filtra las cartas)
+PASSIVES.buuregen = { name: 'Regeneración de Majin Buu', color: '#ff8fd0',
+  desc: 'Tu cuerpo se rehace como el de Buu: recuperas un 0,4% de tu vida máxima por segundo por nivel (2% al máximo). Compensa lo que quema el Kaio-ken.' };
+PASSIVES.marcamajin = { name: 'Marca Majin', color: '#7a1040',
+  users: ['krilin', 'yamcha', 'tien', 'roshi', 'yajirobe', 'videl', 'taop', 'bulmap', 'dendep', 'popop', 'cuip', 'yamup', 'spopovichp', 'puipuip', 'burterp', 'jeicep'],
+  desc: 'Babidi libera tu maldad a cambio de poder: +10% de daño y +3% de velocidad por nivel. Te sale la M en la frente y tu Ki y tus técnicas se oscurecen. Solo los guerreros más débiles.' };
+PASSIVES.reactor = { name: 'Reactor de energía infinita', color: '#5ce0ff',
+  users: ['a13p', 'a16p', 'a17p', 'a18p', 'a19p', 'gerop'],
+  desc: 'El reactor del Dr. Gero: tus transformaciones gastan un 15% menos de Ki por nivel y el Ki se recarga solo. Perfeccionado (nivel 5), no gastas Ki nunca. Solo los androides.' };

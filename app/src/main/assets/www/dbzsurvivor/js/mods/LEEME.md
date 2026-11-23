@@ -64,6 +64,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `ingles.js` | Inglés para lo de los mods: diálogos y títulos (en los datos), avisos del lienzo (t, hudText) y botones/pantallas (observador del DOM) | **al final**, después de `historia.js` |
 | `ingles-datos.js` | Inglés de los datos de los mods por id: técnicas, guerreros, formas, firmas, mejoras y tienda | después de `ingles.js` |
 | `ki.js` | Ki estilo Earth Special Forces: cargar, gasto por segundo, subir/bajar forma, botón tocar/mantener, HUD | **al final** (envuelve a todos) |
+| `poderes.js` | Kaio-ken de los humanos (escalera x1 a x20 en `formas.js`; desde x4 quema vida), pasivas Regeneración de Majin Buu (todos), Marca Majin (los más débiles: más daño, M en la frente, Ki y técnicas oscuras) y Reactor de energía infinita (androides: al 5 no gastan Ki); `users` en `PASSIVES` limita quién la aprende | después de `ki.js` |
 
 ## Puntos de enganche dentro del código base
 

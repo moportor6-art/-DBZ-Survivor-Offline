@@ -265,6 +265,14 @@
   };
   for (const [id, d] of Object.entries(P)) if (PASSIVES[id]) PASSIVES[id].desc = d;
   if (PASSIVES.kiai) Object.assign(PASSIVES.kiai, { name: 'Kiai', desc: 'Your hits knock enemies farther back (bosses barely move).' });
+  if (PASSIVES.buuregen) Object.assign(PASSIVES.buuregen, { name: 'Majin Buu Regeneration', desc: 'Your body rebuilds itself like Buu\'s: you recover 0.4% of your max health per second per level (2% at max). Offsets what the Kaio-ken burns.' });
+  if (PASSIVES.marcamajin) Object.assign(PASSIVES.marcamajin, { name: 'Majin Mark', desc: 'Babidi frees your evil in exchange for power: +10% damage and +3% speed per level. The M appears on your forehead and your Ki and techniques grow darker. Weakest fighters only.' });
+  if (PASSIVES.reactor) Object.assign(PASSIVES.reactor, { name: 'Infinite Energy Reactor', desc: 'Dr. Gero\'s reactor: your transformations use 15% less Ki per level and Ki recharges on its own. Perfected (level 5), you never spend Ki. Androids only.' });
+  // Kaio-ken de los humanos (formas.js): la historia de cada escalón
+  const KK_EN = { 'Kaio-ken': "King Kai's technique: it multiplies Ki and bodily strength for an instant.", 'Kaio-ken x2': 'Double: the red aura flares up and the muscles start to creak.',
+    'Kaio-ken x4': 'Four times: the body starts paying the price.', 'Kaio-ken x5': 'Beyond what a human should endure.',
+    'Kaio-ken x10': 'The one Goku used against Vegeta: brutal power that tears the body apart.', 'Kaio-ken x20': 'All or nothing, like against Frieza on Namek: the body burns every second.' };
+  for (const id of window.HUMANOS_KAIOKEN || []) for (const f of window.FUSION_FORMS[id] || []) if (KK_EN[f.name]) f.lore = KK_EN[f.name];
   const S = {
     pslot: ['Extra upgrade slot', v => `+${v} passive upgrade slot${v === 1 ? '' : 's'} (${MAX_PASSIVES + v} in total)`],
     shenwish: ["Shenron's Wish", v => `+${Math.round(v * 100)}% to everything (health, damage, speed, technique and Ki cooldown, defense, experience and pickup) and +${(v / 0.05 * 0.1).toFixed(1)} health per second, but ${Math.round(v / 0.05 * 0.08 * 100)}% more enemies appear`],

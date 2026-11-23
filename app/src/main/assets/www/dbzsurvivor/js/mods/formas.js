@@ -133,6 +133,25 @@
     janembap: [{ name: 'Super Janemba', aura: '#ff5ad0', bonus: 0.5, fx: { spd: 0.1 }, sprite: A('janembap'),
       lore: 'Su forma compacta y más peligrosa, la que enfrentó a Gogeta.' }],
   };
+  // ─── Kaio-ken para los humanos (js/mods/poderes.js) ───
+  // Los humanos no tienen Super Saiyajin: después de su forma de siempre, cada vez que suben con el botón de Ki
+  // pasan al siguiente escalón del Kaio-ken. Desde x4 el cuerpo no aguanta y quema vida por segundo (hpdrain,
+  // % de la vida máxima; nunca te deja en 0); la Regeneración de Majin Buu lo compensa.
+  const KK = [
+    ['Kaio-ken', 0.1, 0.04, 0, 1, 'La técnica de Kaio-sama: multiplica el Ki y la fuerza del cuerpo por un instante.'],
+    ['Kaio-ken x2', 0.2, 0.07, 0, 1.05, 'El doble: el aura roja se enciende y los músculos empiezan a crujir.'],
+    ['Kaio-ken x4', 0.35, 0.1, 0.002, 1.1, 'Cuatro veces: el cuerpo empieza a pagar el precio.'],
+    ['Kaio-ken x5', 0.45, 0.12, 0.004, 1.15, 'Más allá de lo que un humano debería aguantar.'],
+    ['Kaio-ken x10', 0.7, 0.16, 0.008, 1.25, 'El que usó Goku contra Vegeta: un poder brutal que desgarra el cuerpo.'],
+    ['Kaio-ken x20', 1.0, 0.2, 0.015, 1.35, 'Todo o nada, como contra Freezer en Namek: el cuerpo arde a cada segundo.'],
+  ];
+  window.HUMANOS_KAIOKEN = ['krilin', 'yamcha', 'tien', 'roshi', 'yajirobe', 'videl', 'taop'];
+  for (const id of window.HUMANOS_KAIOKEN) {
+    if (!CHARACTERS[id]) continue;
+    FORMS[id] = [...(FORMS[id] || []), ...KK.map(([name, bonus, spd, hp, drain, lore], i) => ({
+      name, aura: '#ff2a2a', bonus, fx: hp ? { spd, hpdrain: hp } : { spd }, drain, kaioken: i + 1, lore }))];
+  }
+
   // Hojas de cada forma: <guerrero>~<n> (sin transformar, la de siempre) y <guerrero>~<n>:ssj (la de la forma)
   // (las alias se resuelven en orden, así una forma puede reusar la hoja de otra anterior del mismo guerrero)
   for (const [id, list] of Object.entries(FORMS)) {
@@ -187,7 +206,8 @@
   // ─── Ficha del guerrero: sus formas, qué hace cada una y su historia ───
   const FX_TEXT = { spd: v => `${v > 0 ? '+' : '−'}${Math.round(Math.abs(v) * 100)}% velocidad`, cd: v => `−${Math.round(v * 100)}% recarga`,
     def: v => `−${Math.round(v * 100)}% daño recibido`, regen: v => `cura ${(v * 100).toFixed(1)}% de vida/s`,
-    dodge: v => `esquiva ${Math.round(v * 100)}%`, counter: () => 'contragolpe', shock: v => `descargas (${Math.round(v * 100)}%)` };
+    dodge: v => `esquiva ${Math.round(v * 100)}%`, counter: () => 'contragolpe', shock: v => `descargas (${Math.round(v * 100)}%)`,
+    hpdrain: v => `quema ${(v * 100).toFixed(1)}% de vida/s` };
   const fxText = f => {
     const parts = [];
     if (f.bonus) parts.push(`+${Math.round(f.bonus * 100)}% daño extra`);
