@@ -8,10 +8,12 @@ Una sola app Android con los dos juegos, cada uno completo y sin internet:
 Al abrir la app aparece un menú para elegir. El botón **Atrás** dentro de un juego pregunta antes de volver al menú; en el menú cierra la app.
 Cada juego guarda sus partidas por separado (no se mezclan).
 
-## Qué no funciona offline
+## Todo en local
 
-Cuentas, guardado en la nube, ranking, gacha online y co-op de DB Survivors, y el ranking/torneo online de DBZ Survivor: dependen de los servidores de cada creador.
-El co-op de DBZ Survivor (PeerJS) puede funcionar si el teléfono tiene internet.
+La app no tiene cuentas, donaciones, pagos ni redes: no se muestran y ningún enlace sale de la app
+(`js/mods/local.js`, el bloque «todo en local» que `tools/dbsurvivors/actualizar.py` le pone a DB Survivors
+y `MainActivity`, que no abre nada afuera). El ranking de DBZ Survivor es local: tus mejores partidas en el teléfono.
+Lo único que usa internet: el actualizador (GitHub) y el co-op de DBZ Survivor (PeerJS), si lo usas.
 
 ## Opción A: compilar con GitHub (sin instalar nada, incluso desde el celular)
 

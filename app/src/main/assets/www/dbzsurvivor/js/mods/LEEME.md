@@ -51,6 +51,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `jefes.js` | Mecánicas de la serie por jefe (Vegeta Ozaru, cuenta atrás de Freezer, autodestrucción de Cell, absorciones, Hakai…); estado en `e.jf` | después de `companero.js` |
 | `luna.js` | Luna llena en la saga Saiyajin (270–300 s): Ozarus enemigos y los Saiyajin con cola se vuelven Ozaru | después de `jefes.js` |
 | `poder.js` | Nivel 8 · Torneo del Poder: el ring que se encoge y el vacío (datos en `datos/enemigos.js`, suelo en `mapas.js`) | después de `luna.js` |
+| `local.js` | Todo en local: quita donaciones y meta del mes, ningún enlace ni `window.open` sale del juego, oculta reportes/tablón/cartel/desafío semanal (eran del servidor) y hace el ranking local (envuelve `fetch` de `/api/ranking`; localStorage `fusion.ranking`) | después de `telemetry.js` y `support.js` |
 | `red.js` | Cooperativo: el anfitrión manda cada 0,3 s el estado de los mods (formas, Ozaru, aliados, marcas, jefes cambiados) en un aviso de texto que el invitado intercepta | antes de `historia.js` |
 | `autoaprender.js` | Auto-aprender: elige solo la carta al subir de nivel (evoluciones primero, técnicas propias, la mejora que falta para cada fusión, estilo de cada guerrero); localStorage `fusion.auto` | después de `red.js` |
 | `editarhud.js` | Editor del HUD (pausa → ✏️ Editar HUD): mover, tamaño, giro, opacidad y ocultar cada pieza; localStorage `fusion.hud`. Debe ser el último que envuelve `drawHUD` | después de `autoaprender.js` |

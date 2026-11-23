@@ -3,7 +3,6 @@ package com.dbsurvivors.collection;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -120,10 +119,7 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
                 Uri u = req.getUrl();
                 if (isLocal(u)) return false;
-                // Enlaces externos (Ko-fi, redes, créditos): al navegador del teléfono
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, u));
-                } catch (Exception ignored) { }
+                // Todo en local: ningún enlace sale de la app (ni al navegador ni a otra página)
                 return true;
             }
         });

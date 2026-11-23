@@ -1207,7 +1207,7 @@ if(window.dbsXOk())window.dbsXPixel();
       if(h===H){try{localStorage.setItem('dbs_beta_ok',H);}catch(e){}d.remove();}else{d.querySelector('.err').textContent='Contraseña incorrecta / Wrong password';inp.value='';inp.focus();}});};
     document.body.append(d);setTimeout(function(){inp.focus();},50);});})();
 </script>
-</head>
+<style id="dbs-local">#h-acc,#accbox,#acct,#co-acc,#k-acc,#rk-acc,#s-account,#h-kofi-w,#h-kofi,#h-cafe,#kofim,#e-sup,#s-sup,#supbox,#sup-cafe,#h-soc,#h-dc,.socb,.dcb,.kofib,.lp-ic small,a.legal-a[href="terminos.html"]{display:none!important}</style><script id="dbs-local-js">(function(){var o=location.origin;function ext(h){try{return new URL(h,location.href).origin!==o}catch(e){return false}}document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(a&&ext(a.getAttribute("href"))){e.preventDefault();e.stopPropagation()}},true);var w=window.open;window.open=function(u){return u&&ext(u)?null:w.apply(window,arguments)}})()</script></head>
 <body>
 <canvas id="game"></canvas>
 <div id="menubg" class="hidden"></div>

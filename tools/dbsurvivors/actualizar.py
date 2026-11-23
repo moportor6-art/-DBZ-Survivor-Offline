@@ -1,6 +1,7 @@
 """Actualiza la copia de DB Survivors (app/src/main/assets/www/dbsurvivors) con la de dbsurvivors.xyz.
 Baja index.html y assets.js, más la música, los sonidos y las fuentes nuevas que nombre el juego, y vuelve a
-poner el único cambio de la app: window.DBS_OFFLINE (su modo sin servidor). Si algo falla, no toca nada.
+poner los cambios de la app: window.DBS_OFFLINE (su modo sin servidor) y el bloque «todo en local»
+(oculta cuentas, donaciones y redes, y ningún enlace sale del juego). Si algo falla, no toca nada.
 Lo corre todos los días .github/workflows/actualizar-dbsurvivors.yml. Uso: python3 actualizar.py"""
 import os, re, sys, urllib.request
 
@@ -18,8 +19,18 @@ assets = get('assets.js')
 # Que de verdad sea el juego y no una página de error
 if 'DBS_ASSETS' not in assets.decode('utf-8', 'ignore')[:200] or '<canvas' not in html or len(html) < 200_000:
     sys.exit('La descarga no parece el juego: no se cambia nada')
+# Todo en local: sin cuentas, sin donaciones, sin redes y sin enlaces que salgan del juego
+LOCAL = ('<style id="dbs-local">#h-acc,#accbox,#acct,#co-acc,#k-acc,#rk-acc,#s-account,#h-kofi-w,#h-kofi,#h-cafe,#kofim,'
+         '#e-sup,#s-sup,#supbox,#sup-cafe,#h-soc,#h-dc,.socb,.dcb,.kofib,.lp-ic small,a.legal-a[href="terminos.html"]'
+         '{display:none!important}</style><script id="dbs-local-js">(function(){var o=location.origin;'
+         'function ext(h){try{return new URL(h,location.href).origin!==o}catch(e){return false}}'
+         'document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");'
+         'if(a&&ext(a.getAttribute("href"))){e.preventDefault();e.stopPropagation()}},true);'
+         'var w=window.open;window.open=function(u){return u&&ext(u)?null:w.apply(window,arguments)}})()</script>')
 if 'window.DBS_OFFLINE' not in html:
     html = html.replace('<head>', '<head><script>window.DBS_OFFLINE=1</script>', 1)
+if 'id="dbs-local"' not in html:
+    html = html.replace('</head>', LOCAL + '</head>', 1)
 cambios = []
 def escribir(rel, data):
     p = os.path.join(DST, rel)
