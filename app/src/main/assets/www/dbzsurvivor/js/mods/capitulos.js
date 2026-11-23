@@ -127,7 +127,14 @@
   const setProg = p => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* nada */ } };
   const abierto = i => i === 0 || (typeof TEST_MODE !== 'undefined' && TEST_MODE)
     || (CAPS[i].especial ? CAPS.every((c, j) => j === i || (prog()[c.id] || 0) >= 1) : (prog()[CAPS[i - 1].id] || 0) >= 1);
-  const premio = i => Math.round(250 * (1 + i * 0.15) / 10) * 10;   // Zeni por estrella nueva
+  const premio = i => Math.round(400 * (1 + i * 0.15) / 10) * 10;   // Zeni por estrella nueva
+  // Dificultad: cada capítulo dura más y aprieta más que el anterior (del 1, ~6 min, al 20, ~10 min; el final, 13 min).
+  // Los jefes llegan más tarde (cuando ya estás más fuerte), así que también tienen bastante más vida.
+  const DIF = (i, C) => ({ dur: C.especial ? 780 : 360 + i * 13, hp: 1.3 + i * 0.03, dmg: 1.2 + i * 0.025, jefe: 2 + i * 0.06 });
+  for (const C of CAPS) {   // retos de estrellas acordes: más bajas (dura más) y más margen para el jefe final (tiene más vida)
+    if (C.reto.t === 'bajas') C.reto.n = Math.round(C.reto.n * 2.4 / 50) * 50;
+    if (C.reto.t === 'rapido') C.reto.s = Math.round(C.reto.s * 1.5 / 10) * 10;
+  }
   const retoTxt = r => r.t === 'rapido' ? `Derrota al jefe final en menos de ${r.s} s desde que llega` : r.t === 'vida' ? `No bajes nunca del ${Math.round(r.min * 100)}% de vida` : `Derrota ${r.n} enemigos`;
   const capDe = id => CAPS.find(c => c.id === id);
   const nombre = id => (CHARACTERS[id] && CHARACTERS[id].name) || ((BOSSES.find(b => b.id === id) || {}).name) || id;
@@ -143,8 +150,10 @@
   // Lo que convierte una partida del nivel en el capítulo (también en el cooperativo)
   function preparar(C) {
     G.historia = C.id;
-    const L = levelDef(C.nivel);
-    G.bosses = C.b.map(([id, at, fin, mult = 1]) => { const lb = L.bosses.find(q => q.id === id); return { id, at, hp: Math.round((lb ? lb.hp : (BOSSES.find(q => q.id === id) || {}).hp) * mult), final: !!fin }; });
+    const L = levelDef(C.nivel), D = DIF(CAPS.indexOf(C), C);
+    const k = D.dur / Math.max(...C.b.map(b => b[1]));   // estira los tiempos de llegada de los jefes
+    G.lv = { ...G.lv, hp: G.lv.hp * D.hp, dmg: G.lv.dmg * D.dmg };
+    G.bosses = C.b.map(([id, at, fin, mult = 1]) => { const lb = L.bosses.find(q => q.id === id); return { id, at: Math.round(at * k), hp: Math.round((lb ? lb.hp : (BOSSES.find(q => q.id === id) || {}).hp) * mult * D.jefe), final: !!fin }; });
     G.hMin = 1; G.hFinT = 0;
     announce(`Capítulo ${CAPS.indexOf(C) + 1}: ${C.titulo}`, '#ffd93b');
   }
@@ -289,7 +298,7 @@
       el.className = 'cap' + (open ? '' : ' lock');
       el.innerHTML = `<canvas width="64" height="64"></canvas><div><b>${i + 1}. ${C.titulo}</b>
         <small>Juegas con ${nombre(C.char)} · contra ${C.b.map(q => nombre(q[0])).join(', ')}</small>
-        <small>★★★ ${retoTxt(C.reto)} · ${premio(i)} Zeni por estrella</small>${C.especial && !open ? '<small>Se abre al ganar todos los capítulos</small>' : ''}</div><span class="cap-stars">${open ? '★'.repeat(s) + '☆'.repeat(3 - s) : '🔒'}</span>`;
+        <small>⏱ ~${Math.round(DIF(i, C).dur / 60)} min · ★★★ ${retoTxt(C.reto)} · ${premio(i)} Zeni por estrella</small>${C.especial && !open ? '<small>Se abre al ganar todos los capítulos</small>' : ''}</div><span class="cap-stars">${open ? '★'.repeat(s) + '☆'.repeat(3 - s) : '🔒'}</span>`;
       retrato(el.querySelector('canvas'), jefe);
       el.onclick = () => { if (open) jugar(i); };
       list.appendChild(el);
