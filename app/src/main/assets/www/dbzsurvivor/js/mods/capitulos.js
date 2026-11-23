@@ -138,12 +138,54 @@
     if (!C || !CHARACTERS[C.char] || !levelDef(C.nivel)) return;
     $('capScr').classList.add('hidden');
     newGame([{ id: 0, name: myName(), charId: C.char, perks: myPerks() }], null, 0, 1, C.nivel);
+    preparar(C);
+  }
+  // Lo que convierte una partida del nivel en el capítulo (también en el cooperativo)
+  function preparar(C) {
     G.historia = C.id;
     const L = levelDef(C.nivel);
     G.bosses = C.b.map(([id, at, fin, mult = 1]) => { const lb = L.bosses.find(q => q.id === id); return { id, at, hp: Math.round((lb ? lb.hp : (BOSSES.find(q => q.id === id) || {}).hp) * mult), final: !!fin }; });
     G.hMin = 1; G.hFinT = 0;
-    announce(`Capítulo ${i + 1}: ${C.titulo}`, '#ffd93b');
+    announce(`Capítulo ${CAPS.indexOf(C) + 1}: ${C.titulo}`, '#ffd93b');
   }
+
+  // ─── Cooperativo: el anfitrión elige un capítulo en la sala y cada uno juega con su guerrero ───
+  // Cada capítulo es un «nivel» más ('cap:<id>') al final de BONUS_LEVELS (levelDef lo encuentra; el menú no lo muestra),
+  // así viaja por la sala y el inicio de net.js sin tocarlo. newGame lo convierte en el nivel real + el capítulo.
+  // Las escenas salen en todos; las estrellas, el Zeni y el progreso se los lleva cada jugador.
+  for (const C of CAPS) {
+    const L = LEVELS.find(q => q.id === C.nivel);
+    if (L && !BONUS_LEVELS.some(q => q.id === 'cap:' + C.id)) BONUS_LEVELS.push({ ...L, id: 'cap:' + C.id, capitulo: C.id, bonus: false });
+  }
+  const esCap = v => typeof v === 'string' && v.startsWith('cap:');
+  const nivelReal = () => { if (esCap(SAVE.level)) { SAVE.level = SAVE.lastLevel || 'saiyan'; writeSave(); } };
+  nivelReal();   // (si quedó elegido un capítulo de la sala, el menú vuelve a su nivel)
+  const ng = newGame;
+  newGame = function (roster, net, myId, speed, level) {   // eslint-disable-line no-global-assign
+    const C = esCap(level) ? capDe(level.slice(4)) : null;
+    if (!C) return ng.apply(this, arguments);
+    nivelReal();
+    const r = ng.call(this, roster, net, myId, speed, C.nivel);
+    if (net) preparar(C);
+    return r;
+  };
+  // En la sala: los capítulos que tienes abiertos, debajo de los niveles
+  const sel = $('lobbyLevel');
+  if (sel) new MutationObserver(() => {
+    if (sel.classList.contains('hidden') || sel.querySelector('optgroup[data-cap]')) return;
+    const g = document.createElement('optgroup');
+    const en = typeof LANG !== 'undefined' && LANG === 'en';
+    g.dataset.cap = '1'; g.label = en ? '📖 Story Mode' : '📖 Modo Historia';
+    CAPS.forEach((C, i) => {
+      if (!abierto(i) || !isLevelOpen('cap:' + C.id)) return;
+      const o = document.createElement('option');
+      o.value = 'cap:' + C.id; o.textContent = `${en ? 'Chapter' : 'Capítulo'} ${i + 1}: ${t(C.titulo)}`;
+      g.appendChild(o);
+    });
+    if (!g.children.length) return;
+    sel.appendChild(g);
+    if (esCap(SAVE.level)) sel.value = SAVE.level;
+  }).observe(sel, { childList: true });
 
   const up = update;
   update = function () {   // eslint-disable-line no-global-assign

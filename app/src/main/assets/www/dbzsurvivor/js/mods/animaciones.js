@@ -67,6 +67,7 @@
   const tira = (f, w, h, n, s, pie) => ({ img: img(`assets/sprites/fx/tr_${f}.png`), w, h, n, s, pie });
   const CUTS = {
     'goku:3': tira('goku_ssj3', 32, 32, 7, 1.25, 2),
+    'goku:6': tira('goku_ui', 32, 32, 8, 1.25, 2), 'goku:7': tira('goku_ui', 32, 32, 8, 1.25, 2),   // Ultra Instinto (tools/hojas/ui_goku.py)
     'vegeta:1': tira('vegeta_ssj', 32, 32, 6, 1.25, 2),
     'gogetap:1': tira('gogeta', 32, 32, 7, 1.25, 2),
     'vegetto:1': tira('vegito', 32, 32, 8, 1.25, 2),

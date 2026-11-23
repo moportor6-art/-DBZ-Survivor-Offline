@@ -6,17 +6,18 @@
 //   a: aliados invocados / compañero [id, guerrero, nombre, etiqueta]  (el invitado crea su copia para dibujarlos)
 //   e: enemigos cambiados por los mods [nid, marca, Majin, nombre, aspecto, escala]
 //   b: cuentas atrás de jefes [nid, Namek, autodestrucción]
+//   h: Hit [nid, fase del Salto en el tiempo]; y en p, el 6.º valor: cuánto le queda al jugador con el tiempo detenido
 (() => {
   const MARCA = '\u0001mods';
   const defOrig = e => (e.boss ? BOSSES.find(b => b.id === e.id) : ENEMIES[e.id]) || e.def;
   const r1 = v => Math.round(v * 10) / 10;
 
   function estado() {
-    const p = [], a = [], e = [], b = [];
+    const p = [], a = [], e = [], b = [], h = [];
     for (const P of G.players) {
       if (P.gone) continue;
       p.push([P.id, P.formN || 1, (P.charging ? 1 : 0) | (P.ozaru ? 2 : 0) | (P.freeKi > 0 ? 4 : 0), P.mark && !P.mark.dead ? P.mark.nid : 0,
-        P.cuerpo || P.atk2 ? { cu: P.cuerpo || null, a2: (P.atk2 || []).map(a => [a.id, a.lvl]), ad: P.adapt || 0, cd: Math.ceil(P.cuerpoCd || 0) } : 0]);   // Ginyu (js/mods/ginyu.js)
+        P.cuerpo || P.atk2 ? { cu: P.cuerpo || null, a2: (P.atk2 || []).map(a => [a.id, a.lvl]), ad: P.adapt || 0, cd: Math.ceil(P.cuerpoCd || 0) } : 0, P.tiempoT > 0 ? r1(P.tiempoT) : 0]);   // Ginyu (js/mods/ginyu.js)
       if (P.ally && P.summon) a.push([P.id, P.charId, P.name, P.summon.tag || '']);
     }
     for (const q of G.enemies) {
@@ -25,9 +26,10 @@
       if (!q.friend && !q.majin && !cambia) continue;
       e.push([q.nid, q.friend ? q.friend.mark || '' : '', q.majin ? 1 : 0, cambia && q.def.name !== d0.name ? q.def.name : '',
         cambia && q.def.look !== d0.look ? (q.def.look && q.def.look.id) || '' : '', r1(q.scale)]);
+      if (q.hs) h.push([q.nid, q.hs.fase]);
       if (q.jf && (q.jf.doom > 0 || q.jf.sd > 0)) b.push([q.nid, r1(q.jf.doom || 0), r1(q.jf.sd || 0)]);
     }
-    return { p, a, e, b };
+    return { p, a, e, b, h };
   }
 
   let acc = 0;
@@ -49,7 +51,7 @@
         G.players.push(A);
       } catch (err) { /* sin copia: no se dibuja */ }
     }
-    for (const [id, n, f, mark, gy] of s.p || []) {
+    for (const [id, n, f, mark, gy, tq] of s.p || []) {
       const P = G.players.find(q => q.id === id);
       if (!P) continue;
       if (gy) {   // Ginyu: su cuerpo, la segunda fila y la Adaptación
@@ -60,6 +62,7 @@
       if ((P.formN || 1) !== n && window.KiForms && 1 + ((window.FUSION_FORMS || {})[P.charId] || []).length >= n) window.KiForms.set(P, n);   // (sin la maestría: esa es del anfitrión)
       P.charging = !!(f & 1); P.ozaru = !!(f & 2); P.freeKi = f & 4 ? 1 : 0;
       P.mark = mark ? G.enemies.find(q => q.nid === mark) || null : null;
+      P.tiempoT = tq || 0;   // Hit detuvo el tiempo (js/mods/hit.js)
     }
     const byNid = new Map(G.enemies.map(q => [q.nid, q]));
     for (const [nid, mark, majin, name, look, scale] of s.e || []) {
@@ -75,6 +78,7 @@
     }
     for (const q of G.enemies) if (q.jf) q.jf.doom = q.jf.sd = 0;
     for (const [nid, doom, sd] of s.b || []) { const q = byNid.get(nid); if (q) q.jf = { doom, sd }; }
+    for (const [nid, fase] of s.h || []) { const q = byNid.get(nid); if (q) q.hs = { fase }; }
   }
 
   const lt = localText;

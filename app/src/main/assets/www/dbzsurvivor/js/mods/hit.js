@@ -59,7 +59,7 @@
     if (!G || G.mode !== 'play') return r;
     if (G.hitTinte > 0) G.hitTinte -= dt;
     for (const P of G.players) if (P.tiempoT > 0) P.tiempoT -= dt;
-    for (const e of G.enemies) if (e.id === 'hit' && e.boss && !e.dead) { try { jefe(e, dt); } catch (err) { /* que no frene la partida */ } }
+    if (!(G.net && G.net.role === 'client')) for (const e of G.enemies) if (e.id === 'hit' && e.boss && !e.dead) { try { jefe(e, dt); } catch (err) { /* que no frene la partida */ } }
     return r;
   };
 

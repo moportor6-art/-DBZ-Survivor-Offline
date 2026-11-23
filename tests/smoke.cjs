@@ -80,7 +80,7 @@ function serve() {
 
   const info = await page.evaluate(() => ({
     chars: Object.keys(CHARACTERS),
-    levels: LEVELS.map(l => l.id).concat(typeof BONUS_LEVELS !== 'undefined' ? BONUS_LEVELS.map(l => l.id) : []),
+    levels: LEVELS.map(l => l.id).concat(typeof BONUS_LEVELS !== 'undefined' ? BONUS_LEVELS.map(l => l.id).filter(id => !id.startsWith('cap:') || id === 'cap:poder') : []),
   }));
   const chars = QUICK ? info.chars.filter((_, i) => i % 4 === 0) : info.chars;
   console.log(`Guerreros: ${info.chars.length} (probando ${chars.length}) · Niveles: ${info.levels.join(', ')}`);
