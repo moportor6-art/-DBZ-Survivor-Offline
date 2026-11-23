@@ -158,6 +158,42 @@
     announce(`Capítulo ${CAPS.indexOf(C) + 1}: ${C.titulo}`, '#ffd93b');
   }
 
+  // ─── Jefes a la medida de tu poder ───
+  // Con las mejoras de la tienda y las técnicas evolucionadas, un jefe con vida fija caía en 1-2 segundos.
+  // Se mide el daño que hacen los jugadores en los últimos 20 s y, al llegar, el jefe tiene al menos la vida
+  // para aguantar unos segundos de ese daño (el final, 20 s en el capítulo 1 hasta ~60 s; los demás, 8 a ~24 s;
+  // como ese daño se reparte entre muchos enemigos, contra él solo dura bastante más). También pega más fuerte.
+  const VENT = 20;
+  let dps = null;
+  const de = damageEnemy;
+  damageEnemy = function (e) {   // eslint-disable-line no-global-assign
+    if (!G || !G.historia || !e || e.dead) return de.apply(this, arguments);
+    const antes = e.hp, r = de.apply(this, arguments);
+    const d = antes - Math.max(0, e.hp);
+    if (d > 0 && isFinite(d)) {
+      if (!dps || dps.g !== G) dps = { g: G, seg: new Array(VENT).fill(0), t: new Array(VENT).fill(-1) };
+      const s0 = Math.floor(G.t), k = s0 % VENT;
+      if (dps.t[k] !== s0) { dps.seg[k] = 0; dps.t[k] = s0; }
+      dps.seg[k] += d;
+    }
+    return r;
+  };
+  const sb = spawnBoss;
+  spawnBoss = function (b) {   // eslint-disable-line no-global-assign
+    const r = sb.apply(this, arguments);
+    const C = G && G.historia && capDe(G.historia), e = G && G.enemies[G.enemies.length - 1];
+    if (!C || !e || !e.boss || e._aMedida) return r;
+    e._aMedida = true;
+    const i = CAPS.indexOf(C), seg = e.final ? 20 + i * 2 : 8 + i * 0.8;
+    const ahora = Math.floor(G.t);
+    const poder = dps && dps.g === G ? dps.seg.reduce((a, v, k) => a + (dps.t[k] > ahora - VENT ? v : 0), 0) / Math.min(VENT, Math.max(1, G.t)) : 0;
+    const hp = Math.round(Math.max(e.hp, poder * seg));
+    e.hp = e.maxHp = hp;
+    const vida = Math.max(...G.players.filter(P => !P.ally).map(P => P.maxHp || 100));
+    e.dmg = Math.round(Math.max(e.dmg * (1.3 + i * 0.04), vida * (0.08 + i * 0.004)));
+    return r;
+  };
+
   // ─── Cooperativo: el anfitrión elige un capítulo en la sala y cada uno juega con su guerrero ───
   // Cada capítulo es un «nivel» más ('cap:<id>') al final de BONUS_LEVELS (levelDef lo encuentra; el menú no lo muestra),
   // así viaja por la sala y el inicio de net.js sin tocarlo. newGame lo convierte en el nivel real + el capítulo.
