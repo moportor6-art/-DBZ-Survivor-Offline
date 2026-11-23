@@ -276,3 +276,12 @@ function charRegen(P) {
 for (const [id, atk] of Object.entries({ olibu: 'rugido', ginyup: 'milkycannon', taop: 'dodonray', a19p: 'rayosojos', puipuip: 'disparozoon', nappap: 'breakcannon' })) {
   if (CHARACTERS[id] && ATTACKS[atk]) CHARACTERS[id].start = atk;
 }
+
+// ─── Hit (sprites de OrdoMandalore, estilo Legacy of Goku / Buu's Fury; tools/hojas/hit.py) ───
+// No se compra: se desbloquea con los retos del Universo 6 (js/mods/hit.js y la pestaña Retos de las misiones).
+CHARACTERS.hitp = { name: 'Hit', title: 'El asesino legendario del Universo 6', hp: 105, speed: 2.75, start: 'golpeinvisible',
+  transform: 'Salto en el tiempo perfeccionado', perk: 'Asesino profesional: +20% de daño a los jefes', bossBonus: 0.2, aura: '#b46bff',
+  look: { ...CHARACTERS.goku.look, id: 'hitp', ssjHair: null }, ssjHair: null, fusion: true,
+  unlock: { kind: 'retos', text: 'Completa los retos del Universo 6 (Misiones → Retos)' } };
+SPRITE_OVERRIDES.hitp = fusionSheet('hitp', 32, 32, true);
+

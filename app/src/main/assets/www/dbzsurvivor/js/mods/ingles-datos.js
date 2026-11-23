@@ -88,6 +88,7 @@
     ondanail: ["Nail's Ki", "Nail, Namek's strongest warrior, fires Ki bursts that pierce the first enemy."],
     rayocold: ["King's Ray", "Frieza's father's Death Beam: thicker and slower than his son's, but it pierces everyone."],
     bombacui: ["Cui's Barrage", 'Cui fires a shower of small spheres in a fan.'],
+    golpeinvisible: ['Invisible Strike', 'Hit punches so fast nobody sees the fist: a flurry of blows on everyone close to him.'],
   };
   for (const [id, [name, desc]] of Object.entries(A)) if (ATTACKS[id]) Object.assign(ATTACKS[id], { name, desc });
 
@@ -144,12 +145,14 @@
     nailp: ['Nail', "Namek's strongest warrior", 'Power of Namek', 'Namekian regeneration: recovers 1.2% of his health per second, double at low health'],
     coldp: ['King Cold', 'The father of Frieza and Cooler', "King's Power", 'Ruler of the universe: +25% Zeni and +10% damage'],
     cuip: ['Cui', "Vegeta's rival in Frieza's army", "Cui's Power", 'Agile: Ki charges 20% faster'],
+    hitp: ['Hit', 'The legendary assassin of Universe 6', 'Perfected Time Skip', 'Professional assassin: +20% damage to bosses'],
   };
   for (const [id, [name, title, transform, perk]] of Object.entries(C)) {
     const c = CHARACTERS[id];
     if (!c) continue;
     Object.assign(c, { name, title, transform, perk });
     if (c.unlock && /Zeni/.test(c.unlock.text || '')) c.unlock = { ...c.unlock, text: BUY };
+    if (c.unlock && c.unlock.kind === 'retos') c.unlock = { ...c.unlock, text: 'Complete the Universe 6 challenges (Missions → Challenges)' };
   }
 
   // Formas (en orden, desde la 2.ª): [nombre, historia]
@@ -197,6 +200,7 @@
   // Firmas de identidad
   const I = {
     goku: 'Eager to fight: +25% damage to elites and bosses. His forms go up to Mastered Ultra Instinct.',
+    hitp: 'Time Skip: every 12 s (8 s transformed) stops time for nearby enemies for 1.6 s (bosses, 0.6 s). He hits the frozen ones for +50%.',
     vegeta: 'Zenkai: every time he survives below 25% health, his damage rises 7% for the rest of the run (up to 5 times).',
     gohan: 'Bottled-up rage: taking hits fills his rage (+1% damage per 1% health lost, up to +40%; it fades over time).',
     gohanc: 'Father and son: his beams hit up to 60% harder the less health he has.',
@@ -276,7 +280,9 @@
   if (window.trMods) {
     const extraD = { 'Vegeta Ozaru': 'Great Ape Vegeta', 'Súper Cell Perfecto': 'Super Perfect Cell', 'Golden Freezer (agotado)': 'Golden Frieza (exhausted)',
       'Toppo (Dios de la Destrucción)': 'Toppo (God of Destruction)', 'Jiren (al límite)': 'Jiren (Full Power)', 'Zarbon (monstruo)': 'Zarbon (monster)',
-      '¡Cambio de cuerpo!': 'Body Change!', 'Ningún élite o jefe cerca': 'No elite or boss nearby' };
+      '¡Cambio de cuerpo!': 'Body Change!',
+      'Mi trabajo es simple: cuando te das cuenta, ya te golpeé.': "My job is simple: by the time you notice, I've already hit you.",
+      '¡Entonces voy a ser más rápido que tu tiempo!': "Then I'll be faster than your time!", 'Ningún élite o jefe cerca': 'No elite or boss nearby' };
     for (const k in extraD) EN_TEXT[k] = extraD[k];
   }
 })();

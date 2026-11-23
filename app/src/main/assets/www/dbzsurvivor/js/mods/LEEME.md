@@ -37,7 +37,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `tienda.js` | Efectos en partida de los artículos nuevos de la tienda | `game.js` |
 | `kiai.js` | Efecto e ícono de la mejora Kiai | `game.js` |
 | `musica.js` | Música mp3 | `game.js` |
-| `misiones.js` | Misiones diarias | `game.js` |
+| `misiones.js` | Misiones diarias (4), semanales (3) y retos permanentes con escalones; localStorage `fusion.daily`, `fusion.weekly`, `fusion.retos`. Expone `window.FusionRetos` | `game.js` |
 | `pestanas.js` | Pestañas para filtrar guerreros | `game.js` |
 | `graficos.js` | Límite de FPS, 90/120 Hz, resolución, modo batería | `game.js` |
 | `actualizaciones.js` | Ventana de Actualizaciones (la hace `Updater.java`) | `game.js` |
@@ -58,6 +58,7 @@ creador, se reemplaza `js/` y nuestros mods se vuelven a enganchar solos.
 | `guardar.js` | Guardar y salir (pausa), autoguardado al cerrar la app y cada 20 s, ▶ Continuar en el menú; localStorage `fusion.partida` (se borra al continuar, al empezar otra o al terminar) | después de `editarhud.js` |
 | `bestia.js` | Técnicas de forma: Gohan Bestia (Despertar de la Bestia al entrar y Makankosappo automático) y Black Freezer (onda Poder Black al entrar y triple Rayo Mortal Negro automático) | después de `guardar.js` |
 | `capitulos.js` | Modo Historia: 14 capítulos con guerrero, jefes, escenas, estrellas y Zeni; misiones y logros en la misma pantalla; localStorage `fusion.capitulos` | antes de `historia.js` (usa `window.dialogo`) |
+| `hit.js` | Hit: jefe del Torneo del Poder con Salto en el tiempo (te congela y te golpea por la espalda) y esquiva; jugable con su firma; se desbloquea con el reto «Rival del Universo 6» (`unlock.kind: 'retos'`) | después de `capitulos.js` (agrega a Hit al capítulo) |
 | `historia.js` | Escenas con retratos al empezar, al llegar el jefe final y al ganar (localStorage `fusion.historia`) | **la última de todas** (después de `telemetry.js`): es la que congela `update` y necesita `tourPortrait` |
 | `ingles.js` | Inglés para lo de los mods: diálogos y títulos (en los datos), avisos del lienzo (t, hudText) y botones/pantallas (observador del DOM) | **al final**, después de `historia.js` |
 | `ingles-datos.js` | Inglés de los datos de los mods por id: técnicas, guerreros, formas, firmas, mejoras y tienda | después de `ingles.js` |

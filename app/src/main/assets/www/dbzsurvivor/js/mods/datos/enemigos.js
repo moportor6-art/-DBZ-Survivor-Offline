@@ -140,6 +140,8 @@ for (const [id, w, h] of [['jiren', 36, 41], ['toppo', 69, 53]]) {
 }
 BOSSES.push(
   { id: 'toppo', name: 'Toppo', hp: 16000, speed: 1.3, r: 24, dmg: 28, scale: 1.4, every: 1.9, patterns: ['slam', 'aimed', 'dash', 'ring'], look: { ...FB('#c03030'), id: 'toppo' } },
+  // Hit: su Salto en el tiempo está en js/mods/hit.js (la hoja, hitp, se arma en guerreros.js)
+  { id: 'hit', name: 'Hit', hp: 22000, speed: 1.75, r: 18, dmg: 30, scale: 1.3, every: 1.7, patterns: ['dash', 'aimed', 'dash', 'slam'], look: { ...FB('#b46bff'), id: 'hitp' } },
   { id: 'jiren', name: 'Jiren', hp: 34000, speed: 1.8, r: 20, dmg: 32, scale: 1.45, every: 1.5, patterns: ['aimed', 'dash', 'ring', 'slam', 'aimed', 'ring'], look: { ...FB('#c0c0c8'), id: 'jiren' } },
 );
 LEVELS.push({ id: 'poder', num: 8, openAfter: 'leyendas', theme: 'poder',
@@ -148,4 +150,4 @@ LEVELS.push({ id: 'poder', num: 8, openAfter: 'leyendas', theme: 'poder',
   spawns: [{ id: 'soldier', from: 0, weight: 10 }, { id: 'ninja', from: 0, weight: 6 }, { id: 'samurai', from: 60, weight: 6 },
     { id: 'msoldado', from: 90, weight: 6 }, { id: 'gunman', from: 120, weight: 5 }, { id: 'vampire', from: 180, weight: 4 }, { id: 'trex', from: 360, weight: 2 }],
   swarm: 'soldier', swarmText: '¡Las Tropas del Orgullo te rodean!',
-  bosses: [{ id: 'toppo', at: 240, hp: 16000 }, { id: 'jiren', at: 600, hp: 34000, final: true }] });
+  bosses: [{ id: 'toppo', at: 240, hp: 16000 }, { id: 'hit', at: 420, hp: 22000 }, { id: 'jiren', at: 600, hp: 34000, final: true }] });

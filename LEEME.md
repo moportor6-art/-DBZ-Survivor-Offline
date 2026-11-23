@@ -53,6 +53,7 @@ reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
 - Buu's Fury (The Spriters Resource): soldados Majin ripeados por SpYn; mapas de West City, Planeta del Gran Kaio y
   Roshi's Island por -Bwar-; HFIL por Flint829; Templo de Kami por SpYn y Ghost.
 - Dragon Ball Sagas (estilo Legendary Super Warriors): Jiren de Exigeek y Keegixe; Toppo de thekrillmaster
+- Hit (estilo Legacy of Goku / Buu's Fury): OrdoMandalore (tools/hojas/hit.py)
   (hojas armadas con `tools/hojas/u11.py`).
 - Gohan Bestia: hoja "Ultimate LSW" de Andresz2021 (armada con `tools/swl/gohan_bestia2.py`; la anterior, de BlackSanyT con AlexKX29 y orumaitoobeso, queda en `tools/swl/gohan_bestia.py`).
 - Black Freezer: hoja de autor desconocido (armada con `tools/swl/black_freezer.py`).

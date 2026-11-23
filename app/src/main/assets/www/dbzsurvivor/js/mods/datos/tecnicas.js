@@ -359,4 +359,8 @@ Object.assign(ATTACKS, {
   bombacui: { name: 'Ráfaga de Cui', color: '#ffe14d', type: 'projectile', kind: 'ball', users: ['cuip'],
     desc: 'Cui dispara una lluvia de esferas pequeñas en abanico.',
     stats: l => ({ cd: 1.3 - l * 0.08, dmg: 8 + l * 4, count: 3 + Math.floor(l / 2), speed: 8, r: 4, pierce: 0, life: 1.1, spread: 0.35 }) },
+  // Hit (js/mods/hit.js): el asesino del Universo 6
+  golpeinvisible: { name: 'Golpe Invisible', color: '#c27aff', type: 'nova', punch: true, users: ['hitp'],
+    desc: 'Hit golpea tan rápido que nadie ve el puño: una ráfaga de golpes a todos los que tiene cerca.',
+    stats: l => ({ cd: 0.95 - l * 0.05, dmg: 16 + l * 7, radius: 70 + l * 8 }) },
 });
