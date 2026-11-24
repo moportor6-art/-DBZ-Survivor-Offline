@@ -74,7 +74,7 @@ LEVELS.push(
       { id: 'vampire', from: 90, weight: 6 }, { id: 'mummy', from: 180, weight: 5 }],
     swarm: 'skeleton', swarmText: '¡Los muertos del Infierno os rodean!',
     bosses: [{ id: 'yakon', at: 120, hp: 5000 }, { id: 'taob', at: 240, hp: 6000 }, { id: 'pikkon', at: 390, hp: 10000 },
-      { id: 'janemba', at: 600, hp: 22000, final: true }] },
+      { id: 'janemba', at: 600, hp: 19000, final: true }] },   // (2.36.7: se cura un 20% a la mitad)
   { id: 'leyendas', num: 7, openAfter: 'otromundo', desc: 'Los villanos de las películas vuelven por venganza.', theme: 'yermo',
     hp: 2.3, dmg: 1.4, zeni: 2.5,
     spawns: [{ id: 'bandit', from: 0, weight: 10 }, { id: 'ninja', from: 0, weight: 8 }, { id: 'ptero', from: 60, weight: 5 },

@@ -90,8 +90,8 @@
   };
   J('frostb', 'Frost', 16000, 1.7, 18, 26, 1.45, 1.9, ['aimed', 'dash', 'ring', 'aimed'], 'frostb', 52, '#c8a0e8');
   J('willowb', 'Dr. Willow', 22000, 1.4, 22, 30, 1.5, 1.9, ['slam', 'aimed', 'ring', 'aimed'], 'willowb', 56, '#4a5a7a');
-  J('cellmaxb', 'Cell Max', 34000, 1.2, 26, 36, 1.7, 1.8, ['slam', 'ring', 'aimed', 'slam'], 'cellmaxb', 62, '#c03a2a');
-  J('lishenb', 'Super Li Shenron', 28000, 1.9, 18, 32, 1.5, 1.6, ['dash', 'aimed', 'ring', 'dash'], 'lishenb', 48, '#8a5ae0');
+  J('cellmaxb', 'Cell Max', 30000, 1.2, 26, 36, 1.7, 1.8, ['slam', 'ring', 'aimed', 'slam'], 'cellmaxb', 62, '#c03a2a');
+  J('lishenb', 'Super Li Shenron', 30000, 1.9, 18, 32, 1.5, 1.6, ['dash', 'aimed', 'ring', 'dash'], 'lishenb', 48, '#8a5ae0');
 
   const zonas = (n, r, dmg, extra = {}) => {
     const ps = G.players.filter(P => !P.dead && !P.gone && !P.hidden);

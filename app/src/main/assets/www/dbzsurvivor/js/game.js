@@ -876,7 +876,9 @@ const lateRamp = k => G.lv.infinite ? 1 + Math.max(0, G.t - KAIO.from) / k : 1;
 function hpScale() { return (1 + G.t / 110) * coop() * G.lv.hp * lateRamp(KAIO.hpK); }
 // Vida de un jefe al aparecer: en el Nivel 5 también se acelera, más suave que la horda, para que los jefes sigan
 // siendo jefes sin apilarse demasiado pronto
-const bossHp = b => b.hp * coop() * (rule('bossHp') ? 2 : 1) * lateRamp(KAIO.bossK);
+// 2.36.7 (reporte: Kid Buu le ganaba a Ultra Instinto Dominado): los jefes, un 20% menos de vida; los finales, un 30% menos
+const BOSS_HP_K = 0.8, FINAL_HP_K = 0.75;
+const bossHp = b => b.hp * (b.final ? FINAL_HP_K : BOSS_HP_K) * coop() * (rule('bossHp') ? 2 : 1) * lateRamp(KAIO.bossK);
 // Tope de los élites: nunca más del 75% de la vida de un jefe de ese momento. Antes los élites de los enemigos
 // más resistentes superaban a los jefes, y en el Nivel 5 cualquier élite los alcanzaba (2.23.4). La referencia:
 //   niveles normales: el último jefe que apareció (o el primero, si todavía no salió ninguno)

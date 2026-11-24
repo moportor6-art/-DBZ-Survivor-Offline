@@ -97,6 +97,7 @@
     dirs: DIRS_PLAIN, variants: 3, variantRows: 3 };
 
   // ─── Jefes ───
+  // (2.36.7: vidas ordenadas para que suban capítulo a capítulo: Rildo < Baby < Ozaru < Super 17 < los dragones < Syn < Omega)
   const J = (id, name, hp, speed, r, dmg, scale, every, patterns, file, cuerpo, color) => {
     SPRITE_OVERRIDES[id] = hoja(file, cuerpo);
     BOSSES.push({ id, name, hp, speed, r, dmg, scale, every, patterns, look: { ...FB(color), id } });
@@ -104,17 +105,17 @@
   J('rildob', 'General Rildo', 9000, 1.2, 24, 22, 1.4, 2.2, ['aimed', 'slam', 'aimed', 'ring'], 'rildo', 52, '#c8d0e0');
   J('babyb', 'Super Baby Vegeta', 14000, 1.8, 18, 26, 1.4, 1.9, ['aimed', 'dash', 'ring', 'aimed'], 'babyv', 52, '#e8e8f0');
   J('super17b', 'Super 17', 20000, 1.7, 18, 28, 1.45, 1.8, ['aimed', 'dash', 'ring', 'slam'], 'super17', 46, '#3a5aa0');
-  J('hazeb', 'Haze Shenron', 13000, 1.3, 20, 24, 1.6, 2.1, ['aimed', 'slam', 'ring'], 'hazeshen', 40, '#6a9a3a');
-  J('rageb', 'Rage Shenron', 15000, 1.7, 18, 26, 1.5, 1.9, ['dash', 'aimed', 'ring'], 'rageshen', 40, '#c0302a');
-  J('oceanb', 'Oceanus Shenron', 16000, 1.8, 18, 27, 1.5, 1.8, ['aimed', 'ring', 'dash'], 'oceanshen', 44, '#3ab09a');
-  J('naturb', 'Naturon Shenron', 18000, 1.3, 22, 30, 1.6, 2.0, ['slam', 'aimed', 'ring'], 'naturshen', 44, '#7a5a30');
-  J('eisb', 'Eis Shenron', 14000, 1.9, 18, 26, 1.5, 1.8, ['aimed', 'dash', 'ring'], 'eisshen', 44, '#5ab8d8');
-  J('novab', 'Nova Shenron', 20000, 1.7, 18, 30, 1.55, 1.8, ['dash', 'aimed', 'ring', 'slam'], 'novashen', 44, '#e0a030');
-  J('synb', 'Syn Shenron', 26000, 1.7, 20, 32, 1.45, 1.7, ['aimed', 'ring', 'dash', 'slam'], 'synshen', 50, '#e8e8e0');
+  J('hazeb', 'Haze Shenron', 20000, 1.3, 20, 24, 1.6, 2.1, ['aimed', 'slam', 'ring'], 'hazeshen', 40, '#6a9a3a');
+  J('rageb', 'Rage Shenron', 21000, 1.7, 18, 26, 1.5, 1.9, ['dash', 'aimed', 'ring'], 'rageshen', 40, '#c0302a');
+  J('oceanb', 'Oceanus Shenron', 22000, 1.8, 18, 27, 1.5, 1.8, ['aimed', 'ring', 'dash'], 'oceanshen', 44, '#3ab09a');
+  J('naturb', 'Naturon Shenron', 23000, 1.3, 22, 30, 1.6, 2.0, ['slam', 'aimed', 'ring'], 'naturshen', 44, '#7a5a30');
+  J('eisb', 'Eis Shenron', 22000, 1.9, 18, 26, 1.5, 1.8, ['aimed', 'dash', 'ring'], 'eisshen', 44, '#5ab8d8');
+  J('novab', 'Nova Shenron', 25000, 1.7, 18, 30, 1.55, 1.8, ['dash', 'aimed', 'ring', 'slam'], 'novashen', 44, '#e0a030');
+  J('synb', 'Syn Shenron', 30000, 1.7, 20, 32, 1.45, 1.7, ['aimed', 'ring', 'dash', 'slam'], 'synshen', 50, '#e8e8e0');
   J('omegab', 'Omega Shenron', 40000, 1.8, 22, 36, 1.55, 1.5, ['aimed', 'ring', 'dash', 'slam', 'aimed'], 'omegashen', 50, '#f0f0e8');
   SPRITE_OVERRIDES.babyozaru = { src: 'assets/sprites/fusion/gt/babyozaru.png', frameW: 34, frameH: 64, footY: 64, fps: 10, scale: 1.25 * 44 / 64,
     anims: { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 } }, dirs: DIRS_PLAIN };
-  BOSSES.push({ id: 'babyozaru', name: 'Baby Ozaru dorado', hp: 30000, speed: 0.9, r: 30, dmg: 34, scale: 2.2, every: 2.0,
+  BOSSES.push({ id: 'babyozaru', name: 'Baby Ozaru dorado', hp: 24000, speed: 0.9, r: 30, dmg: 34, scale: 2.2, every: 2.0,
     patterns: ['slam', 'aimed', 'ring', 'slam'], look: { ...FB('#e8c040'), id: 'babyozaru' } });
 
   // Técnicas especiales de cada jefe (cada «every» segundos; usan las piezas del motor de jefes)

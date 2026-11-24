@@ -566,7 +566,7 @@ const LEVELS = [
       { id: 'warthog', from: 60, weight: 6 }, { id: 'snake', from: 120, weight: 6 },
       { id: 'sabertooth', from: 240, weight: 5 }, { id: 'triceratops', from: 360, weight: 2 }],
     swarm: 'saibaman', swarmText: '¡Una horda de Saibaimans os rodea!',
-    bosses: [{ id: 'raditz', at: 150, hp: 900 }, { id: 'nappa', at: 360, hp: 2600 }, { id: 'vegetas', at: 600, hp: 6500, final: true }] },
+    bosses: [{ id: 'raditz', at: 150, hp: 900 }, { id: 'nappa', at: 360, hp: 2600 }, { id: 'vegetas', at: 600, hp: 5500, final: true }] },
   { id: 'namek', num: 2, desc: 'Planeta Namek, bajo el ejército de Freezer.', theme: 'namek',
     hp: 1.3, dmg: 1.15, zeni: 1.3,
     spawns: [{ id: 'soldier', from: 0, weight: 10 }, { id: 'nbird', from: 0, to: 300, weight: 6 },

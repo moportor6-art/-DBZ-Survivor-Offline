@@ -101,10 +101,10 @@
       window.dismissAlly(A); heal(e, 0.15);
       powerUp(e, { dmg: 1.15, color: '#ff8ad0', text: `¡Super Buu absorbió a ${A.name}!` });
     },
-    buu(e, dt) {   // Kid Buu: si nadie lo golpea en 3 s, se regenera
+    buu(e, dt) {   // Kid Buu: si nadie lo golpea en 4 s, se regenera (2.36.7: antes 3 s y 2,5%/s, casi no se le podía ganar)
       if (e.hp < (e.jf.last ?? e.hp)) e.jf.quieto = 0; else e.jf.quieto = (e.jf.quieto || 0) + dt;
-      if (e.jf.quieto > 3 && e.hp < e.maxHp) {
-        e.hp = Math.min(e.maxHp, e.hp + e.maxHp * 0.025 * dt);
+      if (e.jf.quieto > 4 && e.hp < e.maxHp) {
+        e.hp = Math.min(e.maxHp, e.hp + e.maxHp * 0.012 * dt);
         if (Math.random() < 0.08) burst(e.x, e.y - 10, '#ff8ad0', 4, 2, 2);
         if (once(e, 'avisoRegen')) announce('¡Kid Buu se regenera! No dejes de golpearlo', '#ff8ad0');
       }
