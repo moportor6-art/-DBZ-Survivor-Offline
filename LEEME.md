@@ -57,6 +57,7 @@ reemplaza los archivos de su carpeta en `assets/www/` con la versión nueva del 
   (hojas armadas con `tools/hojas/u11.py`).
 - Gohan Bestia: hoja "Ultimate LSW" de Andresz2021 (armada con `tools/swl/gohan_bestia2.py`; la anterior, de BlackSanyT con AlexKX29 y orumaitoobeso, queda en `tools/swl/gohan_bestia.py`).
 - Black Freezer: hoja de autor desconocido (armada con `tools/swl/black_freezer.py`).
+- Dragon Ball GT (armadas con `tools/swl/gt`, originales en `tools/swl/gt/hojas`): Goku niño, Goku SSJ4, Vegeta SSJ y Super Baby Vegeta de *Dragon Ball GT: Transformation* (GBA), ripeadas por Darkbolt99; el General Rildo, ripeado por Nemu; Super 17 de Vairen Morningstar; Syn y Omega Shenron de AlquimistaSK (ULSW); Nova, Eis y Haze Shenron de «Mr. Satan» (Rage, Oceanus y Naturon son recoloreados suyos); Gogeta SSJ4 de YoshidaMitooBR (SWL+); Gogeta Xeno SSJ4 de Black Vinas (ULSW); los esbirros de una hoja de autor desconocido; el Baby Ozaru dorado es el Ozaru del juego recoloreado.
 - Tanda Harukanaru (Zarbon y su forma monstruo, Dodoria, Nail, Rey Cold, Cui, Appule, mercenarios de Freezer, Gozu, Mezu, Vegeta con rastreador, Freezer en su nave, 2.ª, 3.ª, final y 100%, y Mecha Freezer): sprites de *Dragon Ball Z: Harukanaru Densetsu* ripeados por Metal-Franky (armados con `tools/swl/harukanaru/build_all.py`).
 - Formas recoloreadas (Goku Dios, Vegeta Ego, Gohan Bestia, Orange Piccolo): hechas a partir de las hojas del juego (tools/recolor).
 - Efectos de aura, transformación de Goku, impactos y fuego: de DB Survivors (dbsurvivors.xyz), sacados con

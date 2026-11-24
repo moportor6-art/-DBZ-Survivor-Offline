@@ -1,0 +1,439 @@
+{
+ "babyv": {
+  "alto": 90,
+  "anims": {
+   "cast": {
+    "col": 8,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 95,
+  "w": 74
+ },
+ "eisshen": {
+  "alto": 38,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 42,
+  "w": 60
+ },
+ "gogetagt": {
+  "alto": 57,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 59,
+  "w": 65
+ },
+ "gogetaxeno": {
+  "alto": 58,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 60,
+  "w": 77
+ },
+ "gokugt": {
+  "alto": 40,
+  "anims": {
+   "cast": {
+    "col": 8,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 14,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 15,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 10,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 51,
+  "w": 54
+ },
+ "gokugt-ssj": {
+  "alto": 81,
+  "anims": {
+   "cast": {
+    "col": 8,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 14,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 10,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 88,
+  "w": 105
+ },
+ "hazeshen": {
+  "alto": 42,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 48,
+  "w": 42
+ },
+ "naturshen": {
+  "alto": 38,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 42,
+  "w": 60
+ },
+ "novashen": {
+  "alto": 38,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 42,
+  "w": 60
+ },
+ "oceanshen": {
+  "alto": 38,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 42,
+  "w": 60
+ },
+ "omegashen": {
+  "alto": 68,
+  "anims": {
+   "cast": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 70,
+  "w": 62
+ },
+ "rageshen": {
+  "alto": 42,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 48,
+  "w": 42
+ },
+ "rildo": {
+  "alto": 96,
+  "anims": {
+   "cast": {
+    "col": 7,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 99,
+  "w": 219
+ },
+ "super17": {
+  "alto": 42,
+  "anims": {
+   "cast": {
+    "col": 7,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 47,
+  "w": 43
+ },
+ "synshen": {
+  "alto": 65,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 68,
+  "w": 61
+ },
+ "vegetagt": {
+  "alto": 72,
+  "anims": {
+   "cast": {
+    "col": 7,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 9,
+    "count": 2,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 4,
+    "row": 0
+   }
+  },
+  "h": 78,
+  "w": 78
+ }
+}

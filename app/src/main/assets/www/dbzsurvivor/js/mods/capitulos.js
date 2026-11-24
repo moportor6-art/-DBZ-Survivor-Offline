@@ -120,13 +120,15 @@
       medio: [{ jefe: 'jiren', hp: 0.4, lines: [['jiren', 'Esta fuerza… no la había sentido nunca.'], ['yo', '¡Es la fuerza de todos los que pelearon antes que nosotros!']] }],
       fin: [['goku', 'Lo logramos, Vegeta.'], ['vegeta', 'No te acostumbres, Kakarotto.'], ['piccolo', 'La Tierra está a salvo. Esta vez, de verdad.']] },
   ];
+  // Dragon Ball GT (js/mods/gt.js): sus capítulos van antes de «La batalla final», que no los pide para abrirse
+  if (window.GT_CAPS) CAPS.splice(CAPS.findIndex(c => c.id === 'final'), 0, ...window.GT_CAPS);
   window.CAPITULOS = CAPS;
   const PREMIO_FINAL = 10000, PREMIO_ESTRELLAS = 15000;
 
   const prog = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
   const setProg = p => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* nada */ } };
   const abierto = i => i === 0 || (typeof TEST_MODE !== 'undefined' && TEST_MODE)
-    || (CAPS[i].especial ? CAPS.every((c, j) => j === i || (prog()[c.id] || 0) >= 1) : (prog()[CAPS[i - 1].id] || 0) >= 1);
+    || (CAPS[i].especial ? CAPS.every((c, j) => j === i || c.gt || (prog()[c.id] || 0) >= 1) : (prog()[CAPS[i - 1].id] || 0) >= 1);
   const premio = i => Math.round(400 * (1 + i * 0.15) / 10) * 10;   // Zeni por estrella nueva
   // Dificultad: cada capítulo dura más y aprieta más que el anterior (del 1, ~6 min, al 20, ~10 min; el final, 13 min).
   // Los jefes llegan más tarde (cuando ya estás más fuerte), así que también tienen bastante más vida.
