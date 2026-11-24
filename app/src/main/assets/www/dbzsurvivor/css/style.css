@@ -968,3 +968,9 @@ body:has(#levelup:not(.hidden)) .hud-tips, #levelup:not(.hidden) ~ .hud-tips { d
   #levelup .choice .rc-names, #levelup .choice .rc-tip { font-size: 11px; }
   #levelup .choice .card-tools { margin-top: 6px; padding-top: 6px; }
 }
+/* El cuadro de combinaciones nunca más ancho que la pantalla (2.36.1); si aun así no cabe, se achica entero */
+.combo-panel { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+#pause, #levelup { overflow-x: hidden; }
+/* Filas con casilla (Auto-aprender, Música de Legacy): el texto entero y la casilla al final, sin pisarse */
+.pause-map .vol-row:has(input[type="checkbox"]), .auto-row { display: flex; white-space: normal; justify-content: space-between; }
+.vol-row input[type="checkbox"] { width: auto; flex: none; }

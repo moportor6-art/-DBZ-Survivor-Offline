@@ -8,6 +8,9 @@
 // Se muestra al subir de nivel (a la izquierda de las cartas) y en la pausa. Las casillas tienen el cartel de siempre.
 const COMBO = { S: 46, GAP: 14, EVO_Y: 40, TEC_Y: 122, PAS_Y: 204, H: 290 };
 const comboX = i => i * (COMBO.S + COMBO.GAP);
+// Mejoras en filas de 5 (2.36.1): con las casillas extra de la Tienda el cuadro ya no se ensancha, crece hacia abajo
+const COMBO_COLS = 5, COMBO_ROW = 86;
+const comboPas = j => ({ x: comboX(j % COMBO_COLS), y: COMBO.PAS_Y + Math.floor(j / COMBO_COLS) * COMBO_ROW });
 
 function comboIcon(kind, id, dim) {
   const cv = document.createElement('canvas');
@@ -19,7 +22,8 @@ function comboIcon(kind, id, dim) {
 }
 
 function comboPanel(P) {
-  const { S, EVO_Y, TEC_Y, PAS_Y, H } = COMBO, W = comboX(Math.max(5, maxPassives(P))) - COMBO.GAP;   // más ancho con casillas extra (Tienda)
+  const { S, EVO_Y, TEC_Y, PAS_Y } = COMBO, W = comboX(COMBO_COLS) - COMBO.GAP;
+  const H = PAS_Y + Math.ceil(Math.max(COMBO_COLS, maxPassives(P)) / COMBO_COLS) * COMBO_ROW;   // más alto con casillas extra (Tienda)
   const owned = Object.keys(PASSIVES).filter(k => P.passives[k] > 0);   // en el mismo orden que el HUD
   const slots = owned.slice(), ghosts = new Set();
   // Qué evoluciona cada técnica y en qué estado está
@@ -56,8 +60,8 @@ function comboPanel(P) {
     svg += `<line x1="${tx}" y1="${TEC_Y}" x2="${tx}" y2="${EVO_Y + S + 4}" stroke="${r.state === 'ready' || r.state === 'done' ? '#ffd93b' : '#6b7bc8'}" stroke-width="${w}"${r.state === 'ready' || r.state === 'done' ? '' : ' stroke-dasharray="4 4"'} marker-end="url(#cbArrow)"/>`;
     // mejora → técnica (con un codo a una altura distinta por técnica, para que no se pisen)
     if (r.pj >= 0) {
-      const px = comboX(r.pj) + S / 2, my = PAS_Y - 8 - r.i * 5;
-      svg += `<path d="M${px} ${PAS_Y} L${px} ${my} L${tx} ${my} L${tx} ${TEC_Y + S}" fill="none" stroke="${c}" stroke-width="${w}"${dash}/>`;
+      const pp = comboPas(r.pj), px = pp.x + S / 2 + (pp.y > PAS_Y ? 8 : 0), my = PAS_Y - 8 - r.i * 5;   // (las de abajo, un poco corridas)
+      svg += `<path d="M${px} ${pp.y} L${px} ${my} L${tx} ${my} L${tx} ${TEC_Y + S}" fill="none" stroke="${c}" stroke-width="${w}"${dash}/>`;
     }
   }
   box.insertAdjacentHTML('beforeend', svg + '</svg>');
@@ -97,10 +101,10 @@ function comboPanel(P) {
   // Mejoras (las que tienes y, punteadas, las que faltan)
   for (let j = 0; j < maxPassives(P); j++) {
     const id = slots[j];
-    if (!id) { slot(comboX(j), PAS_Y, 'empty', t('Casilla libre de mejora')); continue; }
+    if (!id) { slot(comboPas(j).x, comboPas(j).y, 'empty', t('Casilla libre de mejora')); continue; }
     if (ghosts.has(id)) {
       const users = rows.filter(r => r.need === id && r.state === 'miss').map(r => ATTACKS[r.a.id].name).join(', ');
-      const g = slot(comboX(j), PAS_Y, 'ghost', `${PASSIVES[id].name}\n${PASSIVES[id].desc}\n${t('No la tienes: la necesita tu {name}', { name: users })}`);
+      const g = slot(comboPas(j).x, comboPas(j).y, 'ghost', `${PASSIVES[id].name}\n${PASSIVES[id].desc}\n${t('No la tienes: la necesita tu {name}', { name: users })}`);
       g.appendChild(comboIcon('pas', id, true));
       continue;
     }
@@ -113,7 +117,7 @@ function comboPanel(P) {
     const extra = linked ? '' : could.length ? `
 ★ ${t('Evoluciona con')}: ${could.map(k => ATTACKS[k].name).join(', ')} (${t('todavía no las tienes')})` : `
 ${t('No evoluciona ninguna técnica de este guerrero')}`;
-    const pe = slot(comboX(j), PAS_Y, linked ? '' : 'nolink', passiveTip(P, id) + extra);
+    const pe = slot(comboPas(j).x, comboPas(j).y, linked ? '' : 'nolink', passiveTip(P, id) + extra);
     pe.appendChild(comboIcon('pas', id));
     pe.insertAdjacentHTML('beforeend', `<span class="cb-lv">${t('Nv {n}', { n: P.passives[id] })}</span>`);
     if (could.length) {   // hasta 3 iconitos
