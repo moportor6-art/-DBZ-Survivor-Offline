@@ -557,6 +557,10 @@ const isFused = P => !!(G.fusion && G.fusion.phase === 'fused' && G.fusion.ids.i
 const FUSION_POWER = { dmg: 2.5, cd: 0.65, speed: 1.35, def: 0.5 };
 
 // ─── Estadísticas derivadas (por jugador) ────────────────────────────────────
+// Poder de la transformación (2.36.2): además del ×1,5 de daño (+ el bono del guerrero y de la forma), transformado
+// recibes un 25% menos de daño, haces un 25% más a los jefes, recargas un 25% más rápido y al transformarte recuperas
+// un 15% de la salud (reporte: Trunks en Super Saiyajin de la Ira no podía con King Cold)
+const TRANS_DEF = 0.75, TRANS_BOSS = 1.25, TRANS_CD = 0.75, TRANS_HEAL = 0.15;
 function dmgMult(P) {
   if (!P) return 1;
   let m = (rule('glass') ? 2 : 1) * (1 + 0.12 * P.passives.power) * (1 + (P.c.dmgBonus || 0)) * (1 + perk(P, 'atk')) * (1 + (P.wishDmg || 0)) * (1 + (P.limitDmg || 0));
@@ -574,7 +578,7 @@ const FURY_PER_LVL = 0.15, FURY_FULL_AT = 0.3;
 const furyBonus = P => FURY_PER_LVL * (P.passives.fury || 0) * Math.min(1, Math.max(0, 1 - P.hp / P.maxHp) / (1 - FURY_FULL_AT));
 function cdMult(P) {
   let m = Math.max(0.4, 1 - 0.08 * P.passives.focus - (P.c.cdBonus || 0) - perk(P, 'cd'));
-  if (P.transformed > 0) m *= 0.8;
+  if (P.transformed > 0) m *= TRANS_CD;
   if (isFused(P)) m *= FUSION_POWER.cd;
   return m;
 }
@@ -849,6 +853,7 @@ function doTransform(P, secs = 20, force = false) {
     return;
   }
   P.transformed = secs * (1 + (P.c.transformTime || 0)) * (1 + KI_FOCUS_DUR * focus);   // Trunks: dura un 50% más
+  P.hp = Math.min(P.maxHp, P.hp + P.maxHp * TRANS_HEAL);   // el estallido de poder también cura
   P.transBoost = KI_FOCUS_DMG * focus;
   G.shake = Math.max(G.shake, focus >= 1 ? 0.8 : 0.5);
   sfx('power');
@@ -1034,7 +1039,8 @@ function damageEnemy(e, amount, src, kb, owner, aid) {
   if (e.shield > 0) { if (Math.random() < 0.15) burst(e.x, e.y - 8, '#7fe6ff', 3, 2, 2); return; }   // Barrera del Androide 17
   const crit = Math.random() < critChance(owner);
   const boss = (e.boss && owner ? 1 + (owner.c.bossBonus || 0) : 1)   // Trunks del Futuro: más daño a los jefes
-    * ((e.boss || e.elite) && owner && owner.passives ? 1 + 0.25 * (owner.passives.tracker || 0) : 1);   // Rastreador
+    * ((e.boss || e.elite) && owner && owner.passives ? 1 + 0.25 * (owner.passives.tracker || 0) : 1)   // Rastreador
+    * (e.boss && owner && owner.transformed > 0 && owner.c && !owner.c.buddy ? TRANS_BOSS : 1);   // transformado: más daño a los jefes
   const d = Math.max(1, Math.round(amount * dmgMult(owner) * boss * (crit ? critMult(owner) : 1)));
   if (owner && aid) creditDmg(owner, aid, Math.min(d, Math.max(0, e.hp)));
   e.hp -= d;
@@ -1108,7 +1114,7 @@ function hurtPlayer(P, amount, kind) {
     addText(P.x, P.y - 26, '¡Esquivado!', '#e8f2ff');
     return;
   }
-  const tough = isFusedBody(P) ? FUSION_POWER.def : 1;   // Gogeta recibe la mitad del daño
+  const tough = isFusedBody(P) ? FUSION_POWER.def : P.transformed > 0 && !P.c.buddy ? TRANS_DEF : 1;   // Gogeta recibe la mitad del daño
   const d = Math.max(1, Math.round(amount * tough * dmgScale() * (1 - perk(P, 'def')) - P.passives.armor));
   P.hp -= d;
   P.stats.taken += d;
@@ -1155,7 +1161,7 @@ function nearestEnemy(P, maxD = 480) {
 // Multiplicación (+1 proyectil a nivel 1 y otro a nivel 4, en las técnicas que disparan varios)
 // Multiplicación (un solo nivel): +1 proyectil, solo en las técnicas que ya disparan varios (las de una sola
 // esfera grande, como la Genkidama, no se multiplican)
-const multiExtra = l => (l > 0 ? 1 : 0);
+const multiExtra = l => Math.max(0, l || 0);   // 2.36.2: 4 niveles, +1 proyectil por nivel
 // Suerte de Mr. Satán (2.18.5; antes +25% por nivel, era demasiado): cuánto más de semillas, cápsulas y Zeni al
 // terminar, en %, según el nivel (hasta +8% a nivel 5)
 const LUCK_PCT = [0, 2, 3, 5, 6, 8];

@@ -259,7 +259,7 @@
 
   // Mejoras cambiadas por los mods y artículos nuevos de la tienda
   const P = {
-    multi: '+1 projectile on your firing techniques, and a second fanned beam on your beams. A single level.',
+    multi: '+1 projectile per level on your firing techniques, and one more fanned beam per level on your beams. Up to 4 levels.',
     focus: '-8% cooldown for techniques and for the Ki to transform.',
     kictl: 'Ki charges 15% faster and your transformations drain 5% less.',
   };

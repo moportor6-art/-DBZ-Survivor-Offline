@@ -44,11 +44,14 @@ function maxPassives(P) {
 
 // ─── Multiplicación arreglada: también los rayos (un segundo rayo en abanico) ───
 // La base solo sumaba un proyectil a técnicas que ya disparaban 2 o más (game.js, attackStats): ahora es desde 1.
-PASSIVES.multi.desc = '+1 proyectil a tus técnicas que disparan, y un segundo rayo en abanico a tus rayos. Un solo nivel.';
+PASSIVES.multi.desc = '+1 proyectil por nivel a tus técnicas que disparan, y un rayo más en abanico a tus rayos por nivel. Hasta 4 niveles.';
+PASSIVES.multi.max = 4;   // (2.36.2: antes un solo nivel)
 function beamAngles(P, def, ang) {
   const base = def.both ? [ang, ang + Math.PI] : [ang];
   if (!(P && P.passives && P.passives.multi > 0)) return base;
-  return base.flatMap(a => [a, a + 0.3]);
+  const n = P.passives.multi, offs = [];   // nivel 1: +0,3 · 2: −0,3 · 3: +0,6 · 4: −0,6
+  for (let k = 1; k <= n; k++) offs.push((k % 2 ? 1 : -1) * 0.3 * Math.ceil(k / 2));
+  return base.flatMap(a => [a, ...offs.map(o => a + o)]);
 }
 
 // Recarga global (js/mods/tienda.js): la recarga también acelera el Ki para transformarte

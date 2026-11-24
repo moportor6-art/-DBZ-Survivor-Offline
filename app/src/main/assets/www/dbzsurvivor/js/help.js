@@ -82,7 +82,7 @@ function buildHelp() {
     section('Ki y transformaciones', t(`<ul>
       <li>La barra de Ki se llena derrotando enemigos: <b>+1</b> por enemigo común, <b>+15</b> por uno de élite y <b>+50</b> por un jefe. No se carga mientras estás transformado.</li>
       <li>Con la barra llena, pulsa Ki para transformarte durante <b>20 segundos</b>:
-        <ul><li><b>×1,5 de daño</b> (Gohan: <b>×2</b>, por su ira oculta)</li><li><b>+20% de velocidad</b></li><li><b>−20% de recarga</b> de técnicas</li>
+        <ul><li><b>×1,5 de daño</b> (Gohan: <b>×2</b>, por su ira oculta)</li><li><b>+20% de velocidad</b></li><li><b>−25% de recarga</b> de técnicas</li><li><b>−25% de daño recibido</b> y <b>+25% de daño a los jefes</b></li><li>Recuperas un <b>15% de la salud</b> al transformarte</li>
         <li>Al transformarte liberas un estallido que daña y empuja a los enemigos cercanos (a los jefes no les hace nada).</li></ul></li>
       <li><b>Ki concentrado:</b> si guardas el Ki lleno sin transformarte, se va concentrando (lo ves en la barra). A los <b>20 segundos</b>, la próxima transformación dura un <b>50% más</b> y pega un <b>25% más</b>. Conviene guardarla para el momento justo, como la llegada de un jefe.</li>
       <li>Goku, Vegeta y Gohan pasan a Super Saiyajin (Gohan a Super Saiyajin 2); Piccolo se fusiona con Kami y Krilin libera su potencial.</li>
