@@ -41,10 +41,16 @@
     // las hojas: la de su mejor forma (o la de transformado), con el aura roja del Kaio-ken
     const desde = top.i >= 0 ? `${id}~${top.i + 2}:ssj` : `${id}:ssj`;
     const hojaKK = SPRITE_OVERRIDES[desde] || SPRITE_OVERRIDES[`${id}:ssj`] || SPRITE_OVERRIDES[id];
+    // (con traje de trajes.js, «<guerrero>@<traje>», la de esa misma forma con el traje)
+    const trajes = Object.keys(SPRITE_OVERRIDES).filter(k => k.startsWith(`${id}@`) && !k.includes('~') && !k.endsWith(':ssj'));
     nuevas.forEach((f, j) => {
-      const key = `${id}~${list.length + j + 2}`;
+      const n = list.length + j + 2, key = `${id}~${n}`;
       if (SPRITE_OVERRIDES[id]) SPRITE_OVERRIDES[key] = SPRITE_OVERRIDES[id];
       if (hojaKK) SPRITE_OVERRIDES[`${key}:ssj`] = hojaKK;
+      for (const tk of trajes) {
+        SPRITE_OVERRIDES[`${tk}~${n}`] = SPRITE_OVERRIDES[tk];
+        SPRITE_OVERRIDES[`${tk}~${n}:ssj`] = SPRITE_OVERRIDES[top.i >= 0 ? `${tk}~${top.i + 2}:ssj` : `${tk}:ssj`] || hojaKK;
+      }
     });
     FORMS[id] = [...list, ...nuevas];
     window.KAIOKEN_EXTRA[id] = { antes: +top.p.toFixed(2), despues: +poder(c, nuevas[n - 1].bonus, nuevas[n - 1].fx).toFixed(2), escalones: n };
