@@ -588,7 +588,7 @@ function playerSpeed(P) {
   const snake = G && G.snake ? (G.snake.mode === 'race' ? SNAKE_RACE_SPEED : 1) * (P.boost > 0 ? KINTON_BOOST : 1) : 1;   // Carrera y nube Kinton
   return P.c.speed * (1 + 0.08 * P.passives.speed + perk(P, 'spd')) * boost * snake * flee * (P.kaioken > 0 ? 1 + (P.kaiokenBoost || 0) * 0.5 : 1);
 }
-function magnetRange(P) { return (55 + 28 * P.passives.sense) * (1 + perk(P, 'magnet')); }
+function magnetRange(P) { return (55 + 28 * P.passives.sense) * (1 + perk(P, 'magnet')) * (1 + 0.15 * (P.passives.magnetismo || 0)); }   // + Magnetismo
 
 // ─── Efectos (el anfitrión también los reenvía a los clientes) ───────────────
 function emit(ev) { if (G.net && G.net.role === 'host') G.out.push(ev); }
@@ -2039,7 +2039,7 @@ function updatePickups(k) {
   }
 }
 function collect(p, P) {
-  if (p.kind === 'xp') { gainXp(p.v * (1 + (P.c.xpBonus || 0) + perk(P, 'xp'))); sfx('pickup', 0.03); }
+  if (p.kind === 'xp') { gainXp(p.v * (1 + (P.c.xpBonus || 0) + perk(P, 'xp') + 0.06 * (P.passives.xpup || 0))); sfx('pickup', 0.03); }   // + Aumento de experiencia
   else if (p.kind === 'senzu') {
     const bag = P.passives.senzubag || 0;   // Bolsa de Semillas: cura más y sube la salud máxima
     if (bag) { P.maxHp += 2 * bag; }
@@ -2272,10 +2272,10 @@ function cardPool(P) {
     }
   }
   // Mejoras: subir las que ya tienes, o sumar una nueva si queda casilla libre (mismo tope que las técnicas)
-  const ownedPassives = Object.keys(PASSIVES).filter(id => P.passives[id] > 0).length;
+  const ownedPassives = usedPassives(P);
   for (const id in PASSIVES) {
     if (P.passives[id] >= passiveMax(id) || (P.c.noPassives || []).includes(id)) continue;
-    if (P.passives[id] > 0 || ownedPassives < maxPassives(P)) opts.push({ kind: 'passive', id });
+    if (P.passives[id] > 0 || passiveFree(id) || ownedPassives < maxPassives(P)) opts.push({ kind: 'passive', id });
   }
   const banned = new Set(P.banned || []);
   return opts.filter(o => !banned.has(optKey(o)));
@@ -2319,8 +2319,8 @@ function cardCombo(P, o) {
   if (o.kind === 'passive' && !P.passives[o.id]) {
     const a = P.attacks.find(x => EVOLUTION_OF[x.id] && ATTACKS[EVOLUTION_OF[x.id]].needs === o.id && canLearn(P.charId, EVOLUTION_OF[x.id]));
     if (a) return { combo: t('Combina con tu {name}: con esta mejora puede evolucionar', { name: ATTACKS[a.id].name }) };
-    const used = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
-    if (used === maxPassives(P) - 1) {   // última casilla: ¿deja afuera la mejora que alguna técnica necesita?
+    const used = usedPassives(P);
+    if (!passiveFree(o.id) && used === maxPassives(P) - 1) {   // última casilla: ¿deja afuera la mejora que alguna técnica necesita?
       const stuck = P.attacks.find(x => { const e = EVOLUTION_OF[x.id]; return e && canLearn(P.charId, e) && !P.passives[ATTACKS[e].needs]; });
       if (stuck) return { warn: t('Es tu última casilla de mejoras: tu {name} ya no podría evolucionar (necesita {need})', { name: ATTACKS[stuck.id].name, need: PASSIVES[ATTACKS[EVOLUTION_OF[stuck.id]].needs].name }) };
     }
@@ -2365,6 +2365,8 @@ function passiveStatLines(P, id) {
     case 'sustain': return [`${t('Duración')}: +${25 * l}% → +${25 * n}%`];
     case 'meditate': return [`${t('Curación quieto')}: ${(0.6 * l).toFixed(1)}/s → ${(0.6 * n).toFixed(1)}/s`, `${t('Ki quieto')}: +${l}/s → +${n}/s`];
     case 'fury': return [`${t('Daño extra con poca salud')}: +${15 * l}% → +${15 * n}%`];
+    case 'magnetismo': return [`${t('Radio de atracción')}: +${15 * l}% → +${15 * n}% (${Math.round(magnetRange(P))} → ${Math.round(magnetRange(P) / (1 + 0.15 * l) * (1 + 0.15 * n))})`];
+    case 'xpup': return [`${t('Experiencia')}: +${6 * l}% → +${6 * n}%`];
     case 'senzubag': return [`${t('Curación de las semillas')}: ${50 + 10 * l}% → ${50 + 10 * n}%`, `${t('Salud máxima por semilla')}: +${2 * l} → +${2 * n}`];
   }
   return [];
@@ -2413,7 +2415,7 @@ function applyOption(P, o) {
   } else if (o.kind === 'new') {
     if (ATTACKS[o.id] && canLearn(P.charId, o.id) && P.attacks.length < MAX_ATTACKS && !P.attacks.some(a => a.id === o.id)) P.attacks.push({ id: o.id, lvl: 1, cd: 0.3 });
   } else if (o.kind === 'passive') {
-    const slotFree = P.passives[o.id] > 0 || Object.keys(PASSIVES).filter(id => P.passives[id] > 0).length < maxPassives(P);
+    const slotFree = P.passives[o.id] > 0 || passiveFree(o.id) || usedPassives(P) < maxPassives(P);
     if (PASSIVES[o.id] && P.passives[o.id] < passiveMax(o.id) && slotFree) {
       P.passives[o.id]++;
       if (o.id === 'vital') { P.maxHp += 20; healPlayer(P, 20); }
@@ -2771,6 +2773,7 @@ function passiveTip(P, id) {
     tracker: t('+{n}% de daño a jefes y élite', { n: 25 * l }), sustain: t('+{n}% de duración', { n: 10 * l }),
     meditate: t('Quieto: {a} de salud y {b} de Ki por segundo', { a: (0.6 * l).toFixed(1), b: l }),
     fury: t('+{n}% de daño (hasta +{max}%)', { n: Math.round(furyBonus(P) * 100), max: 15 * l }),
+    magnetismo: `+${15 * l}% · ${t('Radio de atracción')}: ${Math.round(magnetRange(P))}`, xpup: t('+{n}% de experiencia', { n: 6 * l }),
     senzubag: t('Las semillas curan el {a}% y suben {b} de salud máxima', { a: 50 + 10 * l, b: 2 * l }),
   }[id];
   const lines = [`${d.name} · ${t('Nivel {a}/{max}', { a: l, max: passiveMax(id) })}`, d.desc, `${t('Ahora')}: ${now}`];
@@ -2852,7 +2855,7 @@ function renderPause() {
     [pctTxt(playerSpeed(P) / P.c.speed - 1), 'Velocidad'],
     [armor || def ? [armor ? t('-{n}/golpe', { n: armor }) : '', def ? `-${Math.round(def * 100)}%` : ''].filter(Boolean).join(' · ') : '—', 'Daño recibido'],
     [regen ? `${regen.toFixed(1)}/s` : '—', 'Regeneración'],
-    [pctTxt((P.c.xpBonus || 0) + perk(P, 'xp')), 'Experiencia'],
+    [pctTxt((P.c.xpBonus || 0) + perk(P, 'xp') + 0.06 * (P.passives.xpup || 0)), 'Experiencia'],
     [fmtNum(magnetRange(P)), 'Radio de atracción'],
     [`${Math.round(critChance(P) * 100)}%`, 'Probabilidad de crítico'],
     [`×${critMult(P).toFixed(1).replace('.0', '')}`, 'Daño crítico'],
@@ -4443,7 +4446,7 @@ function drawLoadout(P, top, compact) {
     hudSlotLevel(x, y2, s, P.passives[id], passiveMax(id));
     if (wanted[id]) hudText('★', x + s - 6, y2 + 10, 10, '#ffd93b', 'center');   // sirve para evolucionar una técnica tuya
   });
-  for (let i = owned.length; i < maxPassives(P); i++) emptySlot(8 + i * (s + gap), y2, s);
+  for (let i = owned.length; i < owned.length + maxPassives(P) - usedPassives(P); i++) emptySlot(8 + i * (s + gap), y2, s);
   return y2 + s;
 }
 // Casilla libre: marco tenue para ver cuánto lugar queda
@@ -5090,8 +5093,8 @@ function testPowerChange(kind, id, delta) {
     }
   } else {
     const lv = P.passives[id] || 0;
-    const used = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
-    if (delta > 0 && lv < passiveMax(id) && (lv > 0 || used < maxPassives(P))) {
+    const used = usedPassives(P);
+    if (delta > 0 && lv < passiveMax(id) && (lv > 0 || passiveFree(id) || used < maxPassives(P))) {
       P.passives[id] = lv + 1;
       if (id === 'vital') { P.maxHp += 20; healPlayer(P, 20); }
     } else if (delta < 0 && lv > 0) {
@@ -5112,9 +5115,9 @@ function renderTestPowers() {
       <span class="tp-name" title="${esc(def.name + (def.desc ? ': ' + def.desc : ''))}">${esc(def.name)}</span><span class="tp-lvl">${lvl}</span>
       <button data-tp="atk" data-id="${id}" data-d="-1"${a ? '' : ' disabled'}>−</button><button data-tp="atk" data-id="${id}" data-d="1"${canUp ? '' : ' disabled'}>+</button></div>`;
   };
-  const usedP = Object.keys(PASSIVES).filter(k => P.passives[k] > 0).length;
+  const usedP = usedPassives(P);
   const pasRow = id => {
-    const lv = P.passives[id] || 0, canUp = lv < passiveMax(id) && (lv > 0 || usedP < maxPassives(P));
+    const lv = P.passives[id] || 0, canUp = lv < passiveMax(id) && (lv > 0 || passiveFree(id) || usedP < maxPassives(P));
     return `<div class="tp-row${lv ? ' on' : ''}"><span class="tp-dot" style="background:${PASSIVES[id].color}"></span>
       <span class="tp-name" title="${esc(PASSIVES[id].desc)}">${esc(PASSIVES[id].name)}</span><span class="tp-lvl">${lv ? t('Nv {n}', { n: lv }) : ''}</span>
       <button data-tp="pas" data-id="${id}" data-d="-1"${lv ? '' : ' disabled'}>−</button><button data-tp="pas" data-id="${id}" data-d="1"${canUp ? '' : ' disabled'}>+</button></div>`;

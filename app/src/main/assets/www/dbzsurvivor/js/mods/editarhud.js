@@ -35,7 +35,7 @@
     { id: 'guerrero', name: 'Tu guerrero', r: () => [4, 12, (W < 640 ? 170 : 220) + 8, 62] },
     { id: 'esferas', name: 'Esferas y deseos', r: () => { const b = slotsBox(['effect']); return [6, 74, Math.max(18 + ballsNeeded() * 18, b ? b[2] : 0) + 4, 22]; } },
     { id: 'tecnicas', name: 'Técnicas y mejoras', r: () => {   // todas las casillas, también las vacías (como drawLoadout)
-      const s = W < 640 ? 26 : 30, n = Math.max(MAX_ATTACKS, maxPassives(G.me));
+      const s = W < 640 ? 26 : 30, n = Math.max(MAX_ATTACKS, maxPassives(G.me) + Object.keys(PASSIVES).filter(k => G.me.passives[k] > 0 && passiveFree(k)).length);
       return [5, 93, 6 + n * (s + 3), Math.max(s + 6, loadEnd - 91)];
     } },
     { id: 'equipo', name: 'Compañeros', r: () => [6, loadEnd + 4, 164, Math.max(1, G.players.filter(q => q !== G.me && !q.gone && !q.ally).length) * 34] },

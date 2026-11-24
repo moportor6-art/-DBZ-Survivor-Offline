@@ -391,6 +391,10 @@ const PASSIVES = {
 const MAX_PASSIVE_LEVEL = 5;
 // Nivel máximo de cada mejora (max en PASSIVES; si no tiene, MAX_PASSIVE_LEVEL)
 const passiveMax = id => (PASSIVES[id] && PASSIVES[id].max) || MAX_PASSIVE_LEVEL;
+// Mejoras «libres» (2.36.4: Magnetismo y Aumento de experiencia, js/mods/aprendizaje.js): tienen sus propias casillas
+// y no ocupan las de las demás mejoras
+const passiveFree = id => !!(PASSIVES[id] && PASSIVES[id].free);
+const usedPassives = P => Object.keys(PASSIVES).filter(k => P.passives[k] > 0 && !passiveFree(k)).length;
 
 // look: configuración para drawFighter (ver draw.js)
 // Mecánicas (2.10.0, ver enemyTricks en game.js): shooter + shootChance (qué parte dispara), spread (abanico de n),

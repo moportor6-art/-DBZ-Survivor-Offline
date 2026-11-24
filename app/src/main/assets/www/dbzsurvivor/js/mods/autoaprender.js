@@ -16,7 +16,7 @@
 
   // Estilos: qué mejoras prefiere cada tipo de guerrero (en orden)
   const ESTILO = {
-    base: ['power', 'focus', 'crit', 'area', 'multi', 'vital', 'tracker', 'kictl', 'speed', 'armor', 'sustain', 'regen', 'sense', 'fury', 'absorb', 'instinct', 'meditate', 'gravity', 'kiai', 'senzubag', 'aura', 'luck'],
+    base: ['power', 'focus', 'crit', 'area', 'multi', 'vital', 'tracker', 'kictl', 'speed', 'armor', 'sustain', 'regen', 'sense', 'fury', 'absorb', 'instinct', 'meditate', 'gravity', 'kiai', 'senzubag', 'aura', 'luck', 'xpup', 'magnetismo'],
     tanque: ['vital', 'armor', 'regen', 'power', 'aura', 'focus', 'absorb', 'area', 'crit', 'senzubag'],
     critico: ['crit', 'power', 'focus', 'tracker', 'multi', 'speed', 'vital'],
     rayos: ['power', 'focus', 'sustain', 'area', 'multi', 'kictl', 'crit', 'vital'],
