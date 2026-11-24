@@ -935,3 +935,36 @@ details.ach-miss { display: block; }
 .board-reply b { color: var(--gold); font-size: 13px; }
 .board-reply p { margin: 4px 0 0; white-space: pre-wrap; }
 .board-note { margin: 0; padding: 6px 10px; font-size: 13px; text-align: center; color: #ffe0a0; background: rgba(255, 170, 40, .12); border: 1px solid rgba(255, 170, 40, .45); border-radius: 8px; }
+
+/* ─── Cartas de subir de nivel en el celular (2.35.3) ───
+   · Android no agranda el texto por su cuenta (autoajuste del WebView), que descuadraba las cartas.
+   · Al tocar, la carta no se queda «inflada» (el efecto de pasar el ratón solo existe con ratón).
+   · En pantallas angostas: cartas a lo ancho, más compactas, sin salirse por los lados. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+#levelup { overflow-x: hidden; }
+/* las zonas de ayuda de las casillas del HUD son para la pausa: sobre las cartas solo estorban */
+body:has(#levelup:not(.hidden)) .hud-tips, #levelup:not(.hidden) ~ .hud-tips { display: none; }
+#levelup .choices { max-width: 100%; }
+#levelup .choice { max-width: 100%; }
+@media (hover: none) {
+  .choice:hover { transform: none; box-shadow: inset 0 0 0 2px var(--panel-top), inset 0 0 0 4px var(--border), 0 6px 0 rgba(0, 0, 0, .35); }
+  .choice:active { transform: scale(.98); }
+}
+@media (max-width: 640px) {
+  #levelup { padding: 62px 8px 12px; }   /* el título, debajo de los botones de pausa, sonido y mapa */
+  #levelup h2 { font-size: 20px; margin-bottom: 8px; }
+  #levelup .choices { width: 100%; flex-direction: column; flex-wrap: nowrap; gap: 8px; }
+  #levelup .choice { width: 100%; padding: 8px 10px; }
+  #levelup .choice .head { margin-bottom: 4px; gap: 8px; }
+  #levelup .choice .icon { width: 30px; height: 30px; }
+  #levelup .choice .name { font-size: 15px; }
+  #levelup .choice .tag { font-size: 12px; }
+  #levelup .choice .desc { font-size: 12.5px; line-height: 1.3; }
+  #levelup .choice .stats { columns: 2; column-gap: 12px; font-size: 12px; line-height: 1.35; margin-top: 6px; padding-top: 4px; }
+  #levelup .choice .stats li { break-inside: avoid; }
+  #levelup .choice .rc-box { margin-top: 6px; padding: 4px 6px; }
+  #levelup .choice .rc-head { font-size: 11px; }
+  #levelup .choice .rc-it canvas { width: 20px; height: 20px; }
+  #levelup .choice .rc-names, #levelup .choice .rc-tip { font-size: 11px; }
+  #levelup .choice .card-tools { margin-top: 6px; padding-top: 6px; }
+}
