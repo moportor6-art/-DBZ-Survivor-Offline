@@ -32,4 +32,12 @@ SPECS = {
                  'punch': [115, 116, 119], 'kohit': [151], 'kolie': [160], 'koup': [152]},
     'gogetaxeno': {'hoja': 'gt_gogeta_xeno_ssj4_blackvinas.png', 'idle': [99, 100, 101, 102], 'walk': [90, 105], 'cast': [158, 161],
                    'punch': [111, 112, 113]},
+    # Pan, Uub y Majuub (ULSW; Majuub de Mr.Drk)
+    'pangt': {'hoja': 'gt_pan_ulsw.png', 'idle': [5, 6, 7], 'walk': [8, 9], 'cast': [42, 44], 'punch': [21, 22, 24],
+              'kohit': [11], 'kolie': [13], 'koup': [12]},
+    # (tol 4: el fondo es casi del color del pelo)
+    'uubgt': {'hoja': 'gt_uub_ulsw.png', 'tol': 4, 'idle': [5, 6], 'walk': [5, 6], 'cast': [49, 50], 'punch': [16, 18, 19],
+              'kohit': [41], 'kolie': [44], 'koup': [40]},
+    'uubgt-ssj': {'hoja': 'gt_majuub_mrdrk.png', 'islas': True, 'idle': [25, 26], 'walk': [23, 24], 'cast': [82, 83], 'punch': [32, 34, 35],
+                  'kohit': [54], 'kolie': [17], 'koup': [56]},
 }

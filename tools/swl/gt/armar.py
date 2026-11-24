@@ -11,12 +11,13 @@ from blobs import blobs
 H = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hojas')
 CACHE = {}
 
-def figuras(hoja, dil=2):
-    if (hoja, dil) not in CACHE: CACHE[(hoja, dil)] = blobs(os.path.join(H, hoja), dil=dil)
-    return CACHE[(hoja, dil)]
+def figuras(hoja, dil=2, tol=18, islas=False):
+    k = (hoja, dil, tol, islas)
+    if k not in CACHE: CACHE[k] = blobs(os.path.join(H, hoja), dil=dil, tol=tol, islas=islas)
+    return CACHE[k]
 
-def cuadro(hoja, n, mirar=1, dil=2):
-    im, a, solid, lab, res = figuras(hoja, dil)
+def cuadro(hoja, n, mirar=1, dil=2, tol=18, islas=False):
+    im, a, solid, lab, res = figuras(hoja, dil, tol, islas)
     x0, y0, x1, y1, _, k = res[n]
     sub = a[y0:y1, x0:x1].copy()
     keep = solid[y0:y1, x0:x1] & (lab[y0:y1, x0:x1] == k)
@@ -73,7 +74,7 @@ def armar(id_, spec, out_dir):
         ids = spec[an]
         anims[an] = {'row': 0, 'col': len(cuadros), 'count': len(ids)}
         for n in ids:
-            f = cuadro(spec['hoja'], n, mirar, spec.get('dil', 2))
+            f = cuadro(spec['hoja'], n, mirar, spec.get('dil', 2), spec.get('tol', 18), spec.get('islas', False))
             if spec.get('tono'): f = tono(f, spec['tono'])
             if spec.get('sombra'):   # quita la sombra negra pintada bajo los pies (el juego pone la suya)
                 q = np.array(f); hh = q.shape[0]; z = q[hh - 14:]

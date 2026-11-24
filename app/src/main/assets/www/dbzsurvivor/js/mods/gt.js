@@ -4,6 +4,7 @@
 //   Goku niño, Goku SSJ4, Vegeta SSJ y Super Baby Vegeta: Dragon Ball GT: Transformation (GBA), ripeadas por Darkbolt99
 //   General Rildo: ripeado por Nemu · Super 17: Vairen Morningstar · Syn y Omega Shenron: AlquimistaSK (ULSW)
 //   Nova, Eis y Haze Shenron: «Mr. Satan» (Rage, Oceanus y Naturon son recoloreados suyos: no tienen hoja)
+//   Pan, Uub (ULSW) y Majuub (Mr.Drk, ULSW)
 //   Gogeta SSJ4: YoshidaMitooBR (SWL+) · Gogeta Xeno SSJ4: Black Vinas (ULSW) · Baby Ozaru dorado: el Ozaru del juego, dorado
 // Las hojas de juego de pelea solo traen el perfil (miran a la derecha y el juego las voltea).
 // Va antes que capitulos.js: deja los capítulos en window.GT_CAPS y capitulos.js los pone antes de «La batalla final».
@@ -21,12 +22,14 @@
     'novashen': [60, 42, 38, { cast: [4, 2], idle: [0, 2], walk: [2, 2] }],
     'oceanshen': [60, 42, 38, { cast: [4, 2], idle: [0, 2], walk: [2, 2] }],
     'omegashen': [62, 70, 68, { cast: [5, 2], idle: [0, 3], walk: [3, 2] }],
+    'pangt': [49, 42, 40, { cast: [5, 2], idle: [0, 3], kohit: [10, 1], kolie: [11, 1], koup: [12, 1], punch: [7, 3], walk: [3, 2] }],
     'rageshen': [42, 48, 42, { cast: [4, 2], idle: [0, 2], walk: [2, 2] }],
     'rildo': [219, 99, 96, { cast: [7, 2], idle: [0, 3], walk: [3, 4] }],
     'super17': [43, 47, 42, { cast: [7, 2], idle: [0, 3], walk: [3, 4] }],
     'synshen': [61, 68, 65, { cast: [4, 2], idle: [0, 2], walk: [2, 2] }],
+    'uubgt': [51, 48, 46, { cast: [4, 2], idle: [0, 2], kohit: [9, 1], kolie: [10, 1], koup: [11, 1], punch: [6, 3], walk: [2, 2] }],
+    'uubgt-ssj': [51, 56, 50, { cast: [4, 2], idle: [0, 2], kohit: [9, 1], kolie: [10, 1], koup: [11, 1], punch: [6, 3], walk: [2, 2] }],
     'vegetagt': [78, 78, 72, { cast: [7, 2], idle: [0, 3], kohit: [11, 1], kolie: [12, 1], koup: [13, 1], punch: [9, 2], walk: [3, 4] }],
-
   };
   const hoja = (file, cuerpo) => {   // cuerpo: alto en el juego (los de GBA y los SWL quedan parejos)
     const [w, h, alto, an] = INFO[file];
@@ -46,10 +49,13 @@
     ryuken: { name: 'Puño del Dragón', color: '#ffcf3d', type: 'projectile', kind: 'big', users: ['gogetaxeno', 'gokugt'],
       desc: 'Un dragón dorado sale del puño y atraviesa a todos los enemigos de la línea.',
       stats: l => ({ cd: 4 - l * 0.25, dmg: 45 + l * 20, count: 1, speed: 6, r: 14 + l * 2, pierce: 99, life: 1.6, spread: 0, explode: 0 }) },
+    rayodulce: { name: 'Rayo dulce', color: '#ff8ad8', core: '#ffe6f6', type: 'beam', users: ['uubgt'],
+      desc: 'El rayo de Majin Buu en manos de Uub: atraviesa la fila de enemigos con energía rosada.',
+      stats: l => ({ cd: 3.2 - l * 0.2, dmg: 9 + l * 4, len: 260 + l * 35, width: 18 + l * 4, dur: 0.6 + l * 0.05 }) },
   });
   const usa = (tec, ...ids) => { if (ATTACKS[tec]) ATTACKS[tec].users = [...(ATTACKS[tec].users || []), ...ids]; };
   usa('kamehameha', 'gokugt'); usa('galick', 'vegetagt'); usa('bigbangatk', 'vegetagt', 'gogetagt', 'gogetaxeno');
-  usa('finalflash', 'vegetagt'); usa('soulpunisher', 'gogetagt', 'gogetaxeno'); usa('kiblast', 'gokugt', 'vegetagt');
+  usa('finalflash', 'vegetagt'); usa('masenko', 'pangt'); usa('kamehameha', 'uubgt'); usa('soulpunisher', 'gogetagt', 'gogetaxeno'); usa('kiblast', 'gokugt', 'vegetagt', 'pangt', 'uubgt');
 
   // ─── Guerreros jugables ───
   // Los dos Gogeta: el de la serie (GT) y el de Dragon Ball Heroes (Xeno), con técnicas y números distintos
@@ -60,6 +66,12 @@
     vegetagt: { name: 'Vegeta (GT)', title: 'El príncipe que se liberó de Baby', hp: 110, speed: 2.7, start: 'galick',
       transform: 'Super Saiyajin', perk: 'Orgullo Saiyajin: +20% de daño a los jefes', bossBonus: 0.2,
       cost: 3500, aura: '#ffe14d', sprite: ['vegetagt', 52], ssj: ['vegetagt', 52] },
+    pangt: { name: 'Pan (GT)', title: 'La nieta de Goku que viajó por el espacio', hp: 90, speed: 2.95, start: 'masenko',
+      transform: 'Potencial liberado', perk: 'Valiente: +15% de daño y el Ki se carga un 20% más rápido', dmgBonus: 0.15, kiBonus: 0.2,
+      cost: 3000, aura: '#ffffff', sprite: ['pangt', 42] },
+    uubgt: { name: 'Uub (GT)', title: 'La reencarnación de Kid Buu', hp: 115, speed: 2.75, start: 'rayodulce',
+      transform: 'Majuub', perk: 'Fusión con Buu: la transformación es un 35% más poderosa y regenera salud', transformBonus: 0.35, regen: 0.3,
+      cost: 4000, aura: '#ff8ad8', sprite: ['uubgt', 48], ssj: ['uubgt-ssj', 50] },
     gogetagt: { name: 'Gogeta SSJ4', title: 'La fusión que derrotó a Omega Shenron', hp: 140, speed: 2.75, start: 'bigbangkame',
       transform: 'Poder de la fusión', perk: 'Fusión de Super Saiyajin 4: +25% de daño', dmgBonus: 0.25,
       cost: 9000, aura: '#ff3c3c', sprite: ['gogetagt', 52] },
@@ -204,12 +216,12 @@
       final: [['rildob', 'Mi cuerpo es de metal vivo. No puedes romperlo.']],
       medio: [{ jefe: 'rildob', hp: 0.5, lines: [['rildob', '¡Contempla al Hyper Meta-Rildo!'], ['yo', '¿Cambias de forma? Yo también sé hacer eso.']] }],
       fin: [['yo', 'Rildo ya no molestará. Pero algo está creciendo dentro de las máquinas del Dr. Myuu…']] },
-    { id: 'gtbaby', gt: true, saga: 'Dragon Ball GT · Saga de Baby', titulo: 'Vegeta poseído', char: 'gokugt', nivel: 'leyendas',
+    { id: 'gtbaby', gt: true, saga: 'Dragon Ball GT · Saga de Baby', titulo: 'Vegeta poseído', char: 'uubgt', nivel: 'leyendas',
       b: [['babyb', 230, 1]], reto: { t: 'rapido', s: 120 },
-      intro: [['babyb', 'Los Saiyajin destruyeron a los Tsufur. Ahora toda la Tierra me obedece… y el cuerpo de Vegeta también.'], ['yo', 'Vegeta, sé que sigues ahí dentro. ¡Despierta!']],
-      final: [['babyb', 'Ríndete, Goku. Hasta tus amigos llevan mi marca.']],
-      medio: [{ jefe: 'babyb', hp: 0.4, lines: [['babyb', 'La energía de los terrícolas es mía. ¡Super Baby 2!'], ['yo', 'No me voy a rendir aunque tenga que pelear con todos.']] }],
-      fin: [['babyb', 'Esto no termina aquí. La luna… necesito la luna.']] },
+      intro: [['babyb', 'Los Saiyajin destruyeron a los Tsufur. Ahora toda la Tierra me obedece… y el cuerpo de Vegeta también.'], ['yo', 'Goku me pidió que aguantara hasta que llegue. ¡Buu, préstame tu poder!']],
+      final: [['babyb', 'Un terrícola con el poder de Majin Buu. Interesante… pero inútil.']],
+      medio: [{ jefe: 'babyb', hp: 0.4, lines: [['babyb', 'La energía de los terrícolas es mía. ¡Super Baby 2!'], ['yo', 'No importa. Soy Majuub y no voy a retroceder.']] }],
+      fin: [['babyb', 'Esto no termina aquí. La luna… necesito la luna.'], ['gokugt', 'Gracias, Uub. Ahora me toca a mí.']] },
     { id: 'gtozaru', gt: true, saga: 'Dragon Ball GT · Saga de Baby', titulo: 'El Ozaru dorado', char: 'gokugt', nivel: 'leyendas',
       b: [['babyb', 110], ['babyozaru', 280, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['vegetagt', 'Kakarotto… Baby usa mi cuerpo. Si se vuelve Ozaru dorado, nadie podrá con él.'], ['yo', 'Entonces tendré que despertar el poder de mi cola.']],
@@ -232,7 +244,7 @@
       final: [['rageb', '¡Mil voltios para el mono!']],
       medio: [{ jefe: 'rageb', hp: 0.5, lines: [['rageb', '¡Más energía! ¡Más grande!'], ['yo', 'Cuanto más crece, más fácil es pegarle.']] }],
       fin: [['yo', 'Era fuerte, pero le gustaba presumir demasiado.']] },
-    { id: 'gtoceanus', gt: true, saga: 'Dragon Ball GT · Los Dragones Oscuros', titulo: 'La dragona del viento', char: 'pan', nivel: 'saiyan',
+    { id: 'gtoceanus', gt: true, saga: 'Dragon Ball GT · Los Dragones Oscuros', titulo: 'La dragona del viento', char: 'pangt', nivel: 'saiyan',
       b: [['oceanb', 220, 1]], reto: { t: 'vida', min: 0.3 },
       intro: [['oceanb', 'Mis tornados borrarán este planeta y nadie sabrá quién fui.'], ['yo', '¡Abuelito, este me toca a mí!']],
       final: [['oceanb', 'No puedes pelear contra el viento, niña.']],

@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 import numpy as np
 from scipy import ndimage
 
-def cargar(path):
+def cargar(path, tol=18, islas=False):
     im = Image.open(path).convert('RGBA')
     a = np.array(im)
     rgb = a[:, :, :3].reshape(-1, 3)
@@ -18,7 +18,7 @@ def cargar(path):
     # pero está repartido en figuras sueltas, así que no cuenta)
     Hh, Ww = a.shape[:2]
     for c in cols[cnt > cnt.sum() * 0.003]:
-        m = np.abs(q - c).sum(2) <= 18
+        m = np.abs(q - c).sum(2) <= tol
         lab, n = ndimage.label(m)
         if not n: continue
         grande = np.bincount(lab.ravel())[1:].max() > total * 0.02
@@ -27,11 +27,15 @@ def cargar(path):
                     (m[sl].sum() < (sl[1].stop - sl[1].start) * (sl[0].stop - sl[0].start) * 0.3)
                     for sl in ndimage.find_objects(lab))
         if grande or largo:
-            solid &= ~m
+            if islas:   # solo las zonas grandes de ese color: las islas dentro de la figura (pelo del mismo tono) se quedan
+                cnt_l = np.bincount(lab.ravel()); big = np.flatnonzero(cnt_l > 400); big = big[big > 0]
+                solid &= ~np.isin(lab, big)
+            else:
+                solid &= ~m
     return im, a, solid
 
-def blobs(path, min_area=60, dil=2):
-    im, a, solid = cargar(path)
+def blobs(path, min_area=60, dil=2, tol=18, islas=False):
+    im, a, solid = cargar(path, tol, islas)
     lab, n = ndimage.label(ndimage.binary_dilation(solid, iterations=dil))
     out = []
     for i, sl in enumerate(ndimage.find_objects(lab), 1):

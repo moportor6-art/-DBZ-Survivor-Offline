@@ -16,3 +16,5 @@ Se arman con `../armar.py` (cuadros elegidos en `../specs.py`, numerados con `..
 | gt_soldados_mini | autor desconocido |
 
 Dragon Ball © Akira Toriyama / Bird Studio, Shueisha, Toei Animation. Uso sin fines comerciales.
+
+- Pan GT y Uub GT: ULSW. Majuub: Mr.Drk (ULSW).

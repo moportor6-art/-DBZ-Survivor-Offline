@@ -306,6 +306,48 @@
   "h": 70,
   "w": 62
  },
+ "pangt": {
+  "alto": 40,
+  "anims": {
+   "cast": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "kohit": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 7,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 42,
+  "w": 49
+ },
  "rageshen": {
   "alto": 42,
   "anims": {
@@ -393,6 +435,90 @@
   },
   "h": 68,
   "w": 61
+ },
+ "uubgt": {
+  "alto": 46,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "kohit": {
+    "col": 9,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 6,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 48,
+  "w": 51
+ },
+ "uubgt-ssj": {
+  "alto": 50,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "kohit": {
+    "col": 9,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 6,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 56,
+  "w": 51
  },
  "vegetagt": {
   "alto": 72,

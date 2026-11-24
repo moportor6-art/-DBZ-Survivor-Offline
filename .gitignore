@@ -5,3 +5,4 @@ local.properties
 .idea/
 *.iml
 app/src/main/assets/contenido-base.json
+__pycache__/
