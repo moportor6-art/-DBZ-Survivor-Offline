@@ -8,7 +8,9 @@
 // Pasivas en datos/mejoras.js (users: quién puede aprenderla). Va después de js/mods/ki.js.
 (() => {
   const lv = (P, id) => (P && P.passives && P.passives[id]) || 0;
-  const kkLvl = P => { const m = P && P.transformed > 0 && P.c && /^Kaio-ken(?: x(\d+))?$/.exec(P.c.transform || ''); return m ? [1, 2, 4, 5, 10, 20].indexOf(+(m[1] || 1)) + 1 : 0; };
+  // (también «Forma + Kaio-ken xN» de kaioken.js y los x30, x50, x100 de los humanos: el aura según cuánto multiplica)
+  const kkLvl = P => { const m = P && P.transformed > 0 && P.c && /Kaio-ken(?: x(\d+))?$/.exec(P.c.transform || ''); if (!m) return 0;
+    const x = +(m[1] || 1); return x >= 20 ? 6 : x >= 10 ? 5 : x >= 5 ? 4 : x >= 3 ? 3 : x >= 2 ? 2 : 1; };
 
   // Cartas: las pasivas con users solo les salen a esos guerreros
   const cp = cardPool;

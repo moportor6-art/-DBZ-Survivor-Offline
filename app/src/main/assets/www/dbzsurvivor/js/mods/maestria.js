@@ -6,7 +6,8 @@
 // En el modo prueba (?test) está todo abierto. Se carga después de js/mods/identidad.js.
 (() => {
   const KEY = 'fusion.maestria';
-  const MASTERY = [0, 0, 150, 600, 1500, 3000, 5000, 8000];   // por número de forma (1 = la de siempre)
+  // por número de forma (1 = la de siempre); desde la 9.ª, los escalones de Kaio-ken de los humanos (js/mods/kaioken.js)
+  const MASTERY = [0, 0, 150, 600, 1500, 3000, 5000, 8000, 11000, 14000, 18000, 23000, 29000];
   let data = {};
   try { data = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { data = {}; }
   let dirty = false;
@@ -18,7 +19,7 @@
   const unlocked = id => {
     if (typeof TEST_MODE !== 'undefined' && TEST_MODE) return 99;
     let n = 1;
-    while (n < 8 && kills(id) >= need(n + 1)) n++;
+    while (n < MASTERY.length - 1 && kills(id) >= need(n + 1)) n++;
     return n;
   };
   window.MAESTRIA = { kills, need, unlocked, add(id, k) { data[id] = data[id] || { k: 0 }; data[id].k += k; dirty = true; } };
