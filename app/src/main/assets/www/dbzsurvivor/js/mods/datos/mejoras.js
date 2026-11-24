@@ -8,7 +8,7 @@
 PASSIVES.kiai = { name: 'Kiai', color: '#ffe0a0', desc: 'Tus golpes empujan más lejos a los enemigos (a los jefes casi no los mueven).' };
 
 // ─── Tienda de Zeni: artículos nuevos (efectos en js/mods/tienda.js) ───
-const FUSION_PSLOT_MAX = 3, SHENLONG_STAT = 0.05, SHENLONG_ENEMIES = 0.08;
+const FUSION_PSLOT_MAX = 5, SHENLONG_STAT = 0.05, SHENLONG_ENEMIES = 0.08;
 SHOP_UPGRADES.push(
   { id: 'pslot', name: 'Casilla de mejora extra', icon: '⊞', color: '#ffb0f0', max: FUSION_PSLOT_MAX, base: 3000, grow: 2.5, per: 1,
     fmt: v => `+${v} casilla${v === 1 ? '' : 's'} de mejora pasiva (${MAX_PASSIVES + v} en total)` },
@@ -27,6 +27,13 @@ SHOP_UPGRADES.push(
 // Genkidama, especiales de las formas...) y cuenta aparte, después del tope de −60% de la recarga normal (game.js cdMult)
 SHOP_UPGRADES.push({ id: 'rapidez', name: 'Rapidez de recarga de ataques', icon: '⏩', color: '#ffe066', max: 5, base: 600, grow: 1.55, per: 0.06,
   fmt: v => `Todos los ataques se recargan un ${Math.round(v * 100)}% más rápido (ráfagas, golpes, Kamehameha, Genkidama, especiales), también por encima del tope de recarga` });
+// Críticos (2.35.5): probabilidad (game.js critChance) y multiplicador del daño crítico (×2 de base)
+SHOP_UPGRADES.push(
+  { id: 'critp', name: 'Ojo del guerrero', icon: '🎯', color: '#ff9b3d', max: 10, base: 500, grow: 1.4, per: 0.02,
+    fmt: v => `+${Math.round(v * 100)}% de probabilidad de golpe crítico` },
+  { id: 'critdmg', name: 'Golpe devastador', icon: '💥', color: '#ff5a3c', max: 10, base: 700, grow: 1.42, per: 0.1,
+    fmt: v => `Los críticos hacen ×${(2 + v).toFixed(1)} de daño (en vez de ×2)` },
+);
 SHOP_UPGRADES.find(u => u.id === 'regen').max = 10;
 SHOP_UPGRADES.find(u => u.id === 'cd').max = 10;
 // Casillas de mejoras pasivas de un guerrero: las de siempre más las compradas en la Tienda

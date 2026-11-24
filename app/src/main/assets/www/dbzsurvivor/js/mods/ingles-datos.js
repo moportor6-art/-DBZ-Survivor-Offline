@@ -278,6 +278,8 @@
     shenwish: ["Shenron's Wish", v => `+${Math.round(v * 100)}% to everything (health, damage, speed, technique and Ki cooldown, defense, experience and pickup) and +${(v / 0.05 * 0.1).toFixed(1)} health per second, but ${Math.round(v / 0.05 * 0.08 * 100)}% more enemies appear`],
     transtime: ['Transformation Mastery', v => `Higher forms (2nd and up) drain ${Math.round(v * 100)}% less Ki`],
     kirec: ['Ki Recharge', v => `Ki charges ${v * 10}% faster and transformations drain ${Math.min(80, v * 4)}% less`],
+    critp: ["Warrior's Eye", v => `+${Math.round(v * 100)}% critical hit chance`],
+    critdmg: ['Devastating Blow', v => `Critical hits deal ×${(2 + v).toFixed(1)} damage (instead of ×2)`],
     cd: [null, v => `-${Math.round(v * 100)}% cooldown (techniques and Ki to transform)`],
   };
   for (const [id, [name, fmt]] of Object.entries(S)) { const u = SHOP_UPGRADES.find(q => q.id === id); if (u) { if (name) u.name = name; u.fmt = fmt; } }
