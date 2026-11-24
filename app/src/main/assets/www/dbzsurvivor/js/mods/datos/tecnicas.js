@@ -23,7 +23,8 @@ Object.assign(ATTACKS, {
     stats: l => ({ cd: 2.4 - l * 0.15, dmg: 16 + l * 8, radius: 85 + l * 10 }),
   },
   fantasmas: {
-    name: 'Ataque Kamikaze Fantasma', color: '#e9f1ff', type: 'projectile', kind: 'ball', users: ['gotenks', 'babidip'],
+    name: 'Ataque Kamikaze Fantasma', color: '#e9f1ff', type: 'projectile', kind: 'ghost',   // (dibujo: js/mods/fantasmas.js)
+    users: ['gotenks', 'babidip'],
     desc: 'Fantasmas que persiguen al enemigo más cercano y explotan al tocarlo.',
     stats: l => ({ cd: 2.6 - l * 0.15, dmg: 20 + l * 9, count: 1 + Math.floor(l / 2), speed: 3, r: 7, pierce: 0, life: 4,
       spread: 0.6, home: 3.5, explode: 38 + l * 6 }),

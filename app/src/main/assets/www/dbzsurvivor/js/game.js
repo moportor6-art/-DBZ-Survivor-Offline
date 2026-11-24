@@ -3872,6 +3872,7 @@ function render() {
   if (allies) allyPass(c, G.players.map(P => ({ owner: P })), (L, o) => drawOrbits(L, o.owner));
   // Proyectiles de los jugadores
   const drawProj = (c, p) => {
+    if (p.kind === 'ghost' && window.drawGhostProj && window.drawGhostProj(c, p, t)) return;   // fantasmas de Gotenks (js/mods/fantasmas.js)
     if (p.kind === 'disc') {
       c.save(); c.translate(Math.round(p.x), Math.round(p.y)); c.rotate(Math.round(p.spin * 2) / 2);
       c.fillStyle = 'rgba(255,216,74,0.45)'; c.beginPath(); c.ellipse(0, 0, p.r + 3, (p.r + 3) * 0.4, 0, 0, Math.PI * 2); c.fill();
