@@ -130,7 +130,8 @@
   const premio = i => Math.round(400 * (1 + i * 0.15) / 10) * 10;   // Zeni por estrella nueva
   // Dificultad: cada capítulo dura más y aprieta más que el anterior (del 1, ~6 min, al 20, ~10 min; el final, 13 min).
   // Los jefes llegan más tarde (cuando ya estás más fuerte), así que también tienen bastante más vida.
-  const DIF = (i, C) => ({ dur: C.especial ? 780 : 360 + i * 13, hp: 1.3 + i * 0.03, dmg: 1.2 + i * 0.025, jefe: 2 + i * 0.06 });
+  // 2.35.x: el capítulo 1 iba con todo (Raditz como un jefe final): ahora empieza un 30% más suave y sube poco a poco
+  const DIF = (i, C) => ({ dur: C.especial ? 780 : 360 + i * 13, hp: 0.9 + i * 0.045, dmg: 0.85 + i * 0.04, jefe: 1.4 + i * 0.08 });
   for (const C of CAPS) {   // retos de estrellas acordes: más bajas (dura más) y más margen para el jefe final (tiene más vida)
     if (C.reto.t === 'bajas') C.reto.n = Math.round(C.reto.n * 2.4 / 50) * 50;
     if (C.reto.t === 'rapido') C.reto.s = Math.round(C.reto.s * 1.5 / 10) * 10;
@@ -184,13 +185,13 @@
     const C = G && G.historia && capDe(G.historia), e = G && G.enemies[G.enemies.length - 1];
     if (!C || !e || !e.boss || e._aMedida) return r;
     e._aMedida = true;
-    const i = CAPS.indexOf(C), seg = e.final ? 20 + i * 2 : 8 + i * 0.8;
+    const i = CAPS.indexOf(C), seg = e.final ? 10 + i * 2.5 : 4 + i * 1;   // capítulo 1: 10 s el final, 4 s los demás
     const ahora = Math.floor(G.t);
     const poder = dps && dps.g === G ? dps.seg.reduce((a, v, k) => a + (dps.t[k] > ahora - VENT ? v : 0), 0) / Math.min(VENT, Math.max(1, G.t)) : 0;
     const hp = Math.round(Math.max(e.hp, poder * seg));
     e.hp = e.maxHp = hp;
     const vida = Math.max(...G.players.filter(P => !P.ally).map(P => P.maxHp || 100));
-    e.dmg = Math.round(Math.max(e.dmg * (1.3 + i * 0.04), vida * (0.08 + i * 0.004)));
+    e.dmg = Math.round(Math.max(e.dmg * (0.9 + i * 0.035), vida * (0.035 + i * 0.005)));   // capítulo 1: 3,5% de tu vida por golpe; el 20, ~13%
     return r;
   };
 

@@ -23,6 +23,10 @@ SHOP_UPGRADES.push(
     fmt: v => `Cargas el Ki un ${v * 10}% más rápido y las transformaciones gastan un ${Math.min(80, v * 4)}% menos` },
 );
 // Más niveles: Meditación (salud por segundo) de 5 a 10 y Control del Ki (recarga de técnicas) de 8 a 10
+// Rapidez de recarga de ataques: multiplica la recarga de TODAS las técnicas (ráfagas, ataques normales, Kamehameha,
+// Genkidama, especiales de las formas...) y cuenta aparte, después del tope de −60% de la recarga normal (game.js cdMult)
+SHOP_UPGRADES.push({ id: 'rapidez', name: 'Rapidez de recarga de ataques', icon: '⏩', color: '#ffe066', max: 5, base: 600, grow: 1.55, per: 0.06,
+  fmt: v => `Todos los ataques se recargan un ${Math.round(v * 100)}% más rápido (ráfagas, golpes, Kamehameha, Genkidama, especiales), también por encima del tope de recarga` });
 SHOP_UPGRADES.find(u => u.id === 'regen').max = 10;
 SHOP_UPGRADES.find(u => u.id === 'cd').max = 10;
 // Casillas de mejoras pasivas de un guerrero: las de siempre más las compradas en la Tienda

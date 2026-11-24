@@ -37,6 +37,10 @@
   // transformado: transformado no se carga Ki.
   const rechargeBonus = p => 1 - Math.max(0.4, 1 - 0.08 * ((p.passives && p.passives.focus) || 0) - (p.c.cdBonus || 0) - perk(p, 'cd'));
   window.fusionRecharge = rechargeBonus;
+  const cdRap = cdMult;
+  cdMult = function (P) {   // eslint-disable-line no-global-assign
+    return cdRap.apply(this, arguments) * (1 - basePerk(P, 'rapidez'));
+  };
   const upd = update;
   update = function () {   // eslint-disable-line no-global-assign
     const ps = typeof G !== 'undefined' && G && G.players ? G.players : [], before = ps.map(p => p.ki);

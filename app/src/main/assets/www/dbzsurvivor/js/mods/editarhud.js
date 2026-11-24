@@ -42,6 +42,7 @@
     { id: 'reloj', name: 'Reloj', r: () => { const L = hudLayout(); return L.narrow ? [L.statsX - 3, L.statsY - 3, 144, G.speed > 1 ? 58 : 42] : [W / 2 - 62, 12, 124, 42]; } },
     { id: 'bajas', name: 'Bajas', r: () => { const L = hudLayout(); return L.narrow ? null : [L.killsX - 3, L.killsY - 3, 106, 44]; } },
     { id: 'ki', name: 'Barra de Ki', r: kiRect },
+    { id: 'cinturon', name: 'Cinturón de objetos', r: () => (window.cinturonRect ? cinturonRect() : null) },
     { id: 'jefe', name: 'Barra de jefes', r: () => {   // una barra por jefe, o la tira de retratos desde BOSS_STRIP_MIN (drawBossStrip)
       const L = hudLayout(), n = Math.max(1, G.enemies.filter(e => e.boss).length), bw = Math.min(420, W - 40);
       const strip = n >= BOSS_STRIP_MIN, S = bossStripSize(n), w = Math.max(bw, strip ? n * S + (n - 1) * 6 : 0) + 16;
