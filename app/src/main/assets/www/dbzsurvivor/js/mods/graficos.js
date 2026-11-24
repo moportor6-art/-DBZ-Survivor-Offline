@@ -7,7 +7,9 @@
 //   · la resolución del lienzo (devicePixelRatio que lee resize()), cuántas partículas, temblor y números de daño
 (() => {
   const KEY = 'fusion.gfx';
-  const DEF = { cap: 60, res: 'alta', fx: 'todos', shake: true, dmgNums: true, fpsShow: false, battery: 'auto' };
+  // En la computadora (sin puente de la APK y con mouse) no hay batería que cuidar: por defecto, los Hz del monitor
+  const PC = typeof window.FusionNative === 'undefined' && !(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+  const DEF = { cap: PC ? 0 : 60, res: 'alta', fx: 'todos', shake: true, dmgNums: true, fpsShow: false, battery: 'auto' };
   let S = { ...DEF };
   try { S = { ...DEF, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch (e) { /* sin almacenamiento */ }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento */ } };
@@ -67,14 +69,21 @@
   }
 
   // ── Límite de cuadros: el bucle de la base, con salto de los cuadros que sobran ──
-  let lastT = 0, frames = 0, fpsT = 0;
+  // Ritmo: se acumula el tiempo y se dibuja cuando toca, con media vuelta de pantalla de margen. Antes se medía
+  // desde el último cuadro dibujado y en monitores de 75/100/144 Hz el tope de 60 daba 37/50 FPS desparejos
+  let lastT = 0, acc = 0, rafDt = 16.7, frames = 0, fpsT = 0;
   frame = function (now) {   // eslint-disable-line no-global-assign
     requestAnimationFrame(frame);   // primero, como en la base: un error no detiene el bucle
+    const d = lastT ? now - lastT : 0;
+    lastT = now;
+    if (d > 0 && d < 100) rafDt += (d - rafDt) * 0.1;
     if (E.cap) {
       const iv = 1000 / E.cap;
-      if (lastT && now - lastT < iv - 1.5) return;
-      lastT = now - Math.min(iv, (now - lastT) % iv || 0);
-    } else lastT = now;
+      acc += d;
+      if (d && acc < iv - rafDt / 2) return;
+      acc = Math.min(acc - iv, iv);
+      if (acc < -iv) acc = 0;
+    }
     frames++;
     if (now - fpsT >= 500) { fpsBox.textContent = `${Math.round(frames * 1000 / (now - fpsT))} FPS`; frames = 0; fpsT = now; }
     lastRaf = performance.now();
