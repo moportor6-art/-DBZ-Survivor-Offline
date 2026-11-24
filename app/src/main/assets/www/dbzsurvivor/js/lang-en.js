@@ -525,7 +525,7 @@ EN_TEXT = {
   '¡Petrificado!': 'Petrified!',
   '¡Rayo de caramelo!': 'Candy Beam!',
   '¡Caramelo!': 'Candy!',
-  'Probabilidad de crítico': 'Critical chance',
+  'Probabilidad de crítico': 'Critical chance', 'Daño crítico': 'Critical damage',
   'Carga del Ki': 'Ki charge',
   'Probabilidad de curarte al derrotar': 'Chance to heal on defeat',
   'Tamaño y área': 'Size and area',

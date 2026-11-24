@@ -172,12 +172,12 @@
     const F = grado(P) >= MAXG && dueño(P);
     return ps.apply(this, arguments) * (F && F.spd ? 1 + F.spd(P) : 1);
   };
+  CRIT_EXTRA.push(o => { const F = grado(o) >= MAXG && dueño(o); return (F && F.crit) || 0; });   // (crítico: en la probabilidad general)
   const de = damageEnemy;
   damageEnemy = function (e, amount, src, kb, owner, aid) {   // eslint-disable-line no-global-assign
     const F = owner && e && !e.dead && grado(owner) >= MAXG && dueño(owner);
     if (F) {
       if (F.vs) amount *= F.vs(owner, e, aid) || 1;
-      if (F.crit && Math.random() < F.crit) amount *= 2;
       if (F.exec && !e.boss && e.hp - amount < e.maxHp * F.exec) amount = Math.max(amount, e.hp + 1);
       arguments[1] = amount;
     }

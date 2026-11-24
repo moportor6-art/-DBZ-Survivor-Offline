@@ -542,17 +542,16 @@
     raw = true;
     try { damageEnemy(e, amount, owner, 0, owner, aid); } finally { raw = false; }
   }
+  // los críticos del guerrero y de su forma se suman a la probabilidad general (salen en amarillo y en la pausa)
+  CRIT_EXTRA.push(o => { if (!o.charId) return 0; const d = ID[o.charId] && !o.summon ? ID[o.charId] : null; return ((d && d.crit) || 0) + (fxOf(o).crit || 0); });
   const de = damageEnemy;
   damageEnemy = function (e, amount, src, kb, owner, aid) {   // eslint-disable-line no-global-assign
     if (raw || !e || e.friend || !owner || !owner.charId) return de.apply(this, arguments);
     const d = ID[owner.charId] && !owner.summon ? ID[owner.charId] : null;
     if (d) {
       if (d.vs) amount *= d.vs(owner, e, aid);
-      if (d.crit && Math.random() < d.crit) amount *= 2;
       if (d.exec && !e.boss && e.hp - amount < e.maxHp * d.exec) amount = Math.max(amount, e.hp + 1);
     }
-    const f = fxOf(owner);
-    if (f.crit && Math.random() < f.crit) amount *= 2;
     const r = de.call(this, e, amount, src, kb, owner, aid);
     if (d && d.hit) d.hit(owner, e, aid);
     return r;

@@ -1024,10 +1024,14 @@ function creditDmg(owner, aid, got) {
   const line = owner.stats.dmgLine || (owner.stats.dmgLine = []), b = Math.floor(G.t / DMG_STEP);
   line[b] = (line[b] || 0) + got;
 }
+// Probabilidad de crítico (daño doble, número amarillo con «!»): 8% + Golpe certero + lo que sumen guerreros y formas (CRIT_EXTRA)
+const CRIT_EXTRA = [];
+const critChance = P => Math.min(1, 0.08 + 0.04 * ((P && P.passives && P.passives.crit) || 0)
+  + (P ? CRIT_EXTRA.reduce((a, f) => a + (f(P) || 0), 0) : 0));
 function damageEnemy(e, amount, src, kb, owner, aid) {
   if (e.dead) return;
   if (e.shield > 0) { if (Math.random() < 0.15) burst(e.x, e.y - 8, '#7fe6ff', 3, 2, 2); return; }   // Barrera del Androide 17
-  const crit = Math.random() < 0.08 + 0.04 * ((owner && owner.passives && owner.passives.crit) || 0);   // Golpe certero
+  const crit = Math.random() < critChance(owner);
   const boss = (e.boss && owner ? 1 + (owner.c.bossBonus || 0) : 1)   // Trunks del Futuro: más daño a los jefes
     * ((e.boss || e.elite) && owner && owner.passives ? 1 + 0.25 * (owner.passives.tracker || 0) : 1);   // Rastreador
   const d = Math.max(1, Math.round(amount * dmgMult(owner) * boss * (crit ? 2 : 1)));
@@ -2843,6 +2847,8 @@ function renderPause() {
     [regen ? `${regen.toFixed(1)}/s` : '—', 'Regeneración'],
     [pctTxt((P.c.xpBonus || 0) + perk(P, 'xp')), 'Experiencia'],
     [fmtNum(magnetRange(P)), 'Radio de atracción'],
+    [`${Math.round(critChance(P) * 100)}%`, 'Probabilidad de crítico'],
+    ['×2', 'Daño crítico'],
     [`${Math.round(P.ki)}%`, 'Ki'],
   ].map(([v, label]) => `<div class="ps-cell"><b>${esc(v)}</b><span>${esc(t(label))}</span></div>`).join('');
   const boosted = P.transformed > 0 ? ` <small>${esc(t('({form} activo)', { form: P.c.transform }))}</small>` : isFusedBody(P) || (G.fusion && G.fusion.phase === 'fused' && G.fusion.ids.includes(P.id)) ? ` <small>${t('(fusionado)')}</small>` : '';
