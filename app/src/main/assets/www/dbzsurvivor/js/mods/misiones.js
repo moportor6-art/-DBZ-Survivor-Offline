@@ -56,6 +56,13 @@
   const estrellas = () => { try { return sum(JSON.parse(localStorage.getItem('fusion.capitulos') || '{}')); } catch (e) { return 0; } };
   const nivelesGanados = () => new Set(Object.keys((SAVE.stats && SAVE.stats.lvWins) || {}).map(k => k.split('|')[0])).size;
   const ganoPoder = () => Object.keys((SAVE.stats && SAVE.stats.lvWins) || {}).some(k => k.startsWith('poder|')) ? 1 : 0;
+  const bossesDe = (...ids) => () => ids.reduce((a, id) => a + bossN(id), 0);
+  const capsGT = () => { try { const c = JSON.parse(localStorage.getItem('fusion.capitulos') || '{}');
+    return (window.GT_CAPS || []).reduce((a, q) => a + (+c[q.id] || 0), 0); } catch (e) { return 0; } };
+  const jefe = (id, cat, icon, es, en, ids, t, fes, fen) => ({ id, cat, icon, name: () => L(es, en), v: bossesDe(...ids), t,
+    text: m => L(`Derrota ${m} veces a ${fes}`, `Defeat ${fen} ${m} times`) });
+  const CATS = { prog: ['Progreso', 'Progress'], fight: ['Combate', 'Combat'], boss: ['Jefes y sagas', 'Bosses and sagas'],
+    gt: ['Dragon Ball GT', 'Dragon Ball GT'], col: ['Colección y modos', 'Collection and modes'] };
   const RETOS = [
     { id: 'u6', icon: '⏱', grupo: true, name: () => L('Rival del Universo 6', 'Rival of Universe 6'),
       desc: () => L('Cumple los tres para desbloquear a Hit', 'Complete all three to unlock Hit'),
@@ -64,21 +71,47 @@
         { text: () => L('Gana el Torneo del Poder (Nivel 8)', 'Win the Tournament of Power (Level 8)'), v: ganoPoder, meta: 1 },
         { text: () => L('Cumple 15 misiones (diarias o semanales)', 'Complete 15 missions (daily or weekly)'), v: () => Math.min(15, R().misiones || 0), meta: 15 },
       ] },
-    { id: 'kills', icon: '💥', name: () => L('Exterminador', 'Exterminator'), v: () => SAVE.stats.kills || 0, t: [[1000, 300], [5000, 800], [20000, 2000], [50000, 5000]], text: m => L(`Derrota ${m} enemigos`, `Defeat ${m} enemies`) },
-    { id: 'time', icon: '⏳', name: () => L('Superviviente', 'Survivor'), v: () => Math.floor((SAVE.stats.time || 0) / 60), t: [[60, 300], [300, 1000], [1000, 3000]], text: m => L(`Juega ${m} minutos en total`, `Play ${m} minutes in total`) },
-    { id: 'wins', icon: '🏆', name: () => L('Campeón', 'Champion'), v: () => SAVE.wins || 0, t: [[5, 300], [25, 1000], [100, 3000]], text: m => L(`Gana ${m} niveles`, `Win ${m} levels`) },
-    { id: 'chars', icon: '🥋', name: () => L('Maestro de guerreros', 'Master of fighters'), v: () => Object.keys(SAVE.stats.winsBy || {}).length, t: [[3, 400], [10, 1200], [25, 3000], [50, 6000]], text: m => L(`Gana con ${m} guerreros distintos`, `Win with ${m} different fighters`) },
-    { id: 'niveles', icon: '🗺', name: () => L('Conquistador', 'Conqueror'), v: nivelesGanados, t: [[3, 500], [6, 1500], [10, 3000]], text: m => L(`Gana ${m} niveles distintos`, `Win ${m} different levels`) },
-    { id: 'bosses', icon: '👑', name: () => L('Cazador de jefes', 'Boss hunter'), v: () => sum(SAVE.stats.bosses), t: [[10, 400], [50, 1200], [200, 4000]], text: m => L(`Derrota ${m} jefes`, `Defeat ${m} bosses`) },
-    { id: 'elites', icon: '⭐', name: () => L('Rompe-élites', 'Elite breaker'), v: () => SAVE.stats.elites || 0, t: [[25, 300], [100, 1000], [500, 3000]], text: m => L(`Derrota ${m} enemigos de élite`, `Defeat ${m} elite enemies`) },
-    { id: 'trans', icon: '⚡', name: () => L('Más allá del límite', 'Beyond the limit'), v: () => SAVE.stats.transforms || 0, t: [[10, 300], [50, 1000], [200, 3000]], text: m => L(`Transfórmate ${m} veces`, `Transform ${m} times`) },
-    { id: 'evos', icon: '🌀', name: () => L('Técnicas definitivas', 'Ultimate techniques'), v: () => SAVE.stats.evoCount || 0, t: [[5, 300], [25, 1000], [100, 3000]], text: m => L(`Evoluciona ${m} técnicas`, `Evolve ${m} techniques`) },
-    { id: 'fusions', icon: '🔗', name: () => L('Fusión de técnicas', 'Technique fusion'), v: () => SAVE.stats.fusions || 0, t: [[1, 300], [10, 1000], [50, 3000]], text: m => L(`Fusiona técnicas ${m} veces`, `Fuse techniques ${m} times`) },
-    { id: 'wish', icon: '🐉', name: () => L('Amigo de Shenlong', "Shenron's friend"), v: () => SAVE.stats.summons || 0, t: [[1, 300], [5, 1000], [20, 3000]], text: m => L(`Invoca a Shenlong ${m} veces`, `Summon Shenron ${m} times`) },
-    { id: 'historia', icon: '📖', name: () => L('Leyenda viviente', 'Living legend'), v: estrellas, t: [[5, 500], [20, 1500], [40, 3000], [63, 8000]], text: m => L(`Consigue ${m} estrellas en el Modo Historia`, `Earn ${m} stars in Story Mode`) },
-    { id: 'misiones', icon: '📋', name: () => L('Constancia', 'Consistency'), v: () => R().misiones || 0, t: [[5, 300], [20, 1000], [60, 3000], [150, 8000]], text: m => L(`Cumple ${m} misiones`, `Complete ${m} missions`) },
-    { id: 'hit', icon: '🟣', name: () => L('El asesino del Universo 6', 'The Universe 6 assassin'), v: () => bossN('hit'), t: [[1, 500], [5, 1500], [15, 4000]], text: m => L(`Derrota a Hit ${m} veces`, `Defeat Hit ${m} times`) },
-    { id: 'jiren', icon: '🔥', name: () => L('Más fuerte que Jiren', 'Stronger than Jiren'), v: () => bossN('jiren'), t: [[1, 800], [5, 2500], [15, 6000]], text: m => L(`Derrota a Jiren ${m} veces`, `Defeat Jiren ${m} times`) },
+    { id: 'kills', cat: 'fight', icon: '💥', name: () => L('Exterminador', 'Exterminator'), v: () => SAVE.stats.kills || 0, t: [[1000, 300], [5000, 800], [20000, 2000], [50000, 5000]], text: m => L(`Derrota ${m} enemigos`, `Defeat ${m} enemies`) },
+    { id: 'time', cat: 'prog', icon: '⏳', name: () => L('Superviviente', 'Survivor'), v: () => Math.floor((SAVE.stats.time || 0) / 60), t: [[60, 300], [300, 1000], [1000, 3000]], text: m => L(`Juega ${m} minutos en total`, `Play ${m} minutes in total`) },
+    { id: 'wins', cat: 'prog', icon: '🏆', name: () => L('Campeón', 'Champion'), v: () => SAVE.wins || 0, t: [[5, 300], [25, 1000], [100, 3000]], text: m => L(`Gana ${m} niveles`, `Win ${m} levels`) },
+    { id: 'chars', cat: 'col', icon: '🥋', name: () => L('Maestro de guerreros', 'Master of fighters'), v: () => Object.keys(SAVE.stats.winsBy || {}).length, t: [[3, 400], [10, 1200], [25, 3000], [50, 6000]], text: m => L(`Gana con ${m} guerreros distintos`, `Win with ${m} different fighters`) },
+    { id: 'niveles', cat: 'prog', icon: '🗺', name: () => L('Conquistador', 'Conqueror'), v: nivelesGanados, t: [[3, 500], [6, 1500], [10, 3000]], text: m => L(`Gana ${m} niveles distintos`, `Win ${m} different levels`) },
+    { id: 'bosses', cat: 'boss', icon: '👑', name: () => L('Cazador de jefes', 'Boss hunter'), v: () => sum(SAVE.stats.bosses), t: [[10, 400], [50, 1200], [200, 4000]], text: m => L(`Derrota ${m} jefes`, `Defeat ${m} bosses`) },
+    { id: 'elites', cat: 'fight', icon: '⭐', name: () => L('Rompe-élites', 'Elite breaker'), v: () => SAVE.stats.elites || 0, t: [[25, 300], [100, 1000], [500, 3000]], text: m => L(`Derrota ${m} enemigos de élite`, `Defeat ${m} elite enemies`) },
+    { id: 'trans', cat: 'fight', icon: '⚡', name: () => L('Más allá del límite', 'Beyond the limit'), v: () => SAVE.stats.transforms || 0, t: [[10, 300], [50, 1000], [200, 3000]], text: m => L(`Transfórmate ${m} veces`, `Transform ${m} times`) },
+    { id: 'evos', cat: 'fight', icon: '🌀', name: () => L('Técnicas definitivas', 'Ultimate techniques'), v: () => SAVE.stats.evoCount || 0, t: [[5, 300], [25, 1000], [100, 3000]], text: m => L(`Evoluciona ${m} técnicas`, `Evolve ${m} techniques`) },
+    { id: 'fusions', cat: 'fight', icon: '🔗', name: () => L('Fusión de técnicas', 'Technique fusion'), v: () => SAVE.stats.fusions || 0, t: [[1, 300], [10, 1000], [50, 3000]], text: m => L(`Fusiona técnicas ${m} veces`, `Fuse techniques ${m} times`) },
+    { id: 'wish', cat: 'col', icon: '🐉', name: () => L('Amigo de Shenlong', "Shenron's friend"), v: () => SAVE.stats.summons || 0, t: [[1, 300], [5, 1000], [20, 3000]], text: m => L(`Invoca a Shenlong ${m} veces`, `Summon Shenron ${m} times`) },
+    { id: 'historia', cat: 'prog', icon: '📖', name: () => L('Leyenda viviente', 'Living legend'), v: estrellas, t: [[5, 500], [20, 1500], [40, 3000], [63, 8000], [96, 15000]], text: m => L(`Consigue ${m} estrellas en el Modo Historia`, `Earn ${m} stars in Story Mode`) },
+    { id: 'misiones', cat: 'prog', icon: '📋', name: () => L('Constancia', 'Consistency'), v: () => R().misiones || 0, t: [[5, 300], [20, 1000], [60, 3000], [150, 8000]], text: m => L(`Cumple ${m} misiones`, `Complete ${m} missions`) },
+    { id: 'hit', cat: 'boss', icon: '🟣', name: () => L('El asesino del Universo 6', 'The Universe 6 assassin'), v: () => bossN('hit'), t: [[1, 500], [5, 1500], [15, 4000]], text: m => L(`Derrota a Hit ${m} veces`, `Defeat Hit ${m} times`) },
+    // ── Nuevos (2.35.2) ──
+    { id: 'runs', cat: 'prog', icon: '🎮', name: () => L('Incansable', 'Tireless'), v: () => SAVE.runs || 0, t: [[10, 300], [50, 1000], [200, 3000], [500, 8000]], text: m => L(`Juega ${m} partidas`, `Play ${m} runs`) },
+    { id: 'zeni', cat: 'prog', icon: '💰', name: () => L('Magnate de Capsule Corp.', 'Capsule Corp. tycoon'), v: () => SAVE.stats.zeniEarned || 0, t: [[10000, 500], [50000, 1500], [200000, 4000], [1000000, 10000]], text: m => L(`Gana ${m} Zeni en total`, `Earn ${m} Zeni in total`) },
+    { id: 'logros', cat: 'prog', icon: '🏅', name: () => L('Cazador de logros', 'Achievement hunter'), v: () => Object.keys(SAVE.ach || {}).length, t: [[10, 500], [25, 1500], [40, 4000], [51, 10000]], text: m => L(`Consigue ${m} logros`, `Unlock ${m} achievements`) },
+    { id: 'lvchar', cat: 'prog', icon: '🗺', name: () => L('Viajero del multiverso', 'Multiverse traveler'), v: () => Object.keys(SAVE.stats.lvWins || {}).length, t: [[10, 500], [30, 1500], [80, 4000], [200, 10000]], text: m => L(`Gana ${m} combinaciones de nivel y guerrero`, `Win ${m} level and fighter combinations`) },
+    { id: 'leal', cat: 'prog', icon: '🤝', name: () => L('Guerrero leal', 'Loyal warrior'), v: () => Math.max(0, ...Object.values(SAVE.stats.charRuns || {}).map(n => +n || 0)), t: [[10, 300], [50, 1200], [150, 4000]], text: m => L(`Juega ${m} partidas con el mismo guerrero`, `Play ${m} runs with the same fighter`) },
+    { id: 'dano', cat: 'fight', icon: '💢', name: () => L('Poder destructivo', 'Destructive power'), v: () => Math.floor(sum(SAVE.stats.techDmg)), t: [[100000, 300], [1000000, 1000], [10000000, 3000], [100000000, 8000]], text: m => L(`Causa ${m.toLocaleString()} de daño con técnicas`, `Deal ${m.toLocaleString()} damage with techniques`) },
+    { id: 'kills2', cat: 'fight', icon: '☠', name: () => L('Ejército de un solo hombre', 'One-man army'), v: () => SAVE.stats.kills || 0, t: [[100000, 8000], [250000, 15000]], text: m => L(`Derrota ${m.toLocaleString()} enemigos`, `Defeat ${m.toLocaleString()} enemies`) },
+    { id: 'bestiario', cat: 'boss', icon: '📕', name: () => L('Bestiario', 'Bestiary'), v: () => BOSSES.filter(b => bossN(b.id) > 0).length, t: [[10, 500], [25, 1500], [40, 4000], [55, 10000]], text: m => L(`Derrota a ${m} jefes distintos`, `Defeat ${m} different bosses`) },
+    jefe('saiyan', 'boss', '🌑', 'Invasión Saiyajin', 'Saiyan invasion', ['raditz', 'nappa', 'vegetas'], [[3, 300], [15, 1000], [50, 3000]], 'Raditz, Nappa o Vegeta', 'Raditz, Nappa or Vegeta'),
+    jefe('ginyu', 'boss', '💪', 'Adiós, Fuerzas Especiales', 'Farewell, Special Force', ['recoome', 'burter', 'jeice', 'ginyu'], [[5, 300], [20, 1000], [60, 3000]], 'las Fuerzas Especiales Ginyu', 'the Ginyu Force'),
+    jefe('freezer', 'boss', '👿', 'Pesadilla de Namek', 'Namek nightmare', ['freezer', 'mechafz', 'goldenfz', 'blackfz', 'coldb', 'coolerb'], [[3, 400], [15, 1200], [50, 4000]], 'Freezer y su familia', 'Frieza and his family'),
+    jefe('androides', 'boss', '🤖', 'Chatarra de la Red Ribbon', 'Red Ribbon scrap', ['a16', 'a17', 'a18', 'a19', 'gero'], [[5, 300], [20, 1000], [60, 3000]], 'los androides', 'the androids'),
+    jefe('cell', 'boss', '🧬', 'Juegos de Cell', 'Cell Games', ['cellimp', 'cellsemi', 'cell'], [[3, 400], [15, 1200], [50, 4000]], 'Cell en cualquier forma', 'Cell in any form'),
+    jefe('buu', 'boss', '🍬', 'Fin de Majin Buu', 'End of Majin Buu', ['fatbuu', 'superbuu', 'buu'], [[3, 400], [15, 1200], [50, 4000]], 'Majin Buu en cualquier forma', 'Majin Buu in any form'),
+    jefe('broly', 'boss', '🟢', 'El Saiyajin legendario', 'The Legendary Saiyan', ['brolyb'], [[1, 500], [5, 1500], [15, 4000]], 'Broly', 'Broly'),
+    jefe('bills', 'boss', '😼', 'Dios de la Destrucción', 'God of Destruction', ['bills'], [[1, 600], [5, 2000], [15, 5000]], 'Bills', 'Beerus'),
+    jefe('janemba', 'boss', '👹', 'Pesadilla del Otro Mundo', 'Other World nightmare', ['janemba'], [[1, 500], [5, 1500], [15, 4000]], 'Janemba', 'Janemba'),
+    jefe('baby', 'gt', '🦠', 'Saga de Baby', 'Baby saga', ['babyb', 'babyozaru', 'rildob'], [[1, 600], [5, 2000], [15, 5000]], 'Baby o el General Rildo', 'Baby or General Rildo'),
+    jefe('s17', 'gt', '🔩', 'Doble androide', 'Double android', ['super17b'], [[1, 600], [5, 2000], [15, 5000]], 'Super 17', 'Super 17'),
+    jefe('dragones', 'gt', '🐲', 'Esferas malditas', 'Cursed Dragon Balls', ['hazeb', 'rageb', 'oceanb', 'naturb', 'eisb', 'novab', 'synb'], [[7, 800], [25, 2500], [70, 6000]], 'los Dragones Oscuros', 'the Shadow Dragons'),
+    jefe('omega', 'gt', '🌌', 'El fin de Omega Shenron', 'The end of Omega Shenron', ['omegab'], [[1, 1000], [5, 3000], [15, 8000]], 'Omega Shenron', 'Omega Shenron'),
+    { id: 'gtcaps', cat: 'gt', icon: '⭐', name: () => L('Leyenda de GT', 'GT legend'), v: capsGT, t: [[5, 800], [15, 2500], [33, 8000]], text: m => L(`Consigue ${m} estrellas en los capítulos de GT`, `Earn ${m} stars in the GT chapters`) },
+    { id: 'coleccion', cat: 'col', icon: '🗃', name: () => L('Coleccionista', 'Collector'), v: () => Object.keys(CHARACTERS).filter(id => typeof isUnlocked === 'function' && isUnlocked(id)).length, t: [[15, 500], [30, 1500], [45, 4000], [60, 10000]], text: m => L(`Ten ${m} guerreros desbloqueados`, `Have ${m} fighters unlocked`) },
+    { id: 'online', cat: 'col', icon: '🌐', name: () => L('Equipo Z', 'Z Team'), v: () => SAVE.stats.onlineWins || 0, t: [[1, 500], [10, 1500], [50, 5000]], text: m => L(`Gana ${m} niveles en cooperativo online`, `Win ${m} levels in online co-op`) },
+    { id: 'semanal', cat: 'col', icon: '📅', name: () => L('Desafío aceptado', 'Challenge accepted'), v: () => SAVE.stats.weeklyWins || 0, t: [[1, 500], [5, 1500], [20, 5000]], text: m => L(`Gana ${m} desafíos semanales`, `Win ${m} weekly challenges`) },
+    { id: 'jiren', cat: 'boss', icon: '🔥', name: () => L('Más fuerte que Jiren', 'Stronger than Jiren'), v: () => bossN('jiren'), t: [[1, 800], [5, 2500], [15, 6000]], text: m => L(`Derrota a Jiren ${m} veces`, `Defeat Jiren ${m} times`) },
   ];
 
   // ── Guardado ──
@@ -244,7 +277,12 @@
     } else {
       $('fdHint').textContent = L('Objetivos para siempre: cada escalón da Zeni una vez.', 'Permanent goals: each tier gives Zeni once.');
       const Rr = leerR();
-      box.innerHTML = RETOS.map(r => {
+      let ultima = '';
+      const titulo = r => { if (!r.cat || r.cat === ultima) return ''; ultima = r.cat; return `<h3 class="fd-cat">${L(...CATS[r.cat])}</h3>`; };
+      const orden = ['prog', 'fight', 'boss', 'gt', 'col'], hechos = RETOS.filter(r => !r.grupo && escalon(r, Rr.cobrados) < 0).length;
+      const lista = RETOS.filter(r => r.grupo).concat(orden.flatMap(c => RETOS.filter(r => r.cat === c)));
+      $('fdHint').textContent += ' ' + L(`Completos: ${hechos} de ${RETOS.length - 1}.`, `Completed: ${hechos} of ${RETOS.length - 1}.`);
+      box.innerHTML = lista.map(r => titulo(r) + (() => {
         if (r.grupo) {
           const hecho = r.partes.every(q => q.v() >= q.meta), libre = typeof isUnlocked === 'function' && CHARACTERS.hitp && isUnlocked('hitp');
           const partes = r.partes.map(q => `<div class="fd-sub">${q.v() >= q.meta ? '✓' : '·'} ${q.text()} <span>${q.v()} / ${q.meta}</span></div>`).join('');
@@ -253,10 +291,10 @@
         }
         const i = escalon(r, Rr.cobrados), v = r.v();
         if (i < 0) return fila(`${r.icon} ${r.name()} <small>${r.text(r.t[r.t.length - 1][0])}</small>`, 100, `<b>✓ ${L('Completo', 'Complete')}</b>`);
-        const [meta, z] = r.t[i], medalla = ['🥉', '🥈', '🥇', '💎'][i] || '💎';
+        const [meta, z] = r.t[i], medalla = ['🥉', '🥈', '🥇', '💎', '👑'][i] || '👑';
         const act = v >= meta ? `<button class="btn small" data-claim="r:${r.id}">${L('Cobrar', 'Claim')} ${z} Zeni</button>` : `<span>${Math.min(v, meta)} / ${meta}</span>`;
         return fila(`${r.icon} ${r.name()} ${medalla} <small>${r.text(meta)}</small>`, 100 * v / meta, act);
-      }).join('');
+      })()).join('');
     }
     for (const b of box.querySelectorAll('[data-claim]')) b.onclick = () => cobrar(b.dataset.claim);
   }
@@ -300,6 +338,7 @@
     .fd-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.12)}
     .fd-txt{flex:1;font-weight:600}.fd-txt small{display:block;font-weight:400;opacity:.8;font-size:.85em}
     .fd-sub{font-weight:400;font-size:.9em;margin-top:4px;opacity:.9}.fd-sub span{opacity:.7;margin-left:6px}
+    .fd-cat{margin:14px 0 2px;color:#ffd93b;font-size:1em;text-align:left}
     .fd-grupo{background:rgba(180,107,255,.12);border-radius:8px}
     .fd-bar{height:8px;margin-top:6px;border-radius:4px;background:rgba(0,0,0,.35);overflow:hidden}
     .fd-bar i{display:block;height:100%;background:#ffcc33}.fd-act{min-width:120px;text-align:right}.fd-bonus .fd-txt{color:#ffd93b}
