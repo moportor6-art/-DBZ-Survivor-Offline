@@ -240,6 +240,7 @@
   screen.innerHTML = `<div class="box help-box"><h2 id="fdTitle"></h2>
     <div class="fd-tabs"><button data-tab="d"></button><button data-tab="w"></button><button data-tab="r"></button></div>
     <p class="hint" id="fdHint"></p>
+    <button id="fdTodo" class="btn small hidden"></button>
     <div id="dailyContent" class="help-content"></div>
     <button id="btnDailyBack" class="btn ghost"></button></div>`;
   document.body.appendChild(screen);
@@ -297,26 +298,45 @@
       })()).join('');
     }
     for (const b of box.querySelectorAll('[data-claim]')) b.onclick = () => cobrar(b.dataset.claim);
+    const n = listos(), todo = $('fdTodo');
+    todo.textContent = L(`Cobrar todo (${n})`, `Claim all (${n})`);
+    todo.classList.toggle('hidden', n < 2);
+    todo.onclick = cobrarTodo;
   }
-  function cobrar(what) {
+  // Cobrar todo: misiones, bonos (ya con todas cobradas) y todos los escalones de retos listos
+  function cobrarTodo() {
+    let z = 0, n = 0;
+    const sumar = q => { const v = cobrar(q, true); if (v) { z += v; n++; } return v; };
+    for (const k of ['d', 'w']) {
+      const D = k === 'd' ? diarias() : semanales();
+      D.list.forEach((m, i) => sumar(`${k}:${i}`));
+      sumar(`${k}:bonus`);
+    }
+    for (const r of RETOS) if (!r.grupo) while (sumar(`r:${r.id}`));
+    if (!n) return;
+    if (typeof SFX !== 'undefined') SFX.play('ball');
+    toast(L(`¡${n} recompensas cobradas!`, `${n} rewards claimed!`), `+${z} Zeni`);
+    render(); badge();
+  }
+  function cobrar(what, quiet) {
     const [k, w] = what.split(':');
     let z = 0, mision = false;
     if (k === 'r') {
       const r = RETOS.find(q => q.id === w), Rr = leerR(), i = r ? escalon(r, Rr.cobrados) : -1;
-      if (i < 0 || r.v() < r.t[i][0]) return;
+      if (i < 0 || r.v() < r.t[i][0]) return 0;
       Rr.cobrados[r.id] = i + 1; z = r.t[i][1]; guardarR(Rr);
     } else {
       const key = k === 'd' ? 'fusion.daily' : 'fusion.weekly', D = k === 'd' ? diarias() : semanales(), B = k === 'd' ? D_BONUS : W_BONUS;
-      if (w === 'bonus') { if (D.bonus || !D.list.every(m => m.claimed)) return; D.bonus = true; z = B; }
-      else { const m = D.list[+w]; if (!m || m.claimed || m.prog < m.v) return; m.claimed = true; z = m.z; mision = true; }
+      if (w === 'bonus') { if (D.bonus || !D.list.every(m => m.claimed)) return 0; D.bonus = true; z = B; }
+      else { const m = D.list[+w]; if (!m || m.claimed || m.prog < m.v) return 0; m.claimed = true; z = m.z; mision = true; }
       escribir(key, D);
     }
     if (mision) { const Rr = leerR(); Rr.misiones = (Rr.misiones || 0) + 1; guardarR(Rr); }
     SAVE.zeni += z; writeSave();
-    if (typeof SFX !== 'undefined') SFX.play('ball');
     $('zeniTotal').textContent = SAVE.zeni;
     window.dispatchEvent(new Event('fusion:retos'));   // (Hit revisa si ya se desbloquea)
-    render(); badge();
+    if (!quiet) { if (typeof SFX !== 'undefined') SFX.play('ball'); render(); badge(); }
+    return z;
   }
 
   const btn = document.createElement('button');
@@ -338,6 +358,7 @@
     .fd-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.12)}
     .fd-txt{flex:1;font-weight:600}.fd-txt small{display:block;font-weight:400;opacity:.8;font-size:.85em}
     .fd-sub{font-weight:400;font-size:.9em;margin-top:4px;opacity:.9}.fd-sub span{opacity:.7;margin-left:6px}
+    #fdTodo{display:block;margin:0 auto 6px;background:#ffd93b;color:#0a0f2e;font-weight:800}#fdTodo.hidden{display:none}
     .fd-cat{margin:14px 0 2px;color:#ffd93b;font-size:1em;text-align:left}
     .fd-grupo{background:rgba(180,107,255,.12);border-radius:8px}
     .fd-bar{height:8px;margin-top:6px;border-radius:4px;background:rgba(0,0,0,.35);overflow:hidden}
