@@ -1,0 +1,488 @@
+{
+ "bra": {
+  "alto": 42,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 45,
+  "w": 56
+ },
+ "bra-ssj": {
+  "alto": 54,
+  "anims": {
+   "cast": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "kohit": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 7,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 56,
+  "w": 63
+ },
+ "cabba": {
+  "alto": 43,
+  "anims": {
+   "cast": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "kohit": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 7,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 45,
+  "w": 82
+ },
+ "caulifla": {
+  "alto": 48,
+  "anims": {
+   "cast": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 2,
+    "row": 0
+   },
+   "kohit": {
+    "col": 9,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 10,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 6,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 2,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 51,
+  "w": 54
+ },
+ "cellmaxb": {
+  "alto": 69,
+  "anims": {
+   "cast": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 3,
+    "row": 0
+   },
+   "punch": {
+    "col": 7,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 3,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 74,
+  "w": 71
+ },
+ "frostb": {
+  "alto": 63,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 69,
+  "w": 78
+ },
+ "gogetablack": {
+  "alto": 55,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 58,
+  "w": 71
+ },
+ "gogetablack-ssj": {
+  "alto": 55,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 58,
+  "w": 56
+ },
+ "gokuaf": {
+  "alto": 52,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 54,
+  "w": 62
+ },
+ "hero": {
+  "alto": 51,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 53,
+  "w": 52
+ },
+ "lishenb": {
+  "alto": 45,
+  "anims": {
+   "cast": {
+    "col": 7,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 5,
+    "row": 0
+   },
+   "punch": {
+    "col": 9,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 5,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 47,
+  "w": 44
+ },
+ "vegetaaf": {
+  "alto": 53,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "kohit": {
+    "col": 11,
+    "count": 1,
+    "row": 0
+   },
+   "kolie": {
+    "col": 12,
+    "count": 1,
+    "row": 0
+   },
+   "koup": {
+    "col": 13,
+    "count": 1,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 57,
+  "w": 48
+ },
+ "willowb": {
+  "alto": 66,
+  "anims": {
+   "cast": {
+    "col": 6,
+    "count": 2,
+    "row": 0
+   },
+   "idle": {
+    "col": 0,
+    "count": 4,
+    "row": 0
+   },
+   "punch": {
+    "col": 8,
+    "count": 3,
+    "row": 0
+   },
+   "walk": {
+    "col": 4,
+    "count": 2,
+    "row": 0
+   }
+  },
+  "h": 68,
+  "w": 79
+ }
+}

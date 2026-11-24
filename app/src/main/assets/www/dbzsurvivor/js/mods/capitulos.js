@@ -122,6 +122,7 @@
   ];
   // Dragon Ball GT (js/mods/gt.js): sus capítulos van antes de «La batalla final», que no los pide para abrirse
   if (window.GT_CAPS) CAPS.splice(CAPS.findIndex(c => c.id === 'final'), 0, ...window.GT_CAPS);
+  if (window.ALT_CAPS) CAPS.splice(CAPS.findIndex(c => c.id === 'final'), 0, ...window.ALT_CAPS);   // (alternos.js)
   window.CAPITULOS = CAPS;
   const PREMIO_FINAL = 10000, PREMIO_ESTRELLAS = 15000;
 

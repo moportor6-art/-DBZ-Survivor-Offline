@@ -18,3 +18,13 @@ Se arman con `../armar.py` (cuadros elegidos en `../specs.py`, numerados con `..
 Dragon Ball © Akira Toriyama / Bird Studio, Shueisha, Toei Animation. Uso sin fines comerciales.
 
 - Pan GT y Uub GT: ULSW. Majuub: Mr.Drk (ULSW).
+
+## Universos alternativos (hojas alt_*, armadas con `ALT=1 armar.py` y `specs_alt.py`)
+- Bra y Bra SSJ: Dragon Ball Multiverse (Andrés gamer animations).
+- Caulifla y Cabba: Nightmarex07 (Ultimate LSW).
+- Black Gogeta y Black Gogeta SSJ Rosé: Black Vinas (Ultimate LSW).
+- Hero: Vairen Morningstar (Dragon Legend Z Lite).
+- Vegeta SSJ4 y Goku: Dragon Ball AF.
+- Frost: AlquimistaSK (Ultimate LSW). Dr. Willow: Arisrad.
+- Cell Max y Super Li Shenron: Vairen Morningstar (Ultimate LSW, Dragon Legend Z).
+- Gai Heata: hoja guardada, todavía sin usar.

@@ -92,7 +92,10 @@ def armar(id_, spec, out_dir):
     alto = max(f.height for f in cuadros[:anims['idle']['count']])   # alto del cuerpo de pie (para la escala)
     return {'w': CW, 'h': CH, 'anims': anims, 'alto': alto}
 
-from specs import SPECS
+# ALT=1: hojas de los universos alternativos (specs_alt.py → alt.json, sin el Ozaru dorado)
+ALT = os.environ.get('ALT') == '1'
+if ALT: from specs_alt import SPECS
+else: from specs import SPECS
 
 def ozaru_dorado(out_dir):
     """Baby Ozaru dorado: la hoja del Ozaru del juego con el pelaje dorado."""
@@ -102,9 +105,9 @@ def ozaru_dorado(out_dir):
 
 if __name__ == '__main__':
     out_dir = sys.argv[1]
-    ozaru_dorado(out_dir)
+    if not ALT: ozaru_dorado(out_dir)
     quiero = sys.argv[2:] or list(SPECS)
-    j = os.path.join(out_dir, 'gt.json')
+    j = os.path.join(out_dir, 'alt.json' if ALT else 'gt.json')
     info = json.load(open(j)) if os.path.exists(j) else {}
     for k in quiero:
         info[k] = armar(k, SPECS[k], out_dir)
