@@ -52,7 +52,7 @@
         announce('¡Freezer lanzó su ataque al núcleo de Namek! Tienes 90 s', '#ff5c5c');
       }
       if (e.jf.doom > 0 && (e.jf.doom -= dt) <= 0) {
-        for (const P of alive()) if (!G.testGod) { P.hp -= P.maxHp * 0.4; burst(P.x, P.y, '#ff7a3d', 20, 5, 3); }
+        for (const P of alive()) if (!G.testGod && !(P.inv > 0)) { P.hp -= P.maxHp * 0.25; burst(P.x, P.y, '#ff7a3d', 20, 5, 3); }   // (2.36.8: era 40%)
         heal(e, 0.25); e.jf.doom = 90; G.shake = 1.2; sfx('boom', 0.6);
         announce('¡El planeta tiembla! Freezer se recupera… otros 90 s', '#ff5c5c');
       }
@@ -77,7 +77,7 @@
         e.jf.sd -= dt; e.scale *= 1 + dt * 0.08;
         if (Math.random() < 0.3) burst(e.x, e.y - 20, '#ffd93b', 4, 3, 2);
         if (e.jf.sd <= 0) {
-          for (const P of alive()) if (!G.testGod && Math.hypot(P.x - e.x, P.y - e.y) < 520) P.hp -= P.maxHp * 0.5;
+          for (const P of alive()) if (!G.testGod && !(P.inv > 0) && Math.hypot(P.x - e.x, P.y - e.y) < 520) P.hp -= P.maxHp * 0.3;   // (2.36.8: era 50%)
           ring(e.x, e.y, 520, 0.8, '#ffd93b'); burst(e.x, e.y, '#ffffff', 80, 9, 5); G.shake = 1.5; sfx('boom', 0.8);
           e.jf.revivio = true; e.hp = e.maxHp * 0.4; e.scale = e.def.scale; e.speed = e.jf.spd;
           powerUp(e, { name: 'Súper Cell Perfecto', spd: 1.1, dmg: 1.25, color: '#7fe6ff', text: '¡Cell regresó de la explosión más fuerte que nunca!' });

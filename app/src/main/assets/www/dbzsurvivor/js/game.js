@@ -965,12 +965,26 @@ function spawnEnemy(id, opts = {}) {
     shooter: !!def.shooter && Math.random() < (def.shootChance ?? SHOOTER_CHANCE),   // solo algunos disparan
   });
 }
+// Daño de los jefes (2.36.8). Al jugador todo le llega × dmgScale() (el tiempo de partida y el nivel): bien para las
+// hordas, pero a los 10 minutos un jefe final pegaba ×3-4 (Janemba ~100 por golpe y 240 con sus especiales, con 100-200
+// de vida). Ahora el golpe normal de un jefe es un % lógico de la vida BASE del guerrero (así Vitalidad y la tienda
+// sí ayudan): 6,8% en el nivel 1 → 12,4% en el 8, ×1,25 si es el final, con un toque de cada jefe (su daño propio) y
+// sus especiales encima (×0,6 a ×2,6). El Modo Historia pone su propio % (window.bossPctHook, capitulos.js).
+const BOSS_PCT = b => {
+  const h = window.bossPctHook && window.bossPctHook(b);
+  const n = Number.isFinite(+G.lv.num) ? +G.lv.num : 4;
+  return (h || 0.06 + 0.008 * Math.min(10, n)) * (b.final ? 1.25 : 1) * Math.max(0.8, Math.min(1.25, (b.dmg || 24) / 24));
+};
+function bossDmg(b) {
+  const ref = Math.max(100, ...G.players.filter(P => !P.ally).map(P => (P.c && P.c.hp) || 100));
+  return Math.max(1, ref * BOSS_PCT(b) * lateRamp(KAIO.dmgK) / dmgScale());   // (el modo infinito sigue apretando)
+}
 // quiet: sin cartel (lo pone spawnBosses, uno solo para todo el grupo)
 function spawnBoss(b, quiet = false) {
   const pos = spawnPos(10), hp = bossHp(b);
   G.enemies.push({
     nid: G.nid++, def: b, id: b.id, boss: true, spawnT: G.t, final: !!b.final, ball: !b.final && canCarryBall(), x: pos.x, y: pos.y, hp, maxHp: hp, r: b.r,
-    speed: b.speed, dmg: b.dmg, xp: 60, scale: b.scale, cd: 2.5, pi: 0, dash: 0, flash: 0, facing: 1, orbHit: 0,
+    speed: b.speed, dmg: bossDmg(b), xp: 60, scale: b.scale, cd: 2.5, pi: 0, dash: 0, flash: 0, facing: 1, orbHit: 0,
     phase: 0,
   });
   G.shake = 0.6;

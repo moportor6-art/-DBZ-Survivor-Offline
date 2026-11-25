@@ -184,6 +184,8 @@
     }
     return r;
   };
+  // % de la vida base del guerrero por golpe normal del jefe: capítulo 1, 5% → sube 0,2% por capítulo (×1,25 el final)
+  window.bossPctHook = () => { const C = G && G.historia && capDe(G.historia); return C ? 0.05 + CAPS.indexOf(C) * 0.002 : 0; };
   const sb = spawnBoss;
   spawnBoss = function (b) {   // eslint-disable-line no-global-assign
     const r = sb.apply(this, arguments);
@@ -196,9 +198,7 @@
     const poder = dps && dps.g === G ? dps.seg.reduce((a, v, k) => a + (dps.t[k] > ahora - VENT ? v : 0), 0) / Math.min(VENT, Math.max(1, G.t)) : 0;
     const hp = Math.round(Math.max(e.hp, poder * seg));
     e.hp = e.maxHp = hp;
-    const vida = Math.max(...G.players.filter(P => !P.ally).map(P => P.maxHp || 100));
-    // capítulo 1: 3,5% de tu vida por golpe; sube despacio y nunca pasa del 10% (antes llegaba al 22% en los últimos)
-    e.dmg = Math.round(Math.max(e.dmg * (0.9 + i * 0.02), vida * Math.min(0.10, 0.035 + i * 0.003)));
+    // (el daño del jefe lo pone game.js bossDmg con el % de abajo: ya no se multiplica otra vez por el tiempo)
     return r;
   };
 
