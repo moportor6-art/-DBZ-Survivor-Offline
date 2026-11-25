@@ -60,7 +60,7 @@
         lore: 'El Ki divino lo envuelve: su cuerpo se recupera mientras pelea.' },
       { name: 'Super Saiyajin Blue', aura: '#4fd8ff', bonus: 0.6, fx: { def: 0.25 }, sprite: S('vegeta~3-ssj'),
         lore: 'El Blue con el orgullo de un príncipe: aguanta golpes que tumbarían a cualquiera.' },
-      { name: 'Ego Superior', aura: '#b06bff', bonus: 0.75, fx: { ego: 0.6 }, sprite: S('vegeta-ego'),
+      { name: 'Ego Superior', aura: '#b06bff', bonus: 0.75, fx: { ego: 0.6 }, sprite: S('vegeta-ego', 32, 32, true),   // dibujo propio de DB Survivors (tools/hojas/dbs_poses.py)
         lore: 'El poder de un dios de la destrucción: cuanto más daño recibe, más fuerte pega.' },
     ],
     gohan: [
@@ -100,9 +100,7 @@
         lore: 'Todo su poder liberado contra Goku en Namek: músculos hinchados y golpes brutales, pero se agota rápido.' },
       { name: 'Golden Freezer', aura: '#ffd93b', bonus: 0.65, fx: { spd: 0.1 }, drain: 1.4, sprite: S('freezerp~4-ssj'),
         lore: 'Cuatro meses de entrenamiento: poder abrumador, pero su resistencia se agota muy rápido.' },
-      { name: 'Black Freezer', aura: '#a04070', bonus: 0.95, fx: { spd: 0.15, def: 0.15, crit: 0.15 }, drain: 1.5, sprite: PERFIL('freezerp-black', 67, 49,
-        { idle: { row: 0, col: 0, count: 1 }, walk: { row: 0, col: 1, count: 4 }, cast: { row: 0, col: 5, count: 2 },
-          kohit: { row: 0, col: 7, count: 1 }, kolie: { row: 0, col: 8, count: 1 }, koup: { row: 0, col: 9, count: 1 } }, 0.9),
+      { name: 'Black Freezer', aura: '#a04070', bonus: 0.95, fx: { spd: 0.15, def: 0.15, crit: 0.15 }, drain: 1.5, sprite: S('freezerp-negro', 32, 32, true),
         lore: 'Diez años en la Habitación del Tiempo: un poder que dejó atrás a Goku y Vegeta. Su Rayo Mortal negro lo atraviesa todo.' },
     ],
     coolerp: [{ name: 'Quinta forma', aura: '#c46bff', bonus: 0.45, fx: { def: 0.15 }, sprite: A('coolerp'),

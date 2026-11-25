@@ -27,7 +27,7 @@ recolor('goku-ssj.png', 'fusion/goku-dios.png', dios)
 # Vegeta Ego Superior: pelo Blue a morado
 def ego(h, s, v, x, y):
     if 0.45 <= h <= 0.62 and s > 0.15 and v > 0.35: return (0.78, s, v * 0.95)
-recolor('fusion/vegeta~3-ssj.png', 'fusion/vegeta-ego.png', ego)
+# recolor('fusion/vegeta~3-ssj.png', 'fusion/vegeta-ego.png', ego)   # ya no: el Ego Superior tiene dibujo propio (tools/hojas/dbs_poses.py)
 # Orange Piccolo: piel verde a naranja
 def naranja(h, s, v, x, y):
     if 0.22 <= h <= 0.42 and s > 0.2 and v > 0.25: return (0.075, min(1, s * 1.05), min(1, v * 1.12))
