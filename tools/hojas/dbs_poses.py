@@ -22,12 +22,12 @@ cuadro = lambda fr: atlas.crop((F[fr][0], F[fr][1], F[fr][0] + F[fr][2], F[fr][1
 POSES = ['shoot', 'hurt', 'hurts', 'charge', 'win']
 
 # ── 2. Hojas nuevas ──
-def hoja(pers, salida):
+def hoja(pers, salida, tinte=None):
     out = Image.new('RGBA', (320, 96), (0, 0, 0, 0))
     def poner(fr, col, fila):
         if not fr: return
         ax, ay = F[fr][4], F[fr][5]
-        celda = Image.new('RGBA', (32, 32), (0, 0, 0, 0)); c = cuadro(fr)
+        celda = Image.new('RGBA', (32, 32), (0, 0, 0, 0)); c = cuadro(fr) if not tinte else tinte(cuadro(fr))
         celda.paste(c, (16 - ax, 32 - ay), c)   # el pie en el centro abajo, como las demás hojas (lo que sobra se recorta)
         out.alpha_composite(celda, (col * 32, fila * 32))
     sec = lambda n: A.get(f'{pers}.{n}', [])
@@ -41,7 +41,27 @@ def hoja(pers, salida):
         poner(uno('ko') or uno('hurts') or quieto, 8, fila)
         poner(quieto, 9, fila)
     out.save(os.path.join(SPR, 'fusion', salida))
+# Super Saiyajin Dios de Goku: no lo tienen; se arma con su Goku de Super («gokus», el mismo dibujo que su Blue y
+# su Ultra Instinto) pintándole el pelo de rojo: el negro de adentro del pelo (no el contorno) pasa a tres rojos.
+# En la pose de carga, su aura dorada pasa a roja.
+VECINOS4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+AURA_ROJA = {(248, 248, 0): (255, 90, 70), (248, 208, 0): (230, 40, 50), (248, 248, 144): (255, 150, 130), (248, 248, 216): (255, 215, 205)}
+def dios(im, aura=False):
+    im = im.copy(); w, h = im.size; px = im.load(); src = im.copy().load()
+    op = lambda x, y: 0 <= x < w and 0 <= y < h and src[x, y][3] > 0
+    for y in range(h):
+        for x in range(w):
+            p = src[x, y]
+            if not p[3]: continue
+            if aura and p[:3] in AURA_ROJA: px[x, y] = AURA_ROJA[p[:3]] + (p[3],); continue
+            if y >= h * 0.5 or p[:3] != (0, 0, 0) or not all(op(x + dx, y + dy) for dx, dy in VECINOS4): continue
+            borde = sum(1 for dx, dy in VECINOS4 + ((1, 1), (-1, -1), (1, -1), (-1, 1)) if not op(x + dx, y + dy) or src[x + dx, y + dy][:3] != (0, 0, 0))
+            px[x, y] = (150, 16, 40, 255) if borde >= 3 else (214, 40, 56, 255) if borde else (236, 72, 72, 255)
+    return im
+
 hoja('vegetas_ego', 'vegeta-ego.png')
+hoja('vegeta_majin', 'vegeta-majin.png')   # Majin Vegeta con su dibujo (antes el SSJ recoloreado)
+hoja('gokus', 'goku-dios.png', dios)
 hoja('freezerp_b', 'freezerp-negro.png')
 
 # ── 1. Qué hoja nuestra es cada personaje ──
@@ -68,18 +88,21 @@ for ruta in sorted(glob.glob(os.path.join(SPR, '*.png')) + glob.glob(os.path.joi
     if cand: hojas[os.path.relpath(ruta, os.path.join(SPR, '..', '..')).replace(os.sep, '/')] = max(cand, key=con_poses)
 
 # ── Atlas de poses (estantes de 64 px de ancho máximo por fila) ──
+hojas['assets/sprites/fusion/goku-dios.png'] = 'gokus_dios'
 usados = sorted(set(hojas.values()))
-lista = [(p, q, fr) for p in usados for q in POSES for fr in A.get(f'{p}.{q}', [])]
+base = lambda p: 'gokus' if p == 'gokus_dios' else p
+lista = [(p, q, fr) for p in usados for q in POSES for fr in A.get(f'{base(p)}.{q}', [])]
 ANCHO, x, y, alto_fila, pos = 1024, 0, 0, 0, {}
 for p, q, fr in lista:
     w, h = F[fr][2], F[fr][3]
     if x + w > ANCHO: x, y, alto_fila = 0, y + alto_fila + 1, 0
-    pos[fr] = (x, y); x += w + 1; alto_fila = max(alto_fila, h)
+    pos[(p, fr)] = (x, y); x += w + 1; alto_fila = max(alto_fila, h)
 img = Image.new('RGBA', (ANCHO, y + alto_fila + 1), (0, 0, 0, 0))
 datos = {}
 for p, q, fr in lista:
-    img.paste(cuadro(fr), pos[fr])
-    datos.setdefault(p, {}).setdefault(q, []).append([*pos[fr], F[fr][2], F[fr][3], F[fr][4], F[fr][5]])
+    c = dios(cuadro(fr), aura=(q == 'charge')) if p == 'gokus_dios' else cuadro(fr)
+    img.paste(c, pos[(p, fr)])
+    datos.setdefault(p, {}).setdefault(q, []).append([*pos[(p, fr)], F[fr][2], F[fr][3], F[fr][4], F[fr][5]])
 os.makedirs(os.path.join(SPR, 'poses'), exist_ok=True)
 img.save(os.path.join(SPR, 'poses', 'dbs_poses.png'))
 json.dump({'hojas': hojas, 'poses': datos}, open(os.path.join(SPR, 'poses', 'dbs_poses.json'), 'w'), separators=(',', ':'))

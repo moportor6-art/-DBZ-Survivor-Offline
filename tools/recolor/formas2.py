@@ -59,7 +59,7 @@ for y in range(H):
     for x in range(W):
         if a[y, x, 3] > 10 and max(a[y, x, :3]) < 70: a[y, x, :3] = [80, 6, 40]
 sparks(a, [255, 120, 200], 2, 7)
-save(a, 'vegeta-majin.png')
+# save(a, 'vegeta-majin.png')   # ya no: el Majin Vegeta usa el dibujo de DB Survivors (tools/hojas/dbs_poses.py)
 
 # Super Trunks: el cuerpo (de los hombros para abajo) un 25% más ancho
 a = load('ftrunks-ssj.png'); out = np.zeros_like(a)

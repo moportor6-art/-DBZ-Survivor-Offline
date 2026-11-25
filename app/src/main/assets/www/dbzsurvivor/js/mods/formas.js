@@ -42,7 +42,7 @@
         lore: 'Más allá del Super Saiyajin: el Ki chisporrotea en descargas eléctricas.' },
       { name: 'Super Saiyajin 3', aura: '#ffe14d', bonus: 0.5, fx: { spd: -0.08 }, drain: 1.15, sprite: S('goku~2-ssj'),
         lore: 'La alcanzó entrenando en el Otro Mundo. Su poder es enorme, pero devora el Ki como ninguna otra.' },
-      { name: 'Super Saiyajin Dios', aura: '#ff4d4d', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: R('goku:ssj', 'goku-dios'),
+      { name: 'Super Saiyajin Dios', aura: '#ff4d4d', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: S('goku-dios', 32, 32, true),   // tools/hojas/dbs_poses.py
         lore: 'El ritual de cinco Saiyajin de corazón puro: Ki divino y sereno que sana su cuerpo, sin desgaste.' },
       { name: 'Super Saiyajin Blue', aura: '#4fd8ff', bonus: 0.6, fx: { cd: 0.25, def: 0.1 }, sprite: S('goku~3-ssj'),
         lore: 'El Ki divino dentro del Super Saiyajin: control perfecto, las técnicas salen casi sin pausa.' },
@@ -54,7 +54,7 @@
     vegeta: [
       { name: 'Super Saiyajin 2', aura: '#fff07a', bonus: 0.2, fx: { shock: 0.1 }, sprite: R('vegeta:ssj', 'vegeta-ssj2'),
         lore: 'Lo alcanzó entrenando para la saga de Buu: descargas eléctricas a su alrededor.' },
-      { name: 'Majin Vegeta', aura: '#ff4da6', bonus: 0.55, fx: { bleed: 0.008 }, sprite: R('vegeta:ssj', 'vegeta-majin'),
+      { name: 'Majin Vegeta', aura: '#ff4da6', bonus: 0.55, fx: { bleed: 0.008 }, sprite: S('vegeta-majin', 32, 32, true),   // dibujo de DB Survivors (tools/hojas/dbs_poses.py)
         lore: 'Dejó que Babidi lo controlara para recuperar su crueldad: muchísimo poder, pero le va quitando vida.' },
       { name: 'Super Saiyajin Dios', aura: '#ff5a5a', bonus: 0.45, fx: { regen: 0.012 }, drain: 0.85, sprite: S('vegeta~2-ssj'),
         lore: 'El Ki divino lo envuelve: su cuerpo se recupera mientras pelea.' },

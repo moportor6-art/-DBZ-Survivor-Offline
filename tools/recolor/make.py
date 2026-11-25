@@ -23,7 +23,7 @@ def dios(h, s, v, x, y):
         return (0.985, max(0.55, min(1, s * 1.3)), min(1, v * 0.82))
     if y % 32 < 10 and s < 0.12 and v > 0.8:   # brillos blancos del pelo
         return (0.985, 0.4, 0.92)
-recolor('goku-ssj.png', 'fusion/goku-dios.png', dios)
+# recolor('goku-ssj.png', 'fusion/goku-dios.png', dios)   # ya no: tools/hojas/dbs_poses.py lo arma con el Goku de DB Survivors
 # Vegeta Ego Superior: pelo Blue a morado
 def ego(h, s, v, x, y):
     if 0.45 <= h <= 0.62 and s > 0.15 and v > 0.35: return (0.78, s, v * 0.95)
