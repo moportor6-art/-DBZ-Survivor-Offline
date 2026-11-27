@@ -8,6 +8,13 @@ Una sola app Android con los dos juegos, cada uno completo y sin internet:
 Al abrir la app aparece un menú para elegir. El botón **Atrás** dentro de un juego pregunta antes de volver al menú; en el menú cierra la app.
 Cada juego guarda sus partidas por separado (no se mezclan).
 
+## Mundos de prueba (worldgen)
+
+En DBZ Survivor, la ventana de **Niveles bonus** trae cuatro tarjetas **🧪** con escenarios generados por
+[worldgen](https://github.com/moportor6-art/worldgen): **Namek de los lagos**, **Tierra baldía**, **Ciudad destruida**
+(manzanas y calles) e **Isla del Torneo** (mar alrededor y el ring en medio). El agua y las mesetas no se pisan. Cada uno
+usa los enemigos y jefes del nivel en que se basa (`js/mods/mundos.js`, `js/mods/worldgen.js`).
+
 ## Todo en local
 
 La app no tiene cuentas, donaciones, pagos ni redes: no se muestran y ningún enlace sale de la app
